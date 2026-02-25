@@ -4,7 +4,7 @@ __pycache__/
 *.pyo
 
 # Reports folder contents
-reports/
+
 
 # Project documentation
 project.md
