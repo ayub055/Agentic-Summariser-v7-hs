@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bureau Report - ###4958</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .header {
+            border-bottom: 3px solid #2c3e50;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .header-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            color: #666;
+            font-size: 13px;
+        }
+
+        .header-meta span {
+            display: inline-block;
+        }
+
+        .section {
+            margin-bottom: 25px;
+            page-break-inside: avoid;
+        }
+
+        .section h3 {
+            color: #2c3e50;
+            font-size: 16px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 8px;
+            margin-bottom: 12px;
+        }
+
+        .summary-box {
+            background-color: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .summary-box p {
+            margin: 0;
+            color: #444;
+            white-space: pre-line;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .info-item {
+            padding: 12px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+        }
+
+        .info-item label {
+            display: block;
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+
+        .info-item .value {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .info-item .value.risk {
+            color: #e74c3c;
+        }
+
+        .info-item .value.safe {
+            color: #27ae60;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 13px;
+        }
+
+        th, td {
+            padding: 8px 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .amount {
+            text-align: right;
+            font-family: 'Consolas', monospace;
+        }
+
+        .center {
+            text-align: center;
+        }
+
+        .secured-yes {
+            color: #27ae60;
+            font-weight: 600;
+        }
+
+        .secured-no {
+            color: #e67e22;
+            font-weight: 600;
+        }
+
+        .footer {
+            margin-top: 30px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+            text-align: center;
+            color: #999;
+            font-size: 11px;
+        }
+
+        @media print {
+            body {
+                padding: 0;
+            }
+            .section {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Bureau Tradeline Report</h1>
+        <div class="header-meta">
+            <span><strong>Customer ID:</strong> ###4958</span>
+            <span><strong>Generated:</strong> 2026-02-16</span>
+            <span><strong>Currency:</strong> INR</span>
+            <span><strong>Tradelines:</strong> 123</span>
+        </div>
+    </div>
+
+    <!-- Portfolio Summary -->
+    <div class="section">
+        <h3>Portfolio Summary</h3>
+        <div class="info-grid">
+            <div class="info-item">
+                <label>Live Tradelines</label>
+                <div class="value">34</div>
+            </div>
+            <div class="info-item">
+                <label>Closed Tradelines</label>
+                <div class="value">89</div>
+            </div>
+            <div class="info-item">
+                <label>Total Exposure</label>
+                <div class="value">INR 1,85,72,860</div>
+            </div>
+            <div class="info-item">
+                <label>Total Outstanding</label>
+                <div class="value">INR 40,15,241</div>
+            </div>
+            <div class="info-item">
+                <label>Unsecured Exposure</label>
+                <div class="value">INR 90,40,983</div>
+            </div>
+            <div class="info-item">
+                <label>Delinquency</label>
+                <div class="value risk">
+                    Yes
+                </div>
+            </div>
+            <div class="info-item">
+                <label>Max DPD</label>
+                <div class="value risk">
+                    61
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Executive Summary (LLM narrative) -->
+    
+    <div class="section">
+        <h3>Executive Summary</h3>
+        <div class="summary-box">
+            <p>The customer&#39;s tradeline portfolio consists of a total of 123 live and closed accounts, with a sanctioned exposure of INR 1,85,72,860. The portfolio is diversified across various loan products, including credit cards, business loans, consumer durable loans, gold loans, personal loans, two-wheeler loans, and auto loans. Notable data points include a high credit card utilization percentage of 35.8%, indicating some pressure on the customer&#39;s credit utilization. Additionally, there are multiple recent Personal Loan (PL) trades in the last 6 months, which may indicate loan stacking or rapid acquisition velocity.
+
+The customer&#39;s behavioral features suggest a mix of positive and concerning signals. On the positive side, there is no missed payment percentage, zero DPD across all products and windows, and a strong closure track record for Personal Loans (90% good closed PL loans). However, high enquiry activity with 21 unsecured enquiries in the last 12 months indicates [HIGH RISK] enquiry pressure, while frequent acquisitions of new loans, particularly Personal Loans, may indicate [CONCERN — rapid loan stacking]. Furthermore, multiple recent PL trades in the last 6 months combined with high enquiry activity suggest a [HIGH RISK] credit hungry profile.</p>
+        </div>
+    </div>
+    
+
+    <!-- Key Findings & Inferences -->
+    
+    <div class="section">
+        <h3>Key Findings & Inferences</h3>
+        <div style="margin-top: 10px;">
+            
+            <div style="display: flex; align-items: flex-start; margin-bottom: 10px; padding: 10px; border-left: 4px solid #e74c3c; background-color: #f8f9fa; border-radius: 0 4px 4px 0;">
+                <div style="flex: 1;">
+                    <div style="margin-bottom: 4px;">
+                        <span style="font-size: 11px; color: #666;">Enquiry Behavior</span>
+                    </div>
+                    <div style="font-weight: 600; color: #2c3e50; font-size: 13px;">21 unsecured enquiries in last 12 months</div>
+                    <div style="color: #555; font-size: 12px; margin-top: 3px; font-style: italic;">Very high enquiry pressure suggests desperate credit seeking or multiple rejections</div>
+                </div>
+            </div>
+            
+            <div style="display: flex; align-items: flex-start; margin-bottom: 10px; padding: 10px; border-left: 4px solid #e74c3c; background-color: #f8f9fa; border-radius: 0 4px 4px 0;">
+                <div style="flex: 1;">
+                    <div style="margin-bottom: 4px;">
+                        <span style="font-size: 11px; color: #666;">Composite Signal</span>
+                    </div>
+                    <div style="font-weight: 600; color: #2c3e50; font-size: 13px;">High enquiry volume (21 in 12M) combined with 2 new PL trades in 6M</div>
+                    <div style="color: #555; font-size: 12px; margin-top: 3px; font-style: italic;">Credit hungry behavior with active loan stacking — elevated risk of debt spiral</div>
+                </div>
+            </div>
+            
+            <div style="display: flex; align-items: flex-start; margin-bottom: 10px; padding: 10px; border-left: 4px solid #e74c3c; background-color: #f8f9fa; border-radius: 0 4px 4px 0;">
+                <div style="flex: 1;">
+                    <div style="margin-bottom: 4px;">
+                        <span style="font-size: 11px; color: #666;">Composite Signal</span>
+                    </div>
+                    <div style="font-weight: 600; color: #2c3e50; font-size: 13px;">Avg 1.8 months between PL/BL with 2 new trades in 6M</div>
+                    <div style="color: #555; font-size: 12px; margin-top: 3px; font-style: italic;">Rapid PL stacking pattern — borrower is accumulating unsecured debt at an accelerating pace</div>
+                </div>
+            </div>
+            
+            <div style="display: flex; align-items: flex-start; margin-bottom: 10px; padding: 10px; border-left: 4px solid #e67e22; background-color: #f8f9fa; border-radius: 0 4px 4px 0;">
+                <div style="flex: 1;">
+                    <div style="margin-bottom: 4px;">
+                        <span style="font-size: 11px; color: #666;">Delinquency</span>
+                    </div>
+                    <div style="font-weight: 600; color: #2c3e50; font-size: 13px;">Active delinquency detected with Max DPD of 61 days</div>
+                    <div style="color: #555; font-size: 12px; margin-top: 3px; font-style: italic;">Significant past-due status suggests repayment difficulty; close monitoring required</div>
+                </div>
+            </div>
+            
+            <div style="display: flex; align-items: flex-start; margin-bottom: 10px; padding: 10px; border-left: 4px solid #e67e22; background-color: #f8f9fa; border-radius: 0 4px 4px 0;">
+                <div style="flex: 1;">
+                    <div style="margin-bottom: 4px;">
+                        <span style="font-size: 11px; color: #666;">Delinquency</span>
+                    </div>
+                    <div style="font-weight: 600; color: #2c3e50; font-size: 13px;">Personal Loan: Delinquent with Max DPD of 61 days</div>
+                    <div style="color: #555; font-size: 12px; margin-top: 3px; font-style: italic;">Significant past-due on Personal Loan; repayment discipline is compromised</div>
+                </div>
+            </div>
+            
+            <div style="display: flex; align-items: flex-start; margin-bottom: 10px; padding: 10px; border-left: 4px solid #e67e22; background-color: #f8f9fa; border-radius: 0 4px 4px 0;">
+                <div style="flex: 1;">
+                    <div style="margin-bottom: 4px;">
+                        <span style="font-size: 11px; color: #666;">Delinquency</span>
+                    </div>
+                    <div style="font-weight: 600; color: #2c3e50; font-size: 13px;">Two Wheeler Loan: Delinquent with Max DPD of 39 days</div>
+                    <div style="color: #555; font-size: 12px; margin-top: 3px; font-style: italic;">Significant past-due on Two Wheeler Loan; repayment discipline is compromised</div>
+                </div>
+            </div>
+            
+            <div style="display: flex; align-items: flex-start; margin-bottom: 10px; padding: 10px; border-left: 4px solid #e67e22; background-color: #f8f9fa; border-radius: 0 4px 4px 0;">
+                <div style="flex: 1;">
+                    <div style="margin-bottom: 4px;">
+                        <span style="font-size: 11px; color: #666;">Loan Activity</span>
+                    </div>
+                    <div style="font-weight: 600; color: #2c3e50; font-size: 13px;">2 new personal loan trades opened in last 6 months</div>
+                    <div style="color: #555; font-size: 12px; margin-top: 3px; font-style: italic;">Multiple recent PL acquisitions; monitor for emerging over-leverage</div>
+                </div>
+            </div>
+            
+            <div style="display: flex; align-items: flex-start; margin-bottom: 10px; padding: 10px; border-left: 4px solid #f39c12; background-color: #f8f9fa; border-radius: 0 4px 4px 0;">
+                <div style="flex: 1;">
+                    <div style="margin-bottom: 4px;">
+                        <span style="font-size: 11px; color: #666;">Loan Velocity</span>
+                    </div>
+                    <div style="font-weight: 600; color: #2c3e50; font-size: 13px;">Avg time between PL/BL acquisitions (12M): 1.8 months</div>
+                    <div style="color: #555; font-size: 12px; margin-top: 3px; font-style: italic;">Frequent loan acquisitions; borrower is actively accumulating unsecured debt</div>
+                </div>
+            </div>
+            
+            <div style="display: flex; align-items: flex-start; margin-bottom: 10px; padding: 10px; border-left: 4px solid #f39c12; background-color: #f8f9fa; border-radius: 0 4px 4px 0;">
+                <div style="flex: 1;">
+                    <div style="margin-bottom: 4px;">
+                        <span style="font-size: 11px; color: #666;">Composite Signal</span>
+                    </div>
+                    <div style="font-weight: 600; color: #2c3e50; font-size: 13px;">No formal missed payments but DPD detected (Portfolio Max DPD: 61 days)</div>
+                    <div style="color: #555; font-size: 12px; margin-top: 3px; font-style: italic;">Payments were made but with delays past due date; payment discipline is inconsistent despite no formal defaults</div>
+                </div>
+            </div>
+            
+            <div style="display: flex; align-items: flex-start; margin-bottom: 10px; padding: 10px; border-left: 4px solid #95a5a6; background-color: #f8f9fa; border-radius: 0 4px 4px 0;">
+                <div style="flex: 1;">
+                    <div style="margin-bottom: 4px;">
+                        <span style="font-size: 11px; color: #666;">Portfolio</span>
+                    </div>
+                    <div style="font-weight: 600; color: #2c3e50; font-size: 13px;">Portfolio spans 9 loan products (Other, Business Loan, Consumer Durable, Credit Card, Gold Loan, LAP / LAS / LAD, Personal Loan, Two Wheeler Loan, Auto Loan)</div>
+                    <div style="color: #555; font-size: 12px; margin-top: 3px; font-style: italic;">Diversified credit portfolio indicates established borrowing history across products</div>
+                </div>
+            </div>
+            
+            <div style="display: flex; align-items: flex-start; margin-bottom: 10px; padding: 10px; border-left: 4px solid #27ae60; background-color: #f8f9fa; border-radius: 0 4px 4px 0;">
+                <div style="flex: 1;">
+                    <div style="margin-bottom: 4px;">
+                        <span style="font-size: 11px; color: #666;">DPD &amp; Delinquency</span>
+                    </div>
+                    <div style="font-weight: 600; color: #2c3e50; font-size: 13px;">Zero DPD across all products in recent 6-9 month windows</div>
+                    <div style="color: #555; font-size: 12px; margin-top: 3px; font-style: italic;">Clean recent payment record demonstrates consistent repayment discipline</div>
+                </div>
+            </div>
+            
+            <div style="display: flex; align-items: flex-start; margin-bottom: 10px; padding: 10px; border-left: 4px solid #27ae60; background-color: #f8f9fa; border-radius: 0 4px 4px 0;">
+                <div style="flex: 1;">
+                    <div style="margin-bottom: 4px;">
+                        <span style="font-size: 11px; color: #666;">Payment Behavior</span>
+                    </div>
+                    <div style="font-weight: 600; color: #2c3e50; font-size: 13px;">No missed payments in last 18 months</div>
+                    <div style="color: #555; font-size: 12px; margin-top: 3px; font-style: italic;">Perfect payment track record over 18 months is a strong positive</div>
+                </div>
+            </div>
+            
+            <div style="display: flex; align-items: flex-start; margin-bottom: 10px; padding: 10px; border-left: 4px solid #27ae60; background-color: #f8f9fa; border-radius: 0 4px 4px 0;">
+                <div style="flex: 1;">
+                    <div style="margin-bottom: 4px;">
+                        <span style="font-size: 11px; color: #666;">Payment Behavior</span>
+                    </div>
+                    <div style="font-weight: 600; color: #2c3e50; font-size: 13px;">Good closure ratio for PL loans: 90%</div>
+                    <div style="color: #555; font-size: 12px; margin-top: 3px; font-style: italic;">Strong track record of closing personal loans in good standing</div>
+                </div>
+            </div>
+            
+            <div style="display: flex; align-items: flex-start; margin-bottom: 10px; padding: 10px; border-left: 4px solid #27ae60; background-color: #f8f9fa; border-radius: 0 4px 4px 0;">
+                <div style="flex: 1;">
+                    <div style="margin-bottom: 4px;">
+                        <span style="font-size: 11px; color: #666;">Composite Signal</span>
+                    </div>
+                    <div style="font-weight: 600; color: #2c3e50; font-size: 13px;">Zero DPD, no missed payments, and 90% good PL closure ratio</div>
+                    <div style="color: #555; font-size: 12px; margin-top: 3px; font-style: italic;">Exemplary repayment profile — strong candidate from a credit discipline standpoint</div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+    
+
+    <!-- Product-wise Breakdown Table -->
+    
+    <div class="section">
+        <h3>Product-wise Breakdown</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Loan Type</th>
+                    <th class="center">Secured</th>
+                    <th class="center">Count</th>
+                    <th class="center">Live</th>
+                    <th class="center">Closed</th>
+                    <th class="amount">Sanctioned</th>
+                    <th class="amount">Outstanding</th>
+                    <th class="center">Max DPD</th>
+                    <th class="center">Util %</th>
+                    <th class="center">On-Us</th>
+                    <th class="center">Off-Us</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+                <tr>
+                    <td>Other</td>
+                    <td class="center secured-no">
+                        No
+                    </td>
+                    <td class="center">15</td>
+                    <td class="center">0</td>
+                    <td class="center">15</td>
+                    <td class="amount">39,47,694</td>
+                    <td class="amount">0</td>
+                    <td class="center">-</td>
+                    <td class="center">-</td>
+                    <td class="center">3</td>
+                    <td class="center">12</td>
+                </tr>
+                
+                <tr>
+                    <td>Business Loan</td>
+                    <td class="center secured-yes">
+                        Yes
+                    </td>
+                    <td class="center">11</td>
+                    <td class="center">2</td>
+                    <td class="center">9</td>
+                    <td class="amount">14,19,000</td>
+                    <td class="amount">1,51,657</td>
+                    <td class="center">30</td>
+                    <td class="center">-</td>
+                    <td class="center">0</td>
+                    <td class="center">11</td>
+                </tr>
+                
+                <tr>
+                    <td>Consumer Durable</td>
+                    <td class="center secured-no">
+                        No
+                    </td>
+                    <td class="center">26</td>
+                    <td class="center">6</td>
+                    <td class="center">20</td>
+                    <td class="amount">8,55,034</td>
+                    <td class="amount">90,527</td>
+                    <td class="center">-</td>
+                    <td class="center">-</td>
+                    <td class="center">0</td>
+                    <td class="center">26</td>
+                </tr>
+                
+                <tr>
+                    <td>Credit Card</td>
+                    <td class="center secured-no">
+                        No
+                    </td>
+                    <td class="center">20</td>
+                    <td class="center">16</td>
+                    <td class="center">4</td>
+                    <td class="amount">26,37,235</td>
+                    <td class="amount">15,11,981</td>
+                    <td class="center">3</td>
+                    <td class="center">36</td>
+                    <td class="center">3</td>
+                    <td class="center">17</td>
+                </tr>
+                
+                <tr>
+                    <td>Gold Loan</td>
+                    <td class="center secured-yes">
+                        Yes
+                    </td>
+                    <td class="center">28</td>
+                    <td class="center">4</td>
+                    <td class="center">24</td>
+                    <td class="amount">47,09,000</td>
+                    <td class="amount">10,56,207</td>
+                    <td class="center">-</td>
+                    <td class="center">-</td>
+                    <td class="center">0</td>
+                    <td class="center">28</td>
+                </tr>
+                
+                <tr>
+                    <td>LAP / LAS / LAD</td>
+                    <td class="center secured-yes">
+                        Yes
+                    </td>
+                    <td class="center">4</td>
+                    <td class="center">0</td>
+                    <td class="center">4</td>
+                    <td class="amount">18,98,000</td>
+                    <td class="amount">0</td>
+                    <td class="center">30</td>
+                    <td class="center">-</td>
+                    <td class="center">0</td>
+                    <td class="center">4</td>
+                </tr>
+                
+                <tr>
+                    <td>Personal Loan</td>
+                    <td class="center secured-no">
+                        No
+                    </td>
+                    <td class="center">15</td>
+                    <td class="center">5</td>
+                    <td class="center">10</td>
+                    <td class="amount">16,01,020</td>
+                    <td class="amount">4,80,098</td>
+                    <td class="center">61</td>
+                    <td class="center">-</td>
+                    <td class="center">0</td>
+                    <td class="center">15</td>
+                </tr>
+                
+                <tr>
+                    <td>Two Wheeler Loan</td>
+                    <td class="center secured-yes">
+                        Yes
+                    </td>
+                    <td class="center">2</td>
+                    <td class="center">0</td>
+                    <td class="center">2</td>
+                    <td class="amount">1,16,000</td>
+                    <td class="amount">0</td>
+                    <td class="center">39</td>
+                    <td class="center">-</td>
+                    <td class="center">0</td>
+                    <td class="center">2</td>
+                </tr>
+                
+                <tr>
+                    <td>Auto Loan</td>
+                    <td class="center secured-yes">
+                        Yes
+                    </td>
+                    <td class="center">2</td>
+                    <td class="center">1</td>
+                    <td class="center">1</td>
+                    <td class="amount">13,89,877</td>
+                    <td class="amount">7,24,771</td>
+                    <td class="center">-</td>
+                    <td class="center">-</td>
+                    <td class="center">1</td>
+                    <td class="center">1</td>
+                </tr>
+                
+            </tbody>
+        </table>
+    </div>
+    
+
+    <!-- Behavioral & Risk Features -->
+    
+    <div class="section">
+        <h3>Behavioral & Risk Features</h3>
+
+        <!-- Loan Activity -->
+        <h4 style="color: #2c3e50; margin: 15px 0 8px 0; font-size: 14px;">Loan Activity</h4>
+        <div class="info-grid">
+            <div class="info-item">
+                <label>Months Since Last PL Trade</label>
+                <div class="value">2.82</div>
+            </div>
+            <div class="info-item">
+                <label>Months Since Last Unsecured Trade</label>
+                <div class="value">2.69</div>
+            </div>
+            <div class="info-item">
+                <label>New PL Trades (6M)</label>
+                <div class="value">2</div>
+            </div>
+        </div>
+
+        <!-- DPD & Delinquency -->
+        <h4 style="color: #2c3e50; margin: 15px 0 8px 0; font-size: 14px;">DPD & Delinquency</h4>
+        <div class="info-grid">
+            <div class="info-item">
+                <label>Max DPD 6M (CC)</label>
+                <div class="value safe">
+                    0
+                </div>
+            </div>
+            <div class="info-item">
+                <label>Max DPD 6M (PL)</label>
+                <div class="value safe">
+                    0
+                </div>
+            </div>
+            <div class="info-item">
+                <label>Max DPD 9M (CC)</label>
+                <div class="value safe">
+                    0
+                </div>
+            </div>
+            <div class="info-item">
+                <label>Months Since Last 0+ DPD (Unsecured)</label>
+                <div class="value">199.61</div>
+            </div>
+            <div class="info-item">
+                <label>Months Since Last 0+ DPD (PL)</label>
+                <div class="value">199.61</div>
+            </div>
+        </div>
+
+        <!-- Payment Behavior -->
+        <h4 style="color: #2c3e50; margin: 15px 0 8px 0; font-size: 14px;">Payment Behavior</h4>
+        <div class="info-grid">
+            <div class="info-item">
+                <label>% 0+ DPD in 24M (All)</label>
+                <div class="value safe">
+                    0.00
+                </div>
+            </div>
+            <div class="info-item">
+                <label>% 0+ DPD in 24M (PL)</label>
+                <div class="value safe">
+                    0.00
+                </div>
+            </div>
+            <div class="info-item">
+                <label>% Missed Payments (18M)</label>
+                <div class="value safe">
+                    0.00
+                </div>
+            </div>
+            <div class="info-item">
+                <label>% Trades 0+ DPD in 12M (All)</label>
+                <div class="value">N/A</div>
+            </div>
+            <div class="info-item">
+                <label>Ratio Good Closed Loans (PL)</label>
+                <div class="value safe">
+                    90%
+                </div>
+            </div>
+        </div>
+
+        <!-- Utilization -->
+        <h4 style="color: #2c3e50; margin: 15px 0 8px 0; font-size: 14px;">Utilization</h4>
+        <div class="info-grid">
+            <div class="info-item">
+                <label>CC Balance Utilization %</label>
+                <div class="value ">
+                    35.80
+                </div>
+            </div>
+            <div class="info-item">
+                <label>PL Balance Remaining %</label>
+                <div class="value">55.33</div>
+            </div>
+        </div>
+
+        <!-- Enquiry Behavior -->
+        <h4 style="color: #2c3e50; margin: 15px 0 8px 0; font-size: 14px;">Enquiry Behavior</h4>
+        <div class="info-grid">
+            <div class="info-item">
+                <label>Unsecured Enquiries (12M)</label>
+                <div class="value risk">
+                    21
+                </div>
+            </div>
+            <div class="info-item">
+                <label>Trade-to-Enquiry Ratio (Unsec 24M)</label>
+                <div class="value">45.45</div>
+            </div>
+        </div>
+
+        <!-- Loan Acquisition Velocity -->
+        <h4 style="color: #2c3e50; margin: 15px 0 8px 0; font-size: 14px;">Loan Acquisition Velocity</h4>
+        <div class="info-grid">
+            <div class="info-item">
+                <label>Interpurchase Time 12M (PL/BL)</label>
+                <div class="value">1.76</div>
+            </div>
+            <div class="info-item">
+                <label>Interpurchase Time 6M (PL/BL)</label>
+                <div class="value">0.00</div>
+            </div>
+            <div class="info-item">
+                <label>Interpurchase Time 24M (All)</label>
+                <div class="value">0.71</div>
+            </div>
+            <div class="info-item">
+                <label>Interpurchase Time 9M (HL/LAP)</label>
+                <div class="value">N/A</div>
+            </div>
+            <div class="info-item">
+                <label>Interpurchase Time 24M (HL/LAP)</label>
+                <div class="value">N/A</div>
+            </div>
+            <div class="info-item">
+                <label>Interpurchase Time 24M (TWL)</label>
+                <div class="value">N/A</div>
+            </div>
+            <div class="info-item">
+                <label>Interpurchase Time 12M (Consumer Loan)</label>
+                <div class="value">1.67</div>
+            </div>
+        </div>
+    </div>
+    
+
+    <div class="footer">
+        <p>Generated on 2026-02-16 | Currency: INR</p>
+    </div>
+</body>
+</html>

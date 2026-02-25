@@ -1,0 +1,14 @@
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Reports folder contents
+reports/
+
+# Project documentation
+project.md
+.claude/
+.DS_Store
+data/ayub_txns.csv
+logs/

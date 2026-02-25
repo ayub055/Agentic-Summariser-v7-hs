@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Report - {{ report.meta.customer_id|mask_id }}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .header {
+            border-bottom: 3px solid #2c3e50;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .header-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            color: #666;
+            font-size: 13px;
+        }
+
+        .header-meta span {
+            display: inline-block;
+        }
+
+        .section {
+            margin-bottom: 25px;
+            page-break-inside: avoid;
+        }
+
+        .section h3 {
+            color: #2c3e50;
+            font-size: 16px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 8px;
+            margin-bottom: 12px;
+        }
+
+        .summary-box {
+            background-color: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .summary-box p {
+            margin: 0;
+            color: #444;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .amount {
+            text-align: right;
+            font-family: 'Consolas', monospace;
+        }
+
+        .positive {
+            color: #27ae60;
+        }
+
+        .negative {
+            color: #e74c3c;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .info-item {
+            padding: 12px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+        }
+
+        .info-item label {
+            display: block;
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+
+        .info-item .value {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .footer {
+            margin-top: 30px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+            text-align: center;
+            color: #999;
+            font-size: 11px;
+        }
+
+        @media print {
+            body {
+                padding: 0;
+            }
+            .section {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Customer Financial Report</h1>
+        <div class="header-meta">
+            <span><strong>Customer ID:</strong> {{ report.meta.customer_id|mask_id }}</span>
+            <span><strong>Generated:</strong> {{ report.meta.generated_at[:10] }}</span>
+            <span><strong>Period:</strong> {{ report.meta.analysis_period }}</span>
+            <span><strong>Transactions:</strong> {{ report.meta.transaction_count }}</span>
+        </div>
+    </div>
+
+    <!-- Relationship Profile (from tl_features) -->
+    {% if tl_features %}
+    <div class="section">
+        <h3>Relationship Profile</h3>
+        <div class="info-grid">
+            {% if tl_features.ktk_rel %}
+            <div class="info-item">
+                <label>Relationship</label>
+                <div class="value">{{ tl_features.ktk_rel }}</div>
+            </div>
+            {% endif %}
+            {% if tl_features.customer_segment %}
+            <div class="info-item">
+                <label>Segment</label>
+                <div class="value">{{ tl_features.customer_segment|segment }}</div>
+            </div>
+            {% endif %}
+            {% if tl_features.bank_grp %}
+            <div class="info-item">
+                <label>Banking Group</label>
+                <div class="value">{{ tl_features.bank_grp }}</div>
+            </div>
+            {% endif %}
+            {% if tl_features.bu_grp %}
+            <div class="info-item">
+                <label>Bureau Group</label>
+                <div class="value">{{ tl_features.bu_grp }}</div>
+            </div>
+            {% endif %}
+            {% if tl_features.affluence_amt is not none or tl_features.income_source %}
+            <div class="info-item">
+                <label>Affluence Amount</label>
+                <div class="value">{% if tl_features.affluence_amt is not none %}INR {{ tl_features.affluence_amt|inr_units }}{% else %}N/A{% endif %}</div>
+                {% if tl_features.income_source %}<div style="font-size: 12px; color: #666; margin-top: 3px;">{{ tl_features.income_source }}</div>{% endif %}
+            </div>
+            {% endif %}
+            {% if tl_features.node %}
+            <div class="info-item">
+                <label>Customer Persona</label>
+                <div class="value">{{ tl_features.node|segment }}</div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    {% if report.customer_review %}
+    <div class="section">
+        <h3>Executive Summary</h3>
+        <div class="summary-box">
+            <p>{{ report.customer_review }}</p>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if report.salary %}
+    <div class="section">
+        <h3>Salary Information</h3>
+        <div class="info-grid">
+            <div class="info-item">
+                <label>Average Amount</label>
+                <div class="value">{{ "{:,.2f}".format(report.salary.avg_amount) }} {{ report.meta.currency }}</div>
+            </div>
+            <div class="info-item">
+                <label>Transactions</label>
+                <div class="value">{{ report.salary.frequency }}</div>
+            </div>
+        </div>
+        {% if report.salary.narration %}
+        <p style="margin-top: 10px; color: #666; font-size: 12px;">
+            <strong>Sample:</strong> {{ report.salary.narration[:80] }}{% if report.salary.narration|length > 80 %}...{% endif %}
+        </p>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {% if rg_salary_data %}
+    <div class="section">
+        <h3>Internal Salary Analysis</h3>
+
+        {% if rg_salary_data.rg_sal %}
+        <h4 style="color: #2c3e50; font-size: 14px; margin-bottom: 8px;">RG SAL</h4>
+        <div class="summary-box">
+            <p>{{ rg_salary_data.rg_sal.observation }}</p>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Narration</th>
+                    <th class="amount">Amount (INR)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for txn in rg_salary_data.rg_sal.transactions %}
+                <tr>
+                    <td>{{ txn.date }}</td>
+                    <td>{{ txn.narration[:60] }}{% if txn.narration|length > 60 %}...{% endif %}</td>
+                    <td class="amount positive">{{ "{:,.0f}".format(txn.amount) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+
+        {% if rg_salary_data.rg_income %}
+        <h4 style="color: #2c3e50; font-size: 14px; margin-top: 18px; margin-bottom: 8px;">RG Income</h4>
+        <div class="summary-box">
+            <p>{{ rg_salary_data.rg_income.observation }}</p>
+        </div>
+        {% for src in rg_salary_data.rg_income.sources %}
+        <p style="margin-top: 12px; margin-bottom: 6px; font-weight: 600; color: #2c3e50; font-size: 13px;">
+            {{ src.merchant }} &mdash; {{ src.count }} transaction{{ 's' if src.count != 1 else '' }}, Total: INR {{ "{:,.0f}".format(src.total) }}
+        </p>
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Narration</th>
+                    <th class="amount">Amount (INR)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for txn in src.transactions %}
+                <tr>
+                    <td>{{ txn.date }}</td>
+                    <td>{{ txn.narration[:60] }}{% if txn.narration|length > 60 %}...{% endif %}</td>
+                    <td class="amount positive">{{ "{:,.0f}".format(txn.amount) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endfor %}
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {% if report.category_overview %}
+    <div class="section">
+        <h3>Spending by Category</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Category</th>
+                    <th class="amount">Amount ({{ report.meta.currency }})</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cat, amount in report.category_overview.items()|sort(attribute='1', reverse=true) %}
+                <tr>
+                    <td>{{ cat }}</td>
+                    <td class="amount">{{ "{:,.2f}".format(amount) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+
+    {% if report.monthly_cashflow %}
+    <div class="section">
+        <h3>Monthly Cash Flow</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Month</th>
+                    <th class="amount">Inflow</th>
+                    <th class="amount">Outflow</th>
+                    <th class="amount">Net</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for m in report.monthly_cashflow %}
+                <tr>
+                    <td>{{ m.month }}</td>
+                    <td class="amount positive">{{ "{:,.0f}".format(m.inflow) }}</td>
+                    <td class="amount negative">{{ "{:,.0f}".format(m.outflow) }}</td>
+                    <td class="amount {% if m.net >= 0 %}positive{% else %}negative{% endif %}">
+                        {{ "{:,.0f}".format(m.net) }}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+
+    {% if report.emis %}
+    <div class="section">
+        <h3>EMI Payments</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th class="amount">Average Amount</th>
+                    <th class="amount">Transactions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for emi in report.emis %}
+                <tr>
+                    <td>{{ emi.name }}</td>
+                    <td class="amount">{{ "{:,.2f}".format(emi.amount) }}</td>
+                    <td class="amount">{{ emi.frequency }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+
+    {% if report.rent %}
+    <div class="section">
+        <h3>Rent Payments</h3>
+        <div class="info-grid">
+            <div class="info-item">
+                <label>Direction</label>
+                <div class="value">{{ report.rent.direction | capitalize }}</div>
+            </div>
+            <div class="info-item">
+                <label>Average Amount</label>
+                <div class="value">{{ "{:,.2f}".format(report.rent.amount) }} {{ report.meta.currency }}</div>
+            </div>
+            <div class="info-item">
+                <label>Transactions</label>
+                <div class="value">{{ report.rent.frequency }}</div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if report.bills %}
+    <div class="section">
+        <h3>Utility Bills</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Type</th>
+                    <th class="amount">Average Amount</th>
+                    <th class="amount">Transactions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for bill in report.bills %}
+                <tr>
+                    <td>{{ bill.bill_type }}</td>
+                    <td class="amount">{{ "{:,.2f}".format(bill.avg_amount) }}</td>
+                    <td class="amount">{{ bill.frequency }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+
+    {% if report.top_merchants %}
+    <div class="section">
+        <h3>Top Merchants</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Merchant</th>
+                    <th class="amount">Transactions</th>
+                    <th class="amount">Total ({{ report.meta.currency }})</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for m in report.top_merchants %}
+                <tr>
+                    <td>{{ m.name[:40] }}{% if m.name|length > 40 %}...{% endif %}</td>
+                    <td class="amount">{{ m.count }}</td>
+                    <td class="amount">{{ "{:,.0f}".format(m.total) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+
+    <div class="footer">
+        <p>Generated on {{ report.meta.generated_at[:10] }} | Currency: {{ report.meta.currency }}</p>
+    </div>
+</body>
+</html>
