@@ -225,6 +225,27 @@
                 page-break-inside: avoid;
             }
         }
+
+        /* ── scorecard ───────────────────────────── */
+        .scorecard { border: 2px solid #2c3e50; border-radius: 6px; padding: 18px; margin-bottom: 28px; background: #fff; }
+        .sc-verdict { font-size: 17px; font-weight: 700; padding: 10px 16px; border-radius: 4px; margin-bottom: 16px; }
+        .sc-rag-red    { background: #fdecea; color: #c0392b; border-left: 5px solid #e74c3c; }
+        .sc-rag-amber  { background: #fef5e7; color: #d35400; border-left: 5px solid #e67e22; }
+        .sc-rag-green  { background: #eafaf1; color: #1e8449; border-left: 5px solid #27ae60; }
+        .sc-rag-neutral{ background: #f4f6f7; color: #555;    border-left: 5px solid #95a5a6; }
+        .sc-signals-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; margin-bottom: 16px; }
+        .sc-signal { padding: 10px; border-radius: 4px; text-align: center; }
+        .sc-sig-label { font-size: 11px; opacity: 0.85; }
+        .sc-sig-value { font-size: 15px; font-weight: 700; margin: 4px 0; }
+        .sc-sig-note  { font-size: 10px; opacity: 0.75; }
+        .sc-3col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+        .sc-col { padding: 10px 12px; border-radius: 4px; font-size: 12px; line-height: 1.7; }
+        .sc-col-head { font-weight: 700; font-size: 12px; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .sc-col-green { background: #eafaf1; }
+        .sc-col-red   { background: #fdecea; }
+        .sc-col-gray  { background: #f4f6f7; }
+        .sc-narrative { border-top: 1px solid #eee; padding-top: 12px; font-size: 13px; color: #444; line-height: 1.6; white-space: pre-line; }
+        .chart-dpd canvas { max-width: 100% !important; max-height: none !important; width: 100% !important; height: 260px !important; }
     </style>
 </head>
 <body>
@@ -232,11 +253,68 @@
         <h1>Bureau Tradeline Report</h1>
         <div class="header-meta">
             <span><strong>Customer ID:</strong> ###1174</span>
-            <span><strong>Generated:</strong> 2026-02-21</span>
+            <span><strong>Generated:</strong> 2026-03-02</span>
             <span><strong>Currency:</strong> INR</span>
             <span><strong>Tradelines:</strong> 49</span>
         </div>
     </div>
+
+    <!-- Risk Scorecard -->
+    
+    <div class="scorecard">
+        <div class="sc-verdict sc-rag-amber">
+            ● Overall Risk: CAUTION
+        </div>
+        
+        <div class="sc-signals-grid">
+            
+            <div class="sc-signal sc-rag-red">
+                <div class="sc-sig-label">Max DPD</div>
+                <div class="sc-sig-value">156 days</div>
+                <div class="sc-sig-note">Gold Loan, 108M ago</div>
+            </div>
+            
+            <div class="sc-signal sc-rag-amber">
+                <div class="sc-sig-label">CC Util</div>
+                <div class="sc-sig-value">73%</div>
+                <div class="sc-sig-note">Elevated</div>
+            </div>
+            
+            <div class="sc-signal sc-rag-amber">
+                <div class="sc-sig-label">Enquiries</div>
+                <div class="sc-sig-value">6 in 12M</div>
+                <div class="sc-sig-note">Moderate</div>
+            </div>
+            
+            <div class="sc-signal sc-rag-green">
+                <div class="sc-sig-label">Payments</div>
+                <div class="sc-sig-value">0% missed</div>
+                <div class="sc-sig-note">18M window</div>
+            </div>
+            
+        </div>
+        
+        <div class="sc-3col">
+            <div class="sc-col sc-col-green">
+                <div class="sc-col-head">Strengths</div>
+                <div>&#10003; Zero DPD across all products in recent 6-9 month windows</div><div>&#10003; No missed payments in last 18 months</div><div>&#10003; Trade-to-enquiry ratio (unsecured, 24M): 55.6%</div>
+            </div>
+            <div class="sc-col sc-col-red">
+                <div class="sc-col-head">Concerns</div>
+                <div>&#9888; Active delinquency detected with Max DPD of 156 days [Gold Loan: Opened: May 2016 – Oct 2024 | Last Closed: Jan 2025]</div><div>&#9888; Gold Loan: Delinquent with Max DPD of 156 days [Opened: May 2016 – Oct 2024 | Last Closed: Jan 2025]</div><div>&#9888; Good closure ratio for PL loans: 33%</div>
+            </div>
+            <div class="sc-col sc-col-gray">
+                <div class="sc-col-head">Verify</div>
+                <div>&#8594; Verify all 6 live tradelines are reflected in banking obligations</div>
+            </div>
+        </div>
+        
+        <div class="sc-narrative">The customer&#39;s tradeline portfolio consists of a total of 49 live and closed accounts, with a sanctioned exposure of INR 54,30,546 and an unsecured sanction amount of INR 17,95,780. The portfolio is predominantly composed of gold loan and credit card products, with a significant number of auto loans and personal loans also present. Notably, the customer has a high credit card utilization percentage of 72.6%, indicating elevated utilization, and a large proportion of outstanding balances remain unsecured.
+
+The behavioral insights suggest that the customer&#39;s credit behavior is characterized by [HIGH RISK] features, including an elevated trade-to-enquiry ratio and frequent loan acquisitions. The customer has also experienced [CONCERN] in terms of high CC balance utilization and a poor closure history for personal loans. However, there are some positive signals, such as no missed payments and a high conversion rate of unsecured enquiries to trades. Additionally, the customer has demonstrated good repayment discipline with 0% missed payments over the past 18 months. The composite risk signals indicate elevated leverage due to the high credit card utilization percentage and outstanding PL balance.</div>
+        
+    </div>
+    
 
     <!-- Portfolio Summary -->
     <div class="section">
@@ -332,13 +410,19 @@
                 <canvas id="chartTimeseries"></canvas>
             </div>
 
+            <!-- 6. DPD Event Timeline (full-width bar chart) -->
+            <div class="chart-card chart-timeseries chart-dpd">
+                <h4>DPD Event Timeline — Max DPD by Month (Days Past Due)</h4>
+                <canvas id="chartDpdTimeline"></canvas>
+            </div>
+
         </div>
     </div>
 
     <script>
     (function() {
         // chart_data is a pre-serialized JSON string from Python — no tojson needed
-        const CD = {"product_mix": {"labels": ["Auto Loan", "Credit Card", "Gold Loan", "Other", "Personal Loan", "Two Wheeler Loan"], "values": [1, 3, 30, 10, 4, 1]}, "secured_split": {"labels": ["Secured", "Unsecured"], "values": [32, 17]}, "onus_offus": {"labels": ["On-Us (Kotak)", "Off-Us"], "values": [0, 49]}, "unsec_outstanding": {"labels": ["Credit Card", "Other", "Personal Loan"], "values": [92907.0, 482500.0, 3322.0]}, "timeseries": {"months": ["Mar 2024", "Apr 2024", "May 2024", "Jun 2024", "Jul 2024", "Aug 2024", "Sep 2024", "Oct 2024", "Nov 2024", "Dec 2024", "Jan 2025", "Feb 2025", "Mar 2025", "Apr 2025", "May 2025", "Jun 2025", "Jul 2025", "Aug 2025", "Sep 2025", "Oct 2025", "Nov 2025", "Dec 2025", "Jan 2026", "Feb 2026"], "series": {"AL": [1267000.0, 1267000.0, 1267000.0, 1267000.0, 1267000.0, 1267000.0, 1267000.0, 1267000.0, 1267000.0, 1267000.0, 1267000.0, 1267000.0, 1267000.0, 1267000.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "CC": [80521.0, 80521.0, 80521.0, 80521.0, 80521.0, 80521.0, 80521.0, 80521.0, 80521.0, 80521.0, 80521.0, 80521.0, 80521.0, 80521.0, 80521.0, 106708.0, 106708.0, 106708.0, 106708.0, 106708.0, 133776.0, 133776.0, 133776.0, 133776.0], "GL": [777641.0, 777641.0, 960741.0, 890741.0, 890741.0, 956101.0, 843001.0, 958744.0, 893384.0, 893384.0, 893384.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "OTHER": [282000.0, 282000.0, 282000.0, 282000.0, 282000.0, 282000.0, 282000.0, 282000.0, 282000.0, 282000.0, 282000.0, 282000.0, 661600.0, 379600.0, 379600.0, 379600.0, 379600.0, 553500.0, 684400.0, 656400.0, 482500.0, 482500.0, 482500.0, 482500.0], "PL": [2504.0, 2504.0, 2504.0, 2504.0, 2504.0, 2504.0, 2504.0, 2504.0, 2504.0, 2504.0, 2504.0, 2504.0, 2504.0, 2504.0, 2504.0, 2504.0, 2504.0, 2504.0, 2504.0, 2504.0, 2504.0, 2504.0, 2504.0, 2504.0]}}};
+        const CD = {"product_mix": {"labels": ["Auto Loan", "Credit Card", "Gold Loan", "Other", "Personal Loan", "Two Wheeler Loan"], "values": [1, 3, 30, 10, 4, 1]}, "secured_split": {"labels": ["Secured", "Unsecured"], "values": [32, 17]}, "onus_offus": {"labels": ["On-Us (Kotak)", "Off-Us"], "values": [0, 49]}, "unsec_outstanding": {"labels": ["Credit Card", "Other", "Personal Loan"], "values": [92907.0, 482500.0, 3322.0]}, "timeseries": {"months": ["Apr 2024", "May 2024", "Jun 2024", "Jul 2024", "Aug 2024", "Sep 2024", "Oct 2024", "Nov 2024", "Dec 2024", "Jan 2025", "Feb 2025", "Mar 2025", "Apr 2025", "May 2025", "Jun 2025", "Jul 2025", "Aug 2025", "Sep 2025", "Oct 2025", "Nov 2025", "Dec 2025", "Jan 2026", "Feb 2026", "Mar 2026"], "series": {"AL": [1267000.0, 1267000.0, 1267000.0, 1267000.0, 1267000.0, 1267000.0, 1267000.0, 1267000.0, 1267000.0, 1267000.0, 1267000.0, 1267000.0, 1267000.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "CC": [80521.0, 80521.0, 80521.0, 80521.0, 80521.0, 80521.0, 80521.0, 80521.0, 80521.0, 80521.0, 80521.0, 80521.0, 80521.0, 80521.0, 106708.0, 106708.0, 106708.0, 106708.0, 106708.0, 133776.0, 133776.0, 133776.0, 133776.0, 133776.0], "GL": [777641.0, 960741.0, 890741.0, 890741.0, 956101.0, 843001.0, 958744.0, 893384.0, 893384.0, 893384.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "OTHER": [282000.0, 282000.0, 282000.0, 282000.0, 282000.0, 282000.0, 282000.0, 282000.0, 282000.0, 282000.0, 282000.0, 661600.0, 379600.0, 379600.0, 379600.0, 379600.0, 553500.0, 684400.0, 656400.0, 482500.0, 482500.0, 482500.0, 482500.0, 482500.0], "PL": [2504.0, 2504.0, 2504.0, 2504.0, 2504.0, 2504.0, 2504.0, 2504.0, 2504.0, 2504.0, 2504.0, 2504.0, 2504.0, 2504.0, 2504.0, 2504.0, 2504.0, 2504.0, 2504.0, 2504.0, 2504.0, 2504.0, 2504.0, 2504.0]}}, "dpd_timeline": {"months": ["Apr 2024", "May 2024", "Jun 2024", "Jul 2024", "Aug 2024", "Sep 2024", "Oct 2024", "Nov 2024", "Dec 2024", "Jan 2025", "Feb 2025", "Mar 2025", "Apr 2025", "May 2025", "Jun 2025", "Jul 2025", "Aug 2025", "Sep 2025", "Oct 2025", "Nov 2025", "Dec 2025", "Jan 2026", "Feb 2026", "Mar 2026"], "events": [{"loan_type": "Auto Loan", "dpd": 83, "month_idx": 3, "month_label": "Jul 2024"}], "historical": [{"loan_type": "Gold Loan", "dpd": 156, "months_ago": 108}, {"loan_type": "Other", "dpd": 45, "months_ago": 35}, {"loan_type": "Personal Loan", "dpd": 39, "months_ago": 69}, {"loan_type": "Two Wheeler Loan", "dpd": 59, "months_ago": 62}]}};
 
         // Fixed per-product color map — consistent across ALL charts.
         // Keys: short enum names (timeseries) AND display names (donuts).
@@ -467,8 +551,42 @@
                     },
                 },
             });
+        // DPD Timeline chart
+        (function() {
+            const dpd = CD.dpd_timeline;
+            if (!dpd || !dpd.events || !dpd.events.length) return;
+            const ctx = document.getElementById("chartDpdTimeline");
+            if (!ctx) return;
+            const byLt = {};
+            dpd.events.forEach(e => {
+                if (!byLt[e.loan_type]) byLt[e.loan_type] = new Array(24).fill(null);
+                byLt[e.loan_type][e.month_idx] = e.dpd;
+            });
+            const datasets = Object.entries(byLt).map(([lt, data], i) => ({
+                label: lt, data,
+                backgroundColor: productColor(lt, i) + "BB",
+                borderColor: productColor(lt, i), borderWidth: 1
+            }));
+            new Chart(ctx, {
+                type: "bar",
+                data: { labels: dpd.months, datasets },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: {
+                        title: { display: true, text: "DPD Event Timeline — Max DPD by Month (Days Past Due)", font: { size: 12 } },
+                        legend: { position: "top", labels: { font: { size: 10 }, boxWidth: 12, padding: 10 } },
+                        tooltip: { callbacks: { label: c => ` ${c.dataset.label}: ${c.parsed.y} days DPD` } }
+                    },
+                    scales: {
+                        x: { ticks: { font: { size: 9 }, maxRotation: 45, autoSkip: true, maxTicksLimit: 12 } },
+                        y: { beginAtZero: true, title: { display: true, text: "Days Past Due", font: { size: 10 } },
+                             ticks: { font: { size: 10 } } }
+                    }
+                }
+            });
         })();
-    })();
+
+        })();
     </script>
     
 
@@ -912,7 +1030,7 @@ The behavioral insights suggest that the customer&#39;s credit behavior is chara
     
 
     <div class="footer">
-        <p>Generated on 2026-02-21 | Currency: INR</p>
+        <p>Generated on 2026-03-02 | Currency: INR</p>
     </div>
 </body>
 </html>

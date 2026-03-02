@@ -6,8 +6,10 @@ Reuses ReportPDF class and _sanitize_text helper.
 NO LLM calls - NO data manipulation - just rendering.
 """
 
+import calendar
 import json
 from dataclasses import asdict
+from datetime import date
 from pathlib import Path
 from typing import Optional
 
@@ -111,12 +113,44 @@ def _compute_html_chart_data(vectors_data: list, ei, monthly_exposure=None) -> s
             for k, v in monthly_exposure.get("series", {}).items()
         }
 
+    # --- DPD Timeline ---
+    # Generate 24-month labels (reuse from monthly_exposure if available)
+    if ts["months"]:
+        months_24 = ts["months"]
+    else:
+        today = date.today()
+        months_24 = []
+        for i in range(23, -1, -1):
+            month = (today.month - 1 - i) % 12 + 1
+            year = today.year + (today.month - 1 - i) // 12
+            months_24.append(f"{calendar.month_abbr[month]} {year}")
+
+    dpd_events = []
+    dpd_historical = []
+    for vec in vectors_data:
+        dpd = vec.get("max_dpd") or 0
+        months_ago = vec.get("max_dpd_months_ago")
+        lt = str(vec.get("loan_type_display", "Unknown"))
+        if dpd <= 0 or months_ago is None:
+            continue
+        idx = 23 - int(months_ago)   # months_24[23]=current month, [0]=23M ago
+        if 0 <= idx < 24:
+            dpd_events.append({
+                "loan_type": lt,
+                "dpd": int(dpd),
+                "month_idx": idx,
+                "month_label": months_24[idx],
+            })
+        else:
+            dpd_historical.append({"loan_type": lt, "dpd": int(dpd), "months_ago": int(months_ago)})
+
     data = {
         "product_mix":      {"labels": product_labels,              "values": product_values},
         "secured_split":    {"labels": ["Secured", "Unsecured"],    "values": [secured, unsecured]},
         "onus_offus":       {"labels": ["On-Us (Kotak)", "Off-Us"], "values": [on_us, off_us]},
         "unsec_outstanding":{"labels": unsec_out_labels,            "values": unsec_out_values},
         "timeseries":       ts,
+        "dpd_timeline":     {"months": months_24, "events": dpd_events, "historical": dpd_historical},
     }
     return json.dumps(data)
 
@@ -362,6 +396,9 @@ def render_bureau_report_html(report: BureauReport) -> str:
 
     chart_data = _compute_html_chart_data(vectors_data, report.executive_inputs, report.monthly_exposure)
 
+    from tools.scorecard import compute_scorecard
+    scorecard = compute_scorecard(bureau_report=report)
+
     template = env.get_template("bureau_report.html")
     return template.render(
         report=report,
@@ -369,4 +406,5 @@ def render_bureau_report_html(report: BureauReport) -> str:
         tl_features=tl_features_data,
         key_findings=key_findings_data,
         chart_data=chart_data,
+        scorecard=scorecard,
     )

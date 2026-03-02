@@ -448,6 +448,11 @@ def render_combined_report_html(
 
     chart_data = _compute_html_chart_data(vectors_data, bureau_report.executive_inputs, bureau_report.monthly_exposure) if bureau_report else None
 
+    from tools.scorecard import compute_scorecard
+    scorecard = compute_scorecard(customer_report=customer_report, bureau_report=bureau_report, rg_salary_data=rg_salary_data)
+    if combined_summary:
+        scorecard["narrative"] = combined_summary
+
     template = env.get_template("combined_report.html")
     return template.render(
         customer_report=customer_report,
@@ -458,4 +463,5 @@ def render_combined_report_html(
         combined_summary=combined_summary,
         chart_data=chart_data,
         rg_salary_data=rg_salary_data,
+        scorecard=scorecard,
     )

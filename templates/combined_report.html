@@ -231,6 +231,8 @@
             height: 420px !important;
         }
 
+        .chart-dpd canvas { max-width: 100% !important; max-height: none !important; width: 100% !important; height: 260px !important; }
+
         @media print {
             body {
                 padding: 0;
@@ -242,6 +244,26 @@
                 page-break-before: always;
             }
         }
+
+        /* ── scorecard ───────────────────────────── */
+        .scorecard { border: 2px solid #2c3e50; border-radius: 6px; padding: 18px; margin-bottom: 28px; background: #fff; }
+        .sc-verdict { font-size: 17px; font-weight: 700; padding: 10px 16px; border-radius: 4px; margin-bottom: 16px; }
+        .sc-rag-red    { background: #fdecea; color: #c0392b; border-left: 5px solid #e74c3c; }
+        .sc-rag-amber  { background: #fef5e7; color: #d35400; border-left: 5px solid #e67e22; }
+        .sc-rag-green  { background: #eafaf1; color: #1e8449; border-left: 5px solid #27ae60; }
+        .sc-rag-neutral{ background: #f4f6f7; color: #555;    border-left: 5px solid #95a5a6; }
+        .sc-signals-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; margin-bottom: 16px; }
+        .sc-signal { padding: 10px; border-radius: 4px; text-align: center; }
+        .sc-sig-label { font-size: 11px; opacity: 0.85; }
+        .sc-sig-value { font-size: 15px; font-weight: 700; margin: 4px 0; }
+        .sc-sig-note  { font-size: 10px; opacity: 0.75; }
+        .sc-3col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+        .sc-col { padding: 10px 12px; border-radius: 4px; font-size: 12px; line-height: 1.7; }
+        .sc-col-head { font-weight: 700; font-size: 12px; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .sc-col-green { background: #eafaf1; }
+        .sc-col-red   { background: #fdecea; }
+        .sc-col-gray  { background: #f4f6f7; }
+        .sc-narrative { border-top: 1px solid #eee; padding-top: 12px; font-size: 13px; color: #444; line-height: 1.6; white-space: pre-line; }
     </style>
 </head>
 <body>
@@ -265,6 +287,43 @@
             {% endif %}
         </div>
     </div>
+
+    <!-- Risk Scorecard -->
+    {% if scorecard %}
+    <div class="scorecard">
+        <div class="sc-verdict sc-rag-{{ scorecard.verdict_rag }}">
+            ● Overall Risk: {{ scorecard.verdict }}
+        </div>
+        {% if scorecard.signals %}
+        <div class="sc-signals-grid">
+            {% for s in scorecard.signals %}
+            <div class="sc-signal sc-rag-{{ s.rag }}">
+                <div class="sc-sig-label">{{ s.label }}</div>
+                <div class="sc-sig-value">{{ s.value }}</div>
+                <div class="sc-sig-note">{{ s.note }}</div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        <div class="sc-3col">
+            <div class="sc-col sc-col-green">
+                <div class="sc-col-head">Strengths</div>
+                {% for s in scorecard.strengths %}<div>&#10003; {{ s }}</div>{% else %}<div style="color:#999">—</div>{% endfor %}
+            </div>
+            <div class="sc-col sc-col-red">
+                <div class="sc-col-head">Concerns</div>
+                {% for c in scorecard.concerns %}<div>&#9888; {{ c }}</div>{% else %}<div style="color:#999">—</div>{% endfor %}
+            </div>
+            <div class="sc-col sc-col-gray">
+                <div class="sc-col-head">Verify</div>
+                {% for v in scorecard.verify %}<div>&#8594; {{ v }}</div>{% else %}<div style="color:#999">—</div>{% endfor %}
+            </div>
+        </div>
+        {% if scorecard.narrative %}
+        <div class="sc-narrative">{{ scorecard.narrative }}</div>
+        {% endif %}
+    </div>
+    {% endif %}
 
     {# ================================================================== #}
     {# PART 1: BUREAU REPORT                                               #}
@@ -363,6 +422,12 @@
             <div class="chart-card chart-timeseries">
                 <h4>Portfolio Exposure Over Time (Stacked by Product)</h4>
                 <canvas id="cmbChartTimeseries"></canvas>
+            </div>
+
+            <!-- 6. DPD Event Timeline -->
+            <div class="chart-card chart-timeseries chart-dpd">
+                <h4>DPD Event Timeline — Max DPD by Month (Days Past Due)</h4>
+                <canvas id="cmbChartDpdTimeline"></canvas>
             </div>
         </div>
     </div>
@@ -496,6 +561,40 @@
                         y: { stacked: true, ticks: { font: { size: 10 }, callback: fmt, maxTicksLimit: 9 }, beginAtZero: true },
                     },
                 },
+            });
+        })();
+
+        // DPD Event Timeline — bar chart showing max DPD per loan type per month
+        (function() {
+            const dpd = CD.dpd_timeline;
+            if (!dpd || !dpd.events || !dpd.events.length) return;
+            const ctx = document.getElementById("cmbChartDpdTimeline");
+            if (!ctx) return;
+            const byLt = {};
+            dpd.events.forEach(e => {
+                if (!byLt[e.loan_type]) byLt[e.loan_type] = new Array(24).fill(null);
+                byLt[e.loan_type][e.month_idx] = e.dpd;
+            });
+            const datasets = Object.entries(byLt).map(([lt, data], i) => ({
+                label: lt, data,
+                backgroundColor: productColor(lt, i) + "BB",
+                borderColor: productColor(lt, i), borderWidth: 1
+            }));
+            new Chart(ctx, {
+                type: "bar",
+                data: { labels: dpd.months, datasets },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: "top", labels: { font: { size: 10 }, boxWidth: 12, padding: 10 } },
+                        tooltip: { callbacks: { label: c => ` ${c.dataset.label}: ${c.parsed.y} days DPD` } }
+                    },
+                    scales: {
+                        x: { ticks: { font: { size: 9 }, maxRotation: 45, autoSkip: true, maxTicksLimit: 12 } },
+                        y: { beginAtZero: true, title: { display: true, text: "Days Past Due" },
+                             ticks: { font: { size: 10 } } }
+                    }
+                }
             });
         })();
     })();

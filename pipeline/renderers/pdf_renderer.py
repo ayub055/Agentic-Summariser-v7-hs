@@ -276,8 +276,16 @@ def render_report_html(
 
     tl_features_data = asdict(tl_features) if tl_features is not None else None
 
+    from tools.scorecard import compute_scorecard
+    scorecard = compute_scorecard(customer_report=report, rg_salary_data=rg_salary_data)
+
     template = env.get_template("customer_report.html")
-    return template.render(report=report, tl_features=tl_features_data, rg_salary_data=rg_salary_data)
+    return template.render(
+        report=report,
+        tl_features=tl_features_data,
+        rg_salary_data=rg_salary_data,
+        scorecard=scorecard,
+    )
 
 
 def is_pdf_available() -> bool:
