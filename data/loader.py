@@ -29,7 +29,7 @@ def load_transactions(force_reload: bool = False) -> pd.DataFrame:
     global _transactions_df
 
     if _transactions_df is None or force_reload:
-        _transactions_df = pd.read_csv(TRANSACTIONS_FILE, sep=TRANSACTIONS_DELIMITER)
+        _transactions_df = pd.read_csv(TRANSACTIONS_FILE, sep=TRANSACTIONS_DELIMITER, index_col=False)
         print(f"Loaded {len(_transactions_df)} transactions from {TRANSACTIONS_FILE}")
 
     return _transactions_df

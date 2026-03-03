@@ -8,6 +8,7 @@ from schemas.intent import ParsedIntent
 from schemas.response import ToolResult
 from schemas.transaction_insights import TransactionInsights
 from utils.helpers import mask_customer_id
+from utils.llm_utils import strip_think, stream_strip_think
 from config.settings import EXPLAINER_MODEL, LLM_TEMPERATURE, LLM_SEED, STREAM_DELAY
 from config.prompts import EXPLAINER_PROMPT
 
@@ -49,7 +50,7 @@ class ResponseExplainer:
         prompt = EXPLAINER_PROMPT.format(query=intent.raw_query, data=data_str)
 
         response = self.llm.invoke(prompt)
-        return response.content
+        return strip_think(response.content, label="Explainer")
 
     def stream_explain(
         self,
@@ -80,13 +81,16 @@ class ResponseExplainer:
 
         prompt = EXPLAINER_PROMPT.format(query=intent.raw_query, data=data_str)
 
-        # Stream tokens from LLM
-        for chunk in self.llm.stream(prompt):
-            if hasattr(chunk, 'content') and chunk.content:
-                yield chunk.content
-            elif isinstance(chunk, str):
-                yield chunk
-            # Apply delay if configured
+        # Stream tokens from LLM — strip think block transparently
+        def _raw_chunks():
+            for chunk in self.llm.stream(prompt):
+                if hasattr(chunk, "content") and chunk.content:
+                    yield chunk.content
+                elif isinstance(chunk, str):
+                    yield chunk
+
+        for text in stream_strip_think(_raw_chunks(), label="Explainer"):
+            yield text
             if self.stream_delay > 0:
                 time.sleep(self.stream_delay)
 

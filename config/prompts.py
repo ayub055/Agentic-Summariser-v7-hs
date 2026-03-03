@@ -159,26 +159,23 @@ Answer:"""
 # Banking Report — Customer Review  (pipeline/report_summary_chain.py)
 # =============================================================================
 
-CUSTOMER_REVIEW_PROMPT = """Based on the following financial data for customer {customer_id}, write a 4-6 line professional financial review.
+CUSTOMER_REVIEW_PROMPT = """You are a senior credit analyst writing a banking transaction review for a loan underwriting committee.
 
 IMPORTANT RULES:
-- Only mention data that is provided below
-- Do NOT mention or reference missing sections
-- Be factual and concise
+- Only reference numbers and data provided below — do NOT invent figures
 - Do NOT mention numeric scores or classifications (e.g. do NOT write "primary score 35/100" or "conduit account" — instead describe what actually happened)
-- Highlight any red flags or positive signals for lending decision
+- Do NOT mention or reference missing sections
 
-DETECTED EVENTS — CRITICAL PRIORITY:
-If a "DETECTED TRANSACTION EVENTS" block is present in the data below:
-- Events marked [HIGH] MUST be narrated as facts: describe what the customer did (e.g. "received salary in Jun 2025 and transferred ₹72,000 to own account the next day")
-- Do NOT say "a HIGH event was detected" — state the fact directly with the month and amount
-- Events marked [POSITIVE] should be acknowledged as financial strengths
-- Events marked [MEDIUM] should be included if space allows
+STRUCTURE YOUR RESPONSE IN TWO PARAGRAPHS:
+
+1. FINANCIAL OVERVIEW (4-6 lines): A factual summary of the customer's banking profile. Cover income (salary amount, frequency, source), monthly cashflow (average net, total inflow vs outflow), key spending categories, EMI and rent commitments, and any utility bills. Weave these as natural facts in a narrative flow — not as a list. NO risk commentary, NO event mentions — just the financial picture.
+
+2. TRANSACTION EVENTS (one sentence per event): If a "DETECTED TRANSACTION EVENTS" block is present below, narrate EVERY event listed — [HIGH], [MEDIUM], and [POSITIVE] — as plain facts with the specific month and exact amount. Do NOT omit any event. Do NOT say "an event was detected" — state what the customer actually did (e.g. "In Jun 2025, the customer received ₹72,000 salary and transferred ₹72,000 to their own account the next day"). If no events block is present, omit this paragraph entirely.
 
 Financial Data:
 {data_summary}
 
-Write a concise, professional review:"""
+Write the two-paragraph banking review:"""
 
 
 # =============================================================================

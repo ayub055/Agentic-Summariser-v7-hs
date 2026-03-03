@@ -12,8 +12,9 @@ MODEL_NAME = "llama3.2"
 MAX_ITERATIONS = 10
 
 # Pipeline models
-PARSER_MODEL = "mistral"
-EXPLAINER_MODEL = "llama3.2"
+PARSER_MODEL = "mistral"          # Intent parsing + report planner — needs fast JSON, no think tags
+EXPLAINER_MODEL = "llama3.2"      # Real-time query chat explainer — fast response
+SUMMARY_MODEL = "deepseek-r1:14b" # Report summaries — async, reasoning quality matters
 
 # LLM inference parameters — change here to affect all LLM calls
 LLM_TEMPERATURE: float = 0       # Deterministic output for all analytical calls

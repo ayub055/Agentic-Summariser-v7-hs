@@ -19,7 +19,8 @@ from schemas.customer_report import CustomerReport
 from data.loader import get_transactions_df
 from utils.helpers import mask_customer_id, format_inr
 from schemas.loan_type import get_loan_type_display_name
-from config.settings import EXPLAINER_MODEL, LLM_TEMPERATURE, LLM_TEMPERATURE_CREATIVE, LLM_SEED
+from config.settings import EXPLAINER_MODEL, SUMMARY_MODEL, LLM_TEMPERATURE, LLM_TEMPERATURE_CREATIVE, LLM_SEED
+from utils.llm_utils import strip_think
 from config.prompts import (
     CUSTOMER_REVIEW_PROMPT,
     CUSTOMER_PERSONA_PROMPT,
@@ -30,11 +31,11 @@ import config.thresholds as T
 
 logger = logging.getLogger(__name__)
 
-# Default model for summary generation (from settings)
-SUMMARY_MODEL = EXPLAINER_MODEL
+# Default model for summary generation — dedicated reasoning model
+_SUMMARY_MODEL = SUMMARY_MODEL
 
 
-def create_summary_chain(model_name: str = SUMMARY_MODEL):
+def create_summary_chain(model_name: str = _SUMMARY_MODEL):
     """
     Create an LCEL chain for generating customer reviews.
 
@@ -52,7 +53,7 @@ def create_summary_chain(model_name: str = SUMMARY_MODEL):
 
 def generate_customer_review(
     report: CustomerReport,
-    model_name: str = SUMMARY_MODEL
+    model_name: str = _SUMMARY_MODEL,
 ) -> Optional[str]:
     """
     Generate an LLM-based customer review from populated report sections.
@@ -80,10 +81,11 @@ def generate_customer_review(
 
     try:
         chain = create_summary_chain(model_name)
-        review = chain.invoke({
+        raw = chain.invoke({
             "customer_id": mask_customer_id(report.meta.customer_id),
-            "data_summary": data_summary
+            "data_summary": data_summary,
         })
+        review = strip_think(raw, label="CustomerReview")
         return review.strip() if review else None
     except Exception as e:
         logger.warning("Customer review generation failed: %s", e)
@@ -175,7 +177,7 @@ def _build_data_summary(report: CustomerReport) -> list:
     return sections
 
 
-def create_persona_chain(model_name: str = SUMMARY_MODEL):
+def create_persona_chain(model_name: str = _SUMMARY_MODEL):
     """Create an LCEL chain for generating customer persona."""
     prompt = ChatPromptTemplate.from_template(CUSTOMER_PERSONA_PROMPT)
     llm = ChatOllama(model=model_name, temperature=LLM_TEMPERATURE_CREATIVE, seed=LLM_SEED)
@@ -184,7 +186,7 @@ def create_persona_chain(model_name: str = SUMMARY_MODEL):
 
 def generate_customer_persona(
     report: CustomerReport,
-    model_name: str = SUMMARY_MODEL
+    model_name: str = _SUMMARY_MODEL,
 ) -> Optional[str]:
     """
     Generate an LLM-based customer persona from all available data.
@@ -210,11 +212,12 @@ def generate_customer_persona(
 
     try:
         chain = create_persona_chain(model_name)
-        persona = chain.invoke({
+        raw = chain.invoke({
             "customer_id": mask_customer_id(report.meta.customer_id),
             "comprehensive_data": comprehensive_data,
-            "transaction_sample": transaction_sample
+            "transaction_sample": transaction_sample,
         })
+        persona = strip_think(raw, label="CustomerPersona")
         return persona.strip() if persona else None
     except Exception as e:
         logger.warning("Customer persona generation failed: %s", e)
@@ -668,7 +671,7 @@ def _build_bureau_data_summary(executive_inputs, tradeline_features=None) -> str
 def generate_bureau_review(
     executive_inputs,
     tradeline_features=None,
-    model_name: str = SUMMARY_MODEL,
+    model_name: str = _SUMMARY_MODEL,
 ) -> Optional[str]:
     """Generate an LLM-based bureau portfolio review from executive summary inputs.
 
@@ -692,7 +695,8 @@ def generate_bureau_review(
         llm = ChatOllama(model=model_name, temperature=LLM_TEMPERATURE, seed=LLM_SEED)
         chain = prompt | llm | StrOutputParser()
 
-        review = chain.invoke({"data_summary": data_summary})
+        raw = chain.invoke({"data_summary": data_summary})
+        review = strip_think(raw, label="BureauReview")
         return review.strip() if review else None
     except Exception as e:
         logger.warning("Bureau review generation failed: %s", e)
@@ -708,7 +712,7 @@ def generate_combined_executive_summary(
     banking_summary: str,
     bureau_summary: str,
     customer_id: str,
-    model_name: str = SUMMARY_MODEL,
+    model_name: str = _SUMMARY_MODEL,
 ) -> Optional[str]:
     """Generate a unified executive summary from both banking and bureau narratives.
 
@@ -729,11 +733,12 @@ def generate_combined_executive_summary(
         llm = ChatOllama(model=model_name, temperature=LLM_TEMPERATURE, seed=LLM_SEED)
         chain = prompt | llm | StrOutputParser()
 
-        result = chain.invoke({
+        raw = chain.invoke({
             "customer_id": customer_id,
             "banking_summary": banking_summary or "(not available)",
             "bureau_summary": bureau_summary or "(not available)",
         })
+        result = strip_think(raw, label="CombinedSummary")
         return result.strip() if result else None
     except Exception as e:
         logger.warning("Combined executive summary generation failed: %s", e)
