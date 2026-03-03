@@ -113,17 +113,11 @@ def _detect_conduit_events(
 
 
 def _compute_atm_pct(debits: pd.DataFrame) -> float:
-    """% of debit transactions identified as ATM withdrawals."""
+    """% of debit transactions identified as ATM withdrawals (via tran_type column)."""
     if len(debits) == 0:
         return 0.0
-    narr  = debits.get("tran_partclr", pd.Series(dtype=str)).fillna("").str.upper()
-    ttype = debits.get("tran_type",    pd.Series(dtype=str)).fillna("").str.upper()
-    cats  = debits.get("category_of_txn", pd.Series(dtype=str)).fillna("").str.upper()
-    is_atm = (
-        narr.str.contains("ATM", na=False) |
-        ttype.str.contains("ATM", na=False) |
-        cats.str.contains("ATM", na=False)
-    )
+    ttype  = debits.get("tran_type", pd.Series(dtype=str)).fillna("").str.upper()
+    is_atm = ttype.str.contains("ATM", na=False)
     return round(is_atm.sum() / len(debits) * 100, 1)
 
 

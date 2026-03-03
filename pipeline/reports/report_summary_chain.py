@@ -170,6 +170,13 @@ def _build_data_summary(report: CustomerReport) -> list:
             for ob in obs:
                 sections.append(f"  {ob}")
 
+    # Detected transaction events (PF withdrawal, post-salary routing, etc.)
+    if report.events:
+        from tools.event_detector import format_events_for_prompt
+        events_block = format_events_for_prompt(report.events)
+        if events_block:
+            sections.append(events_block)
+
     return sections
 
 

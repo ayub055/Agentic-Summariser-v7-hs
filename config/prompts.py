@@ -159,7 +159,7 @@ Answer:"""
 # Banking Report — Customer Review  (pipeline/report_summary_chain.py)
 # =============================================================================
 
-CUSTOMER_REVIEW_PROMPT = """Based on the following financial data for customer {customer_id}, write a 3-4 line professional financial review.
+CUSTOMER_REVIEW_PROMPT = """Based on the following financial data for customer {customer_id}, write a 4-6 line professional financial review.
 
 IMPORTANT RULES:
 - Only mention data that is provided below
@@ -167,6 +167,13 @@ IMPORTANT RULES:
 - Be factual and concise
 - Highlight any red flags or positive signals for lending decision
 - Focus on key financial patterns and observations
+
+DETECTED EVENTS — CRITICAL PRIORITY:
+If a "DETECTED TRANSACTION EVENTS" block is present in the data below:
+- Events marked [HIGH] MUST be mentioned explicitly with the specific date/month and amount provided
+- Events marked [POSITIVE] should be acknowledged as financial strengths
+- Events marked [MEDIUM] should be included if space allows
+- Do NOT paraphrase events — cite the actual figures and timeframes given
 
 Financial Data:
 {data_summary}

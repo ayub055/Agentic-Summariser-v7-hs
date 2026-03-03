@@ -171,6 +171,12 @@ class CustomerReport(BaseModel):
         description="Account quality analysis — primary/conduit/secondary classification with conduit events"
     )
 
+    # Detected transaction events (PF withdrawal, post-salary routing, loan redistribution, etc.)
+    events: Optional[List[Dict[str, Any]]] = Field(
+        default=None,
+        description="Semantic events detected from raw narrations — fed to LLM for intelligent summary"
+    )
+
     # Section planning metadata (tracks what planner decided)
     sections_meta: Optional[List[ReportSectionMeta]] = Field(
         default=None,
@@ -204,6 +210,8 @@ class CustomerReport(BaseModel):
             sections.append("risk_indicators")
         if self.account_quality:
             sections.append("account_quality")
+        if self.events:
+            sections.append("events")
         if self.customer_review:
             sections.append("customer_review")
         if self.customer_persona:

@@ -35,6 +35,7 @@ from schemas.customer_report import (
     RiskIndicatorsBlock
 )
 from tools.account_quality import compute_account_quality
+from tools.event_detector import detect_events
 
 
 def build_customer_report(customer_id: int, months: int = 6) -> CustomerReport:
@@ -114,9 +115,20 @@ def build_customer_report(customer_id: int, months: int = 6) -> CustomerReport:
         logger.warning("account_quality computation failed for %s: %s", customer_id, exc)
         account_quality = None
 
+    # Detect semantic events from raw narrations (PF withdrawal, post-salary routing, etc.)
+    try:
+        events = detect_events(customer_id) or None
+    except Exception as exc:
+        logger.warning("detect_events failed for %s: %s", customer_id, exc)
+        events = None
+
+    updates = {}
     if account_quality:
-        return base_report.model_copy(update={"account_quality": account_quality})
-    return base_report
+        updates["account_quality"] = account_quality
+    if events:
+        updates["events"] = events
+
+    return base_report.model_copy(update=updates) if updates else base_report
 
 
 def _get_category_overview(customer_id: int) -> Optional[dict]:
