@@ -193,6 +193,20 @@ def _banking_signals(customer_report, rg_salary_data: dict = None) -> list:
     else:
         signals.append({"label": "Red Flags", "value": "None", "rag": "green", "note": "No flag categories"})
 
+    # 10. Account Type (from account_quality)
+    if customer_report.account_quality:
+        aq           = customer_report.account_quality
+        account_type = aq.get("account_type", "unknown")
+        score        = aq.get("primary_score", 50)
+        rag_map      = {"primary": "green", "secondary": "amber", "conduit": "red", "unknown": "neutral"}
+        rag          = rag_map.get(account_type, "neutral")
+        signals.append({
+            "label": "Account Type",
+            "value": account_type.title(),
+            "rag":   rag,
+            "note":  f"Score {score}/100",
+        })
+
     return signals
 
 

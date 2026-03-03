@@ -165,6 +165,12 @@ class CustomerReport(BaseModel):
         description="LLM-generated customer persona summary (4-5 lines)"
     )
 
+    # Account quality (primary / conduit / secondary classification)
+    account_quality: Optional[Dict[str, Any]] = Field(
+        default=None,
+        description="Account quality analysis — primary/conduit/secondary classification with conduit events"
+    )
+
     # Section planning metadata (tracks what planner decided)
     sections_meta: Optional[List[ReportSectionMeta]] = Field(
         default=None,
@@ -196,6 +202,8 @@ class CustomerReport(BaseModel):
             sections.append("savings")
         if self.risk_indicators:
             sections.append("risk_indicators")
+        if self.account_quality:
+            sections.append("account_quality")
         if self.customer_review:
             sections.append("customer_review")
         if self.customer_persona:

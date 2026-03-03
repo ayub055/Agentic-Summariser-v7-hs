@@ -34,6 +34,7 @@ from schemas.customer_report import (
     SavingsBlock,
     RiskIndicatorsBlock
 )
+from tools.account_quality import compute_account_quality
 
 
 def build_customer_report(customer_id: int, months: int = 6) -> CustomerReport:
@@ -95,7 +96,7 @@ def build_customer_report(customer_id: int, months: int = 6) -> CustomerReport:
     # 9. Get bills block (via category presence for utilities)
     bills = _get_bills_block(customer_id)
 
-    return CustomerReport(
+    base_report = CustomerReport(
         meta=meta,
         category_overview=category_overview,
         monthly_cashflow=monthly_cashflow,
@@ -105,6 +106,17 @@ def build_customer_report(customer_id: int, months: int = 6) -> CustomerReport:
         rent=rent_block,
         bills=bills
     )
+
+    # Compute account quality after base report is built (needs emis/bills/rent)
+    try:
+        account_quality = compute_account_quality(customer_id, customer_report=base_report)
+    except Exception as exc:
+        logger.warning("account_quality computation failed for %s: %s", customer_id, exc)
+        account_quality = None
+
+    if account_quality:
+        return base_report.model_copy(update={"account_quality": account_quality})
+    return base_report
 
 
 def _get_category_overview(customer_id: int) -> Optional[dict]:
