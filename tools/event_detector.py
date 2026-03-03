@@ -409,6 +409,71 @@ def _detect_loan_redistribution(df: pd.DataFrame, salary_amount: float) -> list:
     return events
 
 
+def _detect_self_transfer_post_salary(
+    df: pd.DataFrame,
+    salary_txns: list,
+    salary_amount: float,
+    customer_name: Optional[str],
+) -> list:
+    """Detect salary received then quickly self-transferred to own account (≥40%, within 3 days).
+
+    Complements _detect_post_salary_routing (which needs 2+ distinct recipients).
+    This fires for the single-self-transfer conduit pattern.
+    """
+    events = []
+    if not salary_txns or salary_amount <= 0:
+        return events
+
+    debits   = df[df["dr_cr_indctor"] == "D"].copy()
+    name_pfx = (customer_name or "").upper()[:6].strip() or None
+
+    # Track months already flagged to avoid duplicates within same salary month
+    flagged_months: set = set()
+
+    for sal_txn in salary_txns:
+        try:
+            sal_date = pd.to_datetime(sal_txn["date"])
+            sal_amt  = float(sal_txn.get("amount", salary_amount) or salary_amount)
+        except (ValueError, KeyError, TypeError):
+            continue
+        if sal_amt <= 0:
+            sal_amt = salary_amount
+
+        month_key = sal_date.strftime("%Y-%m")
+        if month_key in flagged_months:
+            continue
+
+        window = debits[
+            (debits["tran_date"] >= sal_date) &
+            (debits["tran_date"] <= sal_date + timedelta(days=3)) &
+            (debits["tran_amt_in_ac"] >= sal_amt * 0.40)
+        ]
+
+        for _, row in window.iterrows():
+            narr = _narr_upper(row)
+            if _is_self(narr, name_pfx):
+                amt  = float(row["tran_amt_in_ac"])
+                pct  = amt / sal_amt * 100
+                days = int((row["tran_date"] - sal_date).days)
+                events.append({
+                    "type":        "self_transfer_post_salary",
+                    "date":        str(sal_date.date()),
+                    "month_label": _month_label(sal_date),
+                    "amount":      round(amt, 2),
+                    "significance": "high",
+                    "description": (
+                        f"{_month_label(sal_date)}: Self-transfer after salary — "
+                        f"₹{amt:,.0f} ({pct:.0f}% of ₹{sal_amt:,.0f} salary) "
+                        f"transferred to own account {days} day(s) after credit "
+                        f"({str(row.get('tran_partclr', ''))[:60]})"
+                    ),
+                })
+                flagged_months.add(month_key)
+                break  # one event per salary month
+
+    return events
+
+
 def _detect_round_trips(df: pd.DataFrame) -> list:
     """Detect money sent and received back within 7 days (same name, ±15% amount)."""
     events = []
@@ -552,6 +617,11 @@ def detect_events(customer_id: int, rg_salary_data: Optional[dict] = None) -> li
     events = _apply_keyword_rules(cust_df)
 
     # ── Layer 2: Custom multi-step detectors ──────────────────────────────
+    try:
+        events += _detect_self_transfer_post_salary(cust_df, salary_txns, salary_amount, customer_name)
+    except Exception as exc:
+        logger.warning("event_detector: self_transfer_post_salary failed: %s", exc)
+
     try:
         events += _detect_post_salary_routing(cust_df, salary_txns, salary_amount, customer_name)
     except Exception as exc:

@@ -176,15 +176,15 @@
             <span><strong>Customer ID:</strong> ###1174</span>
             <span><strong>Generated:</strong> 2026-03-03</span>
             <span><strong>Period:</strong> Last 6 months</span>
-            <span><strong>Transactions:</strong> 192</span>
+            <span><strong>Transactions:</strong> 36</span>
         </div>
     </div>
 
     <!-- Risk Scorecard -->
     
     <div class="scorecard">
-        <div class="sc-verdict sc-rag-green">
-            ● Overall Risk: LOW RISK
+        <div class="sc-verdict sc-rag-amber">
+            ● Overall Risk: CAUTION
         </div>
         
         <div class="sc-signals-grid">
@@ -197,7 +197,7 @@
             
             <div class="sc-signal sc-rag-green">
                 <div class="sc-sig-label">FOIR</div>
-                <div class="sc-sig-value">4%</div>
+                <div class="sc-sig-value">0%</div>
                 <div class="sc-sig-note">EMI+Rent/Salary</div>
             </div>
             
@@ -207,16 +207,22 @@
                 <div class="sc-sig-note">No flag categories</div>
             </div>
             
+            <div class="sc-signal sc-rag-red">
+                <div class="sc-sig-label">Account Type</div>
+                <div class="sc-sig-value">Conduit</div>
+                <div class="sc-sig-note">Score 35/100</div>
+            </div>
+            
         </div>
         
         <div class="sc-3col">
             <div class="sc-col sc-col-green">
                 <div class="sc-col-head">Strengths</div>
-                <div>&#10003; Income: INR 3,79,804 /mo</div><div>&#10003; FOIR: 4%</div><div>&#10003; Red Flags: None</div>
+                <div>&#10003; Income: INR 3,79,804 /mo</div><div>&#10003; FOIR: 0%</div><div>&#10003; Red Flags: None</div>
             </div>
             <div class="sc-col sc-col-red">
                 <div class="sc-col-head">Concerns</div>
-                <div style="color:#999">—</div>
+                <div>&#9888; Account Type: Conduit (Score 35/100)</div>
             </div>
             <div class="sc-col sc-col-gray">
                 <div class="sc-col-head">Verify</div>
@@ -277,11 +283,34 @@
     <div class="section">
         <h3>Executive Summary</h3>
         <div class="summary-box">
-            <p>Based on the provided financial data for customer ###1174, several key observations can be made. The customer&#39;s top spending categories indicate a relatively low expenditure in P2P and Education, with notable expenses in &#34;Other&#34; transactions totaling ₹905,207. Notably, the customer has a high frequency of transactions with merchant DANTULURI HARIS, suggesting a strong affinity for this particular business. This pattern warrants further review to assess potential creditworthiness.</p>
+            <p>Customer ###1174&#39;s financial data presents a relatively stable picture. The customer&#39;s average monthly spending is primarily allocated to self (48,000 INR), followed by other expenses (27,300 INR) and dining out (1,970 INR). Notably, the customer receives regular salary income of 39,210 INR, averaging two transactions per month.
+
+However, there are some red flags. The low account activity, with an average of three debit transactions per month despite salary credits, may indicate a non-primary account or limited financial engagement. Additionally, the absence of recurring obligations such as EMI, utility bills, and rent in the banking records suggests that loan servicing and fixed expenses might be managed through a different account.
+
+These observations warrant further review to assess the customer&#39;s overall financial situation and potential risks associated with lending.</p>
         </div>
     </div>
     
 
+    
+    <div class="section">
+        <h3>Salary Information</h3>
+        <div class="info-grid">
+            <div class="info-item">
+                <label>Average Amount</label>
+                <div class="value">39,210.00 INR</div>
+            </div>
+            <div class="info-item">
+                <label>Transactions</label>
+                <div class="value">2</div>
+            </div>
+        </div>
+        
+        <p style="margin-top: 10px; color: #666; font-size: 12px;">
+            <strong>Sample:</strong> SYMED SALARY NOV 2025
+        </p>
+        
+    </div>
     
 
     
@@ -422,64 +451,33 @@
             <tbody>
                 
                 <tr>
+                    <td>self</td>
+                    <td class="amount">48,000.00</td>
+                </tr>
+                
+                <tr>
                     <td>other</td>
-                    <td class="amount">905,207.00</td>
-                </tr>
-                
-                <tr>
-                    <td>P2P</td>
-                    <td class="amount">73,000.00</td>
-                </tr>
-                
-                <tr>
-                    <td>Education</td>
-                    <td class="amount">50,000.00</td>
-                </tr>
-                
-                <tr>
-                    <td>Home_commodity_services</td>
-                    <td class="amount">12,147.40</td>
+                    <td class="amount">27,300.00</td>
                 </tr>
                 
                 <tr>
                     <td>Food_restaurants</td>
-                    <td class="amount">5,467.00</td>
+                    <td class="amount">1,970.00</td>
                 </tr>
                 
                 <tr>
-                    <td>Healthcare</td>
-                    <td class="amount">220.20</td>
+                    <td>Home_commodity_services</td>
+                    <td class="amount">590.00</td>
                 </tr>
                 
                 <tr>
-                    <td>Mobility</td>
-                    <td class="amount">201.00</td>
+                    <td>Utility_Bills</td>
+                    <td class="amount">500.00</td>
                 </tr>
                 
-            </tbody>
-        </table>
-    </div>
-    
-
-    
-
-    
-    <div class="section">
-        <h3>EMI Payments</h3>
-        <table>
-            <thead>
                 <tr>
-                    <th>Description</th>
-                    <th class="amount">Average Amount</th>
-                    <th class="amount">Transactions</th>
-                </tr>
-            </thead>
-            <tbody>
-                
-                <tr>
-                    <td>EMI Payment</td>
-                    <td class="amount">15,000.00</td>
-                    <td class="amount">1</td>
+                    <td>Entertainment_Luxury</td>
+                    <td class="amount">31.00</td>
                 </tr>
                 
             </tbody>
@@ -492,51 +490,9 @@
     
 
     
-    <div class="section">
-        <h3>Top Merchants</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>Merchant</th>
-                    <th class="amount">Transactions</th>
-                    <th class="amount">Total (INR)</th>
-                </tr>
-            </thead>
-            <tbody>
-                
-                <tr>
-                    <td>DANTULURI HARIS</td>
-                    <td class="amount">23</td>
-                    <td class="amount">162,150</td>
-                </tr>
-                
-                <tr>
-                    <td>DANTULURI HARIS</td>
-                    <td class="amount">17</td>
-                    <td class="amount">236,412</td>
-                </tr>
-                
-                <tr>
-                    <td>recd imps slpe infot kkbk x payou</td>
-                    <td class="amount">7</td>
-                    <td class="amount">202,786</td>
-                </tr>
-                
-                <tr>
-                    <td>KOLUKULURI VENK</td>
-                    <td class="amount">6</td>
-                    <td class="amount">16,340</td>
-                </tr>
-                
-                <tr>
-                    <td>BHABEN  HASDA</td>
-                    <td class="amount">5</td>
-                    <td class="amount">21,001</td>
-                </tr>
-                
-            </tbody>
-        </table>
-    </div>
+
+    
+
     
 
     <div class="footer">

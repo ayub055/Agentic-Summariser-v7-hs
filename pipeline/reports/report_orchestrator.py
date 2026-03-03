@@ -35,6 +35,8 @@ from .customer_report_builder import (
 )
 from .report_planner import ReportPlanner, ReportPlan, PlannedSection
 from .report_summary_chain import generate_customer_review, generate_customer_persona
+from tools.account_quality import compute_account_quality
+from tools.event_detector import detect_events
 from ..renderers.pdf_renderer import render_report_pdf
 from ..extractors.tradeline_feature_extractor import extract_tradeline_features
 from data.loader import get_transactions_df, load_rg_salary_data
@@ -303,7 +305,7 @@ def _aggregate_to_report(
         for s in plan.sections
     ]
 
-    return CustomerReport(
+    base_report = CustomerReport(
         meta=meta,
         category_overview=category_overview,
         monthly_cashflow=monthly_cashflow,
@@ -316,6 +318,24 @@ def _aggregate_to_report(
         risk_indicators=risk_indicators,
         sections_meta=sections_meta
     )
+
+    # Attach account quality + events (same as build_customer_report path)
+    updates = {}
+    try:
+        aq = compute_account_quality(customer_id, customer_report=base_report)
+        if aq:
+            updates["account_quality"] = aq
+    except Exception as exc:
+        logger.warning("account_quality failed in _aggregate_to_report for %s: %s", customer_id, exc)
+
+    try:
+        evts = detect_events(customer_id) or None
+        if evts:
+            updates["events"] = evts
+    except Exception as exc:
+        logger.warning("detect_events failed in _aggregate_to_report for %s: %s", customer_id, exc)
+
+    return base_report.model_copy(update=updates) if updates else base_report
 
 
 def get_customer_report_data(

@@ -159,16 +159,11 @@ def _build_data_summary(report: CustomerReport) -> list:
             f"{top_merchant.get('total', 0):,.0f} INR)"
         )
 
-    # Account quality observations (conduit signals, ATM dependency, etc.)
+    # Account quality observations — presented as plain facts, no score label
     if report.account_quality:
-        aq   = report.account_quality
-        obs  = aq.get("observations", [])
-        atyp = aq.get("account_type", "unknown").title()
-        scr  = aq.get("primary_score", 50)
-        if obs:
-            sections.append(f"Account quality ({atyp} account, primary score {scr}/100):")
-            for ob in obs:
-                sections.append(f"  {ob}")
+        obs = report.account_quality.get("observations", [])
+        for ob in obs:
+            sections.append(ob)
 
     # Detected transaction events (PF withdrawal, post-salary routing, etc.)
     if report.events:

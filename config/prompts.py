@@ -165,15 +165,15 @@ IMPORTANT RULES:
 - Only mention data that is provided below
 - Do NOT mention or reference missing sections
 - Be factual and concise
+- Do NOT mention numeric scores or classifications (e.g. do NOT write "primary score 35/100" or "conduit account" — instead describe what actually happened)
 - Highlight any red flags or positive signals for lending decision
-- Focus on key financial patterns and observations
 
 DETECTED EVENTS — CRITICAL PRIORITY:
 If a "DETECTED TRANSACTION EVENTS" block is present in the data below:
-- Events marked [HIGH] MUST be mentioned explicitly with the specific date/month and amount provided
+- Events marked [HIGH] MUST be narrated as facts: describe what the customer did (e.g. "received salary in Jun 2025 and transferred ₹72,000 to own account the next day")
+- Do NOT say "a HIGH event was detected" — state the fact directly with the month and amount
 - Events marked [POSITIVE] should be acknowledged as financial strengths
 - Events marked [MEDIUM] should be included if space allows
-- Do NOT paraphrase events — cite the actual figures and timeframes given
 
 Financial Data:
 {data_summary}
@@ -241,6 +241,8 @@ STRICT RULES:
 payment behaviour / DPD, and an overall creditworthiness assessment
 - If either summary is empty or missing, work with whatever is available
 - Be factual — do not invent numbers that are not present in the inputs
+- Do NOT mention numeric scores or classifications by label (e.g. do NOT write "primary score 35/100") \
+— instead narrate the underlying fact (e.g. "received salary and immediately transferred funds to own account")
 - End with a clear one-line creditworthiness assessment (positive, cautious, or negative)
 - Do NOT add any meta-commentary, personal notes, disclaimers, or remarks about the writing \
 process — output ONLY the summary paragraph followed by the standard note below
