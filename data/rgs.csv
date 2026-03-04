@@ -1,4 +1,4 @@
-cust_id	dr_cr_indctor	tran_date	prty_name	tran_amt_in_ac	tran_partclr	sal_flag	self_transfer	tran_type	category_of_txn
+cust_id dr_cr_indctor	tran_date	prty_name	tran_amt_in_ac	tran_partclr	sal_flag	self_transfer	tran_type	category_of_txn
 100101174	D	2025-10-21	PANKAJ VITTHAL KOTI	10	UPI/Nanji Patidar/529431415359/UPISCANQR	NULL	0	UPI	Food_restaurants	
 100101174	D	2025-10-26	PANKAJ VITTHAL KOTI	6000	ATL/5852/800025/KHARADI 2 BRANCHPUNEMH261025/15:20	NULL	0	ATM	other	
 100101174	D	2025-09-01	PANKAJ VITTHAL KOTI	14783.11	UPI/Tata Payments/524425121419/Some Note	NULL	0	UPI	other	
