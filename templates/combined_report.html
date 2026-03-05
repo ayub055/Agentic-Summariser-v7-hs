@@ -160,6 +160,50 @@
             color: #27ae60;
         }
 
+        /* Compact grid for Behavioral & Risk Features */
+        .rf-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+            margin-bottom: 4px;
+        }
+
+        .rf-item {
+            padding: 7px 10px;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+
+        .rf-item label {
+            display: block;
+            font-size: 10.5px;
+            color: #666;
+            margin-bottom: 2px;
+            line-height: 1.3;
+        }
+
+        .rf-item .value {
+            font-size: 15px;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+
+        .rf-item .value.risk { color: #e74c3c; }
+        .rf-item .value.safe { color: #27ae60; }
+
+        .rf-subhead {
+            font-size: 11px;
+            font-weight: 700;
+            color: #475569;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin: 12px 0 5px;
+            padding: 2px 8px;
+            background: #e2e8f0;
+            border-radius: 3px;
+            display: inline-block;
+        }
+
         .secured-yes {
             color: #27ae60;
             font-weight: 600;
@@ -232,6 +276,20 @@
         }
 
         .chart-dpd canvas { max-width: 100% !important; max-height: none !important; width: 100% !important; height: 260px !important; }
+
+        /* KEY FINDINGS — 2-column grid */
+        .findings-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 10px; }
+        .finding-card { display: flex; align-items: flex-start; padding: 9px 11px; background: #f8f9fa; border-radius: 0 4px 4px 0; }
+        .finding-body { flex: 1; min-width: 0; }
+        .finding-meta { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; flex-wrap: wrap; }
+        .finding-text { font-weight: 600; color: #2c3e50; font-size: 12.5px; line-height: 1.4; }
+        .finding-inference { color: #555; font-size: 11.5px; margin-top: 3px; font-style: italic; line-height: 1.4; }
+        .sev-badge { font-size: 9px; font-weight: 700; padding: 1px 5px; border-radius: 3px; white-space: nowrap; }
+        .sev-high_risk     { background: #fdecea; color: #c0392b; }
+        .sev-moderate_risk { background: #fef5e7; color: #d35400; }
+        .sev-concern       { background: #fef9c3; color: #713f12; }
+        .sev-positive      { background: #eafaf1; color: #1e8449; }
+        .sev-neutral       { background: #f4f6f7; color: #666;    }
 
         @media print {
             body {
@@ -424,8 +482,8 @@
                 <canvas id="cmbChartTimeseries"></canvas>
             </div>
 
-            <!-- 6. DPD Event Timeline -->
-            <div class="chart-card chart-timeseries chart-dpd">
+            <!-- 6. DPD Event Timeline — hidden by JS if no events -->
+            <div class="chart-card chart-timeseries chart-dpd" id="cmbDpdTimelineCard">
                 <h4>DPD Event Timeline — Max DPD by Month (Days Past Due)</h4>
                 <canvas id="cmbChartDpdTimeline"></canvas>
             </div>
@@ -564,10 +622,14 @@
             });
         })();
 
-        // DPD Event Timeline — bar chart showing max DPD per loan type per month
+        // DPD Event Timeline — hide card entirely if no events
         (function() {
             const dpd = CD.dpd_timeline;
-            if (!dpd || !dpd.events || !dpd.events.length) return;
+            const card = document.getElementById("cmbDpdTimelineCard");
+            if (!dpd || !dpd.events || !dpd.events.length) {
+                if (card) card.style.display = "none";
+                return;
+            }
             const ctx = document.getElementById("cmbChartDpdTimeline");
             if (!ctx) return;
             const byLt = {};
@@ -615,15 +677,16 @@
     {% if key_findings %}
     <div class="section">
         <h3>Key Findings & Inferences</h3>
-        <div style="margin-top: 10px;">
+        <div class="findings-grid">
             {% for finding in key_findings %}
-            <div style="display: flex; align-items: flex-start; margin-bottom: 10px; padding: 10px; border-left: 4px solid {% if finding.severity == 'high_risk' %}#e74c3c{% elif finding.severity == 'moderate_risk' %}#e67e22{% elif finding.severity == 'concern' %}#f39c12{% elif finding.severity == 'positive' %}#27ae60{% else %}#95a5a6{% endif %}; background-color: #f8f9fa; border-radius: 0 4px 4px 0;">
-                <div style="flex: 1;">
-                    <div style="margin-bottom: 4px;">
-                        <span style="font-size: 11px; color: #666;">{{ finding.category }}</span>
+            <div class="finding-card" style="border-left: 4px solid {% if finding.severity == 'high_risk' %}#e74c3c{% elif finding.severity == 'moderate_risk' %}#e67e22{% elif finding.severity == 'concern' %}#f39c12{% elif finding.severity == 'positive' %}#27ae60{% else %}#95a5a6{% endif %};">
+                <div class="finding-body">
+                    <div class="finding-meta">
+                        <span class="sev-badge sev-{{ finding.severity }}">{% if finding.severity == 'high_risk' %}HIGH RISK{% elif finding.severity == 'moderate_risk' %}MOD RISK{% elif finding.severity == 'concern' %}CONCERN{% elif finding.severity == 'positive' %}POSITIVE{% else %}INFO{% endif %}</span>
+                        <span style="font-size: 10.5px; color: #888;">{{ finding.category }}</span>
                     </div>
-                    <div style="font-weight: 600; color: #2c3e50; font-size: 13px;">{{ finding.finding }}</div>
-                    <div style="color: #555; font-size: 12px; margin-top: 3px; font-style: italic;">{{ finding.inference }}</div>
+                    <div class="finding-text">{{ finding.finding }}</div>
+                    <div class="finding-inference">{{ finding.inference }}</div>
                 </div>
             </div>
             {% endfor %}
@@ -677,77 +740,80 @@
     <div class="section">
         <h3>Behavioral & Risk Features</h3>
 
-        <h4 style="color: #2c3e50; margin: 15px 0 8px 0; font-size: 14px;">Loan Activity</h4>
-        <div class="info-grid">
-            <div class="info-item">
+        <!-- Loan Activity -->
+        <div class="rf-subhead">Loan Activity</div>
+        <div class="rf-grid">
+            <div class="rf-item">
                 <label>Months Since Last PL Trade</label>
                 <div class="value">{{ "%.2f"|format(tl_features.months_since_last_trade_pl) if tl_features.months_since_last_trade_pl is not none else "N/A" }}</div>
             </div>
-            <div class="info-item">
+            <div class="rf-item">
                 <label>Months Since Last Unsecured Trade</label>
                 <div class="value">{{ "%.2f"|format(tl_features.months_since_last_trade_uns) if tl_features.months_since_last_trade_uns is not none else "N/A" }}</div>
             </div>
-            <div class="info-item">
+            <div class="rf-item">
                 <label>New PL Trades (6M)</label>
                 <div class="value">{{ tl_features.new_trades_6m_pl if tl_features.new_trades_6m_pl is not none else "N/A" }}</div>
             </div>
         </div>
 
-        <h4 style="color: #2c3e50; margin: 15px 0 8px 0; font-size: 14px;">DPD & Delinquency</h4>
-        <div class="info-grid">
-            <div class="info-item">
+        <!-- DPD & Delinquency -->
+        <div class="rf-subhead">DPD & Delinquency</div>
+        <div class="rf-grid">
+            <div class="rf-item">
                 <label>Max DPD 6M (CC)</label>
                 <div class="value {% if tl_features.max_dpd_6m_cc is not none and tl_features.max_dpd_6m_cc > 0 %}risk{% else %}safe{% endif %}">
                     {{ tl_features.max_dpd_6m_cc if tl_features.max_dpd_6m_cc is not none else "N/A" }}
                 </div>
             </div>
-            <div class="info-item">
+            <div class="rf-item">
                 <label>Max DPD 6M (PL)</label>
                 <div class="value {% if tl_features.max_dpd_6m_pl is not none and tl_features.max_dpd_6m_pl > 0 %}risk{% else %}safe{% endif %}">
                     {{ tl_features.max_dpd_6m_pl if tl_features.max_dpd_6m_pl is not none else "N/A" }}
                 </div>
             </div>
-            <div class="info-item">
+            <div class="rf-item">
                 <label>Max DPD 9M (CC)</label>
                 <div class="value {% if tl_features.max_dpd_9m_cc is not none and tl_features.max_dpd_9m_cc > 0 %}risk{% else %}safe{% endif %}">
                     {{ tl_features.max_dpd_9m_cc if tl_features.max_dpd_9m_cc is not none else "N/A" }}
                 </div>
             </div>
-            <div class="info-item">
-                <label>Months Since Last 0+ DPD (Unsecured)</label>
+            <div class="rf-item">
+                <label>Mo. Since Last 0+ DPD (Unsec)</label>
                 <div class="value">{{ "%.2f"|format(tl_features.months_since_last_0p_uns) if tl_features.months_since_last_0p_uns is not none else "N/A" }}</div>
             </div>
-            <div class="info-item">
-                <label>Months Since Last 0+ DPD (PL)</label>
+            <div class="rf-item">
+                <label>Mo. Since Last 0+ DPD (PL)</label>
                 <div class="value">{{ "%.2f"|format(tl_features.months_since_last_0p_pl) if tl_features.months_since_last_0p_pl is not none else "N/A" }}</div>
             </div>
         </div>
 
-        <h4 style="color: #2c3e50; margin: 15px 0 8px 0; font-size: 14px;">Payment Behavior</h4>
-        <div class="info-grid">
-            <div class="info-item">
+        <!-- Payment Behavior -->
+        <div class="rf-subhead">Payment Behavior</div>
+        <div class="rf-grid">
+            <div class="rf-item">
                 <label>% 0+ DPD in 24M (All)</label>
                 <div class="value {% if tl_features.pct_0plus_24m_all is not none and tl_features.pct_0plus_24m_all > 0 %}risk{% else %}safe{% endif %}">
                     {{ "%.2f"|format(tl_features.pct_0plus_24m_all) if tl_features.pct_0plus_24m_all is not none else "N/A" }}
                 </div>
             </div>
-            <div class="info-item">
+            <div class="rf-item">
                 <label>% 0+ DPD in 24M (PL)</label>
                 <div class="value {% if tl_features.pct_0plus_24m_pl is not none and tl_features.pct_0plus_24m_pl > 0 %}risk{% else %}safe{% endif %}">
                     {{ "%.2f"|format(tl_features.pct_0plus_24m_pl) if tl_features.pct_0plus_24m_pl is not none else "N/A" }}
                 </div>
             </div>
-            <div class="info-item">
+            <div class="rf-item">
                 <label>% Missed Payments (18M)</label>
                 <div class="value {% if tl_features.pct_missed_payments_18m is not none and tl_features.pct_missed_payments_18m > 0 %}risk{% else %}safe{% endif %}">
                     {{ "%.2f"|format(tl_features.pct_missed_payments_18m) if tl_features.pct_missed_payments_18m is not none else "N/A" }}
                 </div>
             </div>
-            <div class="info-item">
+            <div class="rf-item">
                 <label>% Trades 0+ DPD in 12M (All)</label>
                 <div class="value">{{ "%.2f"|format(tl_features.pct_trades_0plus_12m) if tl_features.pct_trades_0plus_12m is not none else "N/A" }}</div>
             </div>
-            <div class="info-item">
+            <div class="rf-item">
                 <label>Ratio Good Closed Loans (PL)</label>
                 <div class="value {% if tl_features.ratio_good_closed_pl is not none and tl_features.ratio_good_closed_pl >= 0.8 %}safe{% elif tl_features.ratio_good_closed_pl is not none and tl_features.ratio_good_closed_pl < 0.5 %}risk{% endif %}">
                     {{ "%.0f%%"|format(tl_features.ratio_good_closed_pl * 100) if tl_features.ratio_good_closed_pl is not none else "N/A" }}
@@ -755,62 +821,60 @@
             </div>
         </div>
 
-        <h4 style="color: #2c3e50; margin: 15px 0 8px 0; font-size: 14px;">Utilization</h4>
-        <div class="info-grid">
-            <div class="info-item">
+        <!-- Utilization & Enquiry -->
+        <div class="rf-subhead">Utilization</div>
+        <div class="rf-grid">
+            <div class="rf-item">
                 <label>CC Balance Utilization %</label>
                 <div class="value {% if tl_features.cc_balance_utilization_pct is not none and tl_features.cc_balance_utilization_pct > 75 %}risk{% elif tl_features.cc_balance_utilization_pct is not none and tl_features.cc_balance_utilization_pct <= 30 %}safe{% endif %}">
                     {{ "%.2f"|format(tl_features.cc_balance_utilization_pct) if tl_features.cc_balance_utilization_pct is not none else "N/A" }}
                 </div>
             </div>
-            <div class="info-item">
+            <div class="rf-item">
                 <label>PL Balance Remaining %</label>
                 <div class="value">{{ "%.2f"|format(tl_features.pl_balance_remaining_pct) if tl_features.pl_balance_remaining_pct is not none else "N/A" }}</div>
             </div>
-        </div>
-
-        <h4 style="color: #2c3e50; margin: 15px 0 8px 0; font-size: 14px;">Enquiry Behavior</h4>
-        <div class="info-grid">
-            <div class="info-item">
+            <div class="rf-item">
                 <label>Unsecured Enquiries (12M)</label>
                 <div class="value {% if tl_features.unsecured_enquiries_12m is not none and tl_features.unsecured_enquiries_12m > 10 %}risk{% elif tl_features.unsecured_enquiries_12m is not none and tl_features.unsecured_enquiries_12m <= 3 %}safe{% endif %}">
                     {{ tl_features.unsecured_enquiries_12m if tl_features.unsecured_enquiries_12m is not none else "N/A" }}
                 </div>
             </div>
-            <div class="info-item">
+            <div class="rf-item">
                 <label>Trade-to-Enquiry Ratio (Unsec 24M)</label>
                 <div class="value">{{ "%.2f"|format(tl_features.trade_to_enquiry_ratio_uns_24m) if tl_features.trade_to_enquiry_ratio_uns_24m is not none else "N/A" }}</div>
             </div>
         </div>
 
-        <h4 style="color: #2c3e50; margin: 15px 0 8px 0; font-size: 14px;">Loan Acquisition Velocity</h4>
-        <div class="info-grid">
-            <div class="info-item">
-                <label>Interpurchase Time 12M (PL/BL)</label>
+        <!-- Loan Acquisition Velocity -->
+        <div class="rf-subhead">Loan Acquisition Velocity</div>
+        <div class="rf-grid">
+            <div class="rf-item">
+                <label>Interpurchase 12M (PL/BL)</label>
                 <div class="value">{{ "%.2f"|format(tl_features.interpurchase_time_12m_plbl) if tl_features.interpurchase_time_12m_plbl is not none else "N/A" }}</div>
             </div>
-            <div class="info-item">
-                <label>Interpurchase Time 6M (PL/BL)</label>
+            <div class="rf-item">
+                <label>Interpurchase 6M (PL/BL)</label>
                 <div class="value">{{ "%.2f"|format(tl_features.interpurchase_time_6m_plbl) if tl_features.interpurchase_time_6m_plbl is not none else "N/A" }}</div>
             </div>
-            <div class="info-item">
-                <label>Interpurchase Time 24M (All)</label>
+            <div class="rf-item">
+                <label>Interpurchase 24M (All)</label>
                 <div class="value">{{ "%.2f"|format(tl_features.interpurchase_time_24m_all) if tl_features.interpurchase_time_24m_all is not none else "N/A" }}</div>
             </div>
-            <div class="info-item">
-                <label>Interpurchase Time 9M (HL/LAP)</label>
+            <div class="rf-item">
+                <label>Interpurchase 9M (HL/LAP)</label>
                 <div class="value">{{ "%.2f"|format(tl_features.interpurchase_time_9m_hl_lap) if tl_features.interpurchase_time_9m_hl_lap is not none else "N/A" }}</div>
             </div>
-            <div class="info-item">
-                <label>Interpurchase Time 24M (HL/LAP)</label>
+            <div class="rf-item">
+                <label>Interpurchase 24M (HL/LAP)</label>
                 <div class="value">{{ "%.2f"|format(tl_features.interpurchase_time_24m_hl_lap) if tl_features.interpurchase_time_24m_hl_lap is not none else "N/A" }}</div>
             </div>
-            <div class="info-item">
-                <label>Interpurchase Time 24M (TWL)</label>
+            <div class="rf-item">
+                <label>Interpurchase 24M (TWL)</label>
                 <div class="value">{{ "%.2f"|format(tl_features.interpurchase_time_24m_twl) if tl_features.interpurchase_time_24m_twl is not none else "N/A" }}</div>
             </div>
-            <div class="info-item">
-                <label>Interpurchase Time 12M (Consumer Loan)</label>
+            <div class="rf-item">
+                <label>Interpurchase 12M (Consumer)</label>
                 <div class="value">{{ "%.2f"|format(tl_features.interpurchase_time_12m_cl) if tl_features.interpurchase_time_12m_cl is not none else "N/A" }}</div>
             </div>
         </div>
