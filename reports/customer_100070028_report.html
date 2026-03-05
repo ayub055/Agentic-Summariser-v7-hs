@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Report - ###0028</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .header {
+            border-bottom: 3px solid #2c3e50;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .header-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            color: #666;
+            font-size: 13px;
+        }
+
+        .header-meta span {
+            display: inline-block;
+        }
+
+        .section {
+            margin-bottom: 25px;
+            page-break-inside: avoid;
+        }
+
+        .section h3 {
+            color: #2c3e50;
+            font-size: 16px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 8px;
+            margin-bottom: 12px;
+        }
+
+        .summary-box {
+            background-color: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .summary-box p {
+            margin: 0;
+            color: #444;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .amount {
+            text-align: right;
+            font-family: 'Consolas', monospace;
+        }
+
+        .positive {
+            color: #27ae60;
+        }
+
+        .negative {
+            color: #e74c3c;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .info-item {
+            padding: 12px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+        }
+
+        .info-item label {
+            display: block;
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+
+        .info-item .value {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .footer {
+            margin-top: 30px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+            text-align: center;
+            color: #999;
+            font-size: 11px;
+        }
+
+        @media print {
+            body {
+                padding: 0;
+            }
+            .section {
+                page-break-inside: avoid;
+            }
+        }
+
+        /* ── scorecard ───────────────────────────── */
+        .scorecard { border: 2px solid #2c3e50; border-radius: 6px; padding: 18px; margin-bottom: 28px; background: #fff; }
+        .sc-verdict { font-size: 17px; font-weight: 700; padding: 10px 16px; border-radius: 4px; margin-bottom: 16px; }
+        .sc-rag-red    { background: #fdecea; color: #c0392b; border-left: 5px solid #e74c3c; }
+        .sc-rag-amber  { background: #fef5e7; color: #d35400; border-left: 5px solid #e67e22; }
+        .sc-rag-green  { background: #eafaf1; color: #1e8449; border-left: 5px solid #27ae60; }
+        .sc-rag-neutral{ background: #f4f6f7; color: #555;    border-left: 5px solid #95a5a6; }
+        .sc-signals-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; margin-bottom: 16px; }
+        .sc-signal { padding: 10px; border-radius: 4px; text-align: center; }
+        .sc-sig-label { font-size: 11px; opacity: 0.85; }
+        .sc-sig-value { font-size: 15px; font-weight: 700; margin: 4px 0; }
+        .sc-sig-note  { font-size: 10px; opacity: 0.75; }
+        .sc-3col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+        .sc-col { padding: 10px 12px; border-radius: 4px; font-size: 12px; line-height: 1.7; }
+        .sc-col-head { font-weight: 700; font-size: 12px; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .sc-col-green { background: #eafaf1; }
+        .sc-col-red   { background: #fdecea; }
+        .sc-col-gray  { background: #f4f6f7; }
+        .sc-narrative { border-top: 1px solid #eee; padding-top: 12px; font-size: 13px; color: #444; line-height: 1.6; white-space: pre-line; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Customer Financial Report</h1>
+        <div class="header-meta">
+            <span><strong>Customer ID:</strong> ###0028</span>
+            <span><strong>Generated:</strong> 2026-03-05</span>
+            <span><strong>Period:</strong> Last 6 months</span>
+            <span><strong>Transactions:</strong> 36</span>
+        </div>
+    </div>
+
+    <!-- Risk Scorecard -->
+    
+    <div class="scorecard">
+        <div class="sc-verdict sc-rag-amber">
+            ● Overall Risk: CAUTION
+        </div>
+        
+        <div class="sc-signals-grid">
+            
+            <div class="sc-signal sc-rag-green">
+                <div class="sc-sig-label">Income</div>
+                <div class="sc-sig-value">INR 34,495 /mo</div>
+                <div class="sc-sig-note">Salary</div>
+            </div>
+            
+            <div class="sc-signal sc-rag-green">
+                <div class="sc-sig-label">FOIR</div>
+                <div class="sc-sig-value">0%</div>
+                <div class="sc-sig-note">EMI+Rent/Salary</div>
+            </div>
+            
+            <div class="sc-signal sc-rag-green">
+                <div class="sc-sig-label">Red Flags</div>
+                <div class="sc-sig-value">None</div>
+                <div class="sc-sig-note">No flag categories</div>
+            </div>
+            
+            <div class="sc-signal sc-rag-red">
+                <div class="sc-sig-label">Account Type</div>
+                <div class="sc-sig-value">Conduit</div>
+                <div class="sc-sig-note">Score 20/100</div>
+            </div>
+            
+        </div>
+        
+        <div class="sc-3col">
+            <div class="sc-col sc-col-green">
+                <div class="sc-col-head">Strengths</div>
+                <div>&#10003; Income: INR 34,495 /mo</div><div>&#10003; FOIR: 0%</div><div>&#10003; Red Flags: None</div>
+            </div>
+            <div class="sc-col sc-col-red">
+                <div class="sc-col-head">Concerns</div>
+                <div>&#9888; Account Type: Conduit (Score 20/100)</div>
+            </div>
+            <div class="sc-col sc-col-gray">
+                <div class="sc-col-head">Verify</div>
+                <div>&#8594; Confirm income source from employer or IT returns</div>
+            </div>
+        </div>
+        
+    </div>
+    
+
+    <!-- Relationship Profile (from tl_features) -->
+    
+    <div class="section">
+        <h3>Relationship Profile</h3>
+        <div class="info-grid">
+            
+            <div class="info-item">
+                <label>Relationship</label>
+                <div class="value">CorpSal</div>
+            </div>
+            
+            
+            <div class="info-item">
+                <label>Segment</label>
+                <div class="value">True Salary</div>
+            </div>
+            
+            
+            <div class="info-item">
+                <label>Banking Group</label>
+                <div class="value">Banking Thin</div>
+            </div>
+            
+            
+            <div class="info-item">
+                <label>Bureau Group</label>
+                <div class="value">BU thick</div>
+            </div>
+            
+            
+            <div class="info-item">
+                <label>Affluence Amount</label>
+                <div class="value">INR 34,495</div>
+                <div style="font-size: 12px; color: #666; margin-top: 3px;">Salary_SLC</div>
+            </div>
+            
+            
+            <div class="info-item">
+                <label>Customer Persona</label>
+                <div class="value">Dormant</div>
+            </div>
+            
+        </div>
+    </div>
+    
+
+    
+    <div class="section">
+        <h3>Executive Summary</h3>
+        <div class="summary-box">
+            <p>The customer&#39;s banking profile indicates a relatively stable financial situation. Their average monthly net income is ₹18,000, with an average salary of ₹39,210 per month, sourced from two transactions. The customer&#39;s top spending categories are self (48,000), other (27,300), and food/restaurants (1,970). On average, the customer has a total inflow of ₹78,428 and outflow of ₹78,391 each month. Notably, the customer has a large-transfer account where approximately 85% of their salary is transferred out within three days of credit in two months.
+
+In December 2025, the customer received ₹43,925 as salary and transferred ₹43,000 to their own account the next day via UPI/CHINTAMALLA SAN.</p>
+        </div>
+    </div>
+    
+
+    
+    <div class="section">
+        <h3>Salary Information</h3>
+        <div class="info-grid">
+            <div class="info-item">
+                <label>Average Amount</label>
+                <div class="value">39,210.00 INR</div>
+            </div>
+            <div class="info-item">
+                <label>Transactions</label>
+                <div class="value">2</div>
+            </div>
+        </div>
+        
+        <p style="margin-top: 10px; color: #666; font-size: 12px;">
+            <strong>Sample:</strong> SYMED SALARY OCT 2025
+        </p>
+        
+    </div>
+    
+
+    
+    <div class="section">
+        <h3>Internal Salary Analysis</h3>
+
+        
+        <h4 style="color: #2c3e50; font-size: 14px; margin-bottom: 8px;">RG SAL</h4>
+        <div class="summary-box">
+            <p>Estimated monthly salary of INR 34,495 from Salary, identified across 3 months.</p>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Narration</th>
+                    <th class="amount">Amount (INR)</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+                <tr>
+                    <td>2026-01-05</td>
+                    <td>SYMED SALARY DEC 2025</td>
+                    <td class="amount positive">43,923</td>
+                </tr>
+                
+                <tr>
+                    <td>2025-12-05</td>
+                    <td>SYMED SALARY NOV 2025</td>
+                    <td class="amount positive">43,925</td>
+                </tr>
+                
+                <tr>
+                    <td>2025-11-04</td>
+                    <td>SYMED SALARY OCT 2025</td>
+                    <td class="amount positive">34,495</td>
+                </tr>
+                
+            </tbody>
+        </table>
+        
+
+        
+    </div>
+    
+
+    
+    <div class="section">
+        <h3>Spending by Category</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Category</th>
+                    <th class="amount">Amount (INR)</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+                <tr>
+                    <td>self</td>
+                    <td class="amount">48,000.00</td>
+                </tr>
+                
+                <tr>
+                    <td>other</td>
+                    <td class="amount">27,300.00</td>
+                </tr>
+                
+                <tr>
+                    <td>Food_restaurants</td>
+                    <td class="amount">1,970.00</td>
+                </tr>
+                
+                <tr>
+                    <td>Home_commodity_services</td>
+                    <td class="amount">590.00</td>
+                </tr>
+                
+                <tr>
+                    <td>Utility_Bills</td>
+                    <td class="amount">500.00</td>
+                </tr>
+                
+                <tr>
+                    <td>Entertainment_Luxury</td>
+                    <td class="amount">31.00</td>
+                </tr>
+                
+            </tbody>
+        </table>
+    </div>
+    
+
+    
+    <div class="section">
+        <h3>Monthly Cash Flow</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Month</th>
+                    <th class="amount">Inflow</th>
+                    <th class="amount">Outflow</th>
+                    <th class="amount">Net</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+                <tr>
+                    <td>2025-11</td>
+                    <td class="amount positive">34,495</td>
+                    <td class="amount negative">34,471</td>
+                    <td class="amount positive">
+                        24
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td>2025-12</td>
+                    <td class="amount positive">43,933</td>
+                    <td class="amount negative">43,920</td>
+                    <td class="amount positive">
+                        13
+                    </td>
+                </tr>
+                
+            </tbody>
+        </table>
+    </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="footer">
+        <p>Generated on 2026-03-05 | Currency: INR</p>
+    </div>
+</body>
+</html>

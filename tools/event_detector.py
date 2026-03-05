@@ -451,7 +451,9 @@ def _detect_self_transfer_post_salary(
 
         for _, row in window.iterrows():
             narr = _narr_upper(row)
-            if _is_self(narr, name_pfx):
+            # Check narration keywords OR the self_transfer column flag (=1)
+            self_flag = str(row.get("self_transfer", "")).strip() == "1"
+            if _is_self(narr, name_pfx) or self_flag:
                 amt  = float(row["tran_amt_in_ac"])
                 pct  = amt / sal_amt * 100
                 days = int((row["tran_date"] - sal_date).days)

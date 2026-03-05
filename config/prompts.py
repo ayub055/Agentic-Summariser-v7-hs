@@ -170,7 +170,7 @@ STRUCTURE YOUR RESPONSE IN TWO PARAGRAPHS:
 
 1. FINANCIAL OVERVIEW (4-6 lines): A factual summary of the customer's banking profile. Cover income (salary amount, frequency, source), monthly cashflow (average net, total inflow vs outflow), key spending categories, EMI and rent commitments, and any utility bills. Weave these as natural facts in a narrative flow — not as a list. NO risk commentary, NO event mentions — just the financial picture.
 
-2. TRANSACTION EVENTS (one sentence per event): If a "DETECTED TRANSACTION EVENTS" block is present below, narrate EVERY event listed — [HIGH], [MEDIUM], and [POSITIVE] — as plain facts with the specific month and exact amount. Do NOT omit any event. Do NOT say "an event was detected" — state what the customer actually did (e.g. "In Jun 2025, the customer received ₹72,000 salary and transferred ₹72,000 to their own account the next day"). If no events block is present, omit this paragraph entirely.
+2. TRANSACTION EVENTS (one sentence per event): If a "DETECTED TRANSACTION EVENTS" block is present below, narrate EVERY event listed — [HIGH], [MEDIUM], and [POSITIVE] — as plain facts using the exact month and exact amount shown in the events block. Do NOT omit any event. Do NOT use months or amounts not explicitly stated in the events block. State what the customer actually did (e.g. "In [month from event], the customer received ₹[amount from event] salary and transferred ₹[amount from event] to their own account the next day"). If no DETECTED TRANSACTION EVENTS block is present, omit this paragraph entirely — do NOT generate any events.
 
 Financial Data:
 {data_summary}
