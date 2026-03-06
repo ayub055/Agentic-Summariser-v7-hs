@@ -37,6 +37,7 @@ def generate_bureau_report_pdf(customer_id: int) -> Tuple[BureauReport, str]:
         report.narrative = generate_bureau_review(
             report.executive_inputs,
             tradeline_features=report.tradeline_features,
+            monthly_exposure=report.monthly_exposure,
         )
     except Exception as e:
         logger.warning(f"Bureau narrative generation failed: {e}")

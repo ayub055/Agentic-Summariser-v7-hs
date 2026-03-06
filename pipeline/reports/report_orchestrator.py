@@ -104,6 +104,14 @@ def generate_customer_report_pdf(
 
         _REPORT_CACHE[cache_key] = report
 
+    # Load internal salary algorithm data (fail-soft) — must precede LLM review
+    # so the authoritative salary amount matches what the scorecard shows.
+    rg_salary_data = None
+    try:
+        rg_salary_data = load_rg_salary_data(customer_id) or None
+    except Exception as e:
+        logger.warning(f"RG salary data unavailable for [{customer_id}]: {e}")
+
     # Generate LLM summaries (optional, fail-soft)
     if include_summary:
         try:
@@ -114,7 +122,7 @@ def generate_customer_report_pdf(
 
         try:
             if report.customer_review is None:
-                report.customer_review = generate_customer_review(report)
+                report.customer_review = generate_customer_review(report, rg_salary_data=rg_salary_data)
         except Exception as e:
             logger.warning(f"Failed to generate customer review: {e}")
 
@@ -124,13 +132,6 @@ def generate_customer_report_pdf(
         tl_features = extract_tradeline_features(customer_id)
     except Exception as e:
         logger.warning(f"Tradeline features unavailable for customer profile [{customer_id}]: {e}")
-
-    # Load internal salary algorithm data (fail-soft)
-    rg_salary_data = None
-    try:
-        rg_salary_data = load_rg_salary_data(customer_id) or None
-    except Exception as e:
-        logger.warning(f"RG salary data unavailable for [{customer_id}]: {e}")
 
     # Render PDF
     if output_path is None:
@@ -385,6 +386,13 @@ def get_customer_report_data(
             report = build_customer_report(customer_id, months)
         _REPORT_CACHE[cache_key] = report
 
+    # Load RG salary data before LLM review for income consistency
+    rg_salary_data = None
+    try:
+        rg_salary_data = load_rg_salary_data(customer_id) or None
+    except Exception as e:
+        logger.warning(f"RG salary data unavailable for [{customer_id}]: {e}")
+
     # Generate summaries if requested (fail-soft)
     if include_summary:
         try:
@@ -395,7 +403,7 @@ def get_customer_report_data(
 
         try:
             if report.customer_review is None:
-                report.customer_review = generate_customer_review(report)
+                report.customer_review = generate_customer_review(report, rg_salary_data=rg_salary_data)
         except Exception as e:
             logger.warning(f"Failed to generate customer review: {e}")
 

@@ -33,43 +33,111 @@
 
         body {
             font-family: 'Segoe UI', Arial, sans-serif;
+            background: #f8fafc; /* Cool light slate background */
+            color: #1e293b;
             max-width: 900px;
             margin: 0 auto;
             padding: 20px;
-            color: #333;
-            font-size: 14px;
-            line-height: 1.5;
+            font-size: 15px;
         }
 
+        /* COOLER, COMPACT HEADER */
         .header {
-            border-bottom: 3px solid #2c3e50;
-            padding-bottom: 15px;
-            margin-bottom: 25px;
+            background: #ffffff;
+            padding: 16px 20px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            border: 1px solid #e2e8f0;
+            border-left: 5px solid #6366f1; /* Indigo accent from Arch file */
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
 
         .header h1 {
-            color: #2c3e50;
-            font-size: 24px;
-            margin-bottom: 10px;
+            color: #1e1b4b; /* Deep indigo text */
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
         }
 
+        /* META PILLS (Adapted from .stat-pill / .model-pill) */
         .header-meta {
             display: flex;
             flex-wrap: wrap;
-            gap: 20px;
-            color: #666;
-            font-size: 13px;
+            gap: 8px;
         }
 
         .header-meta span {
-            display: inline-block;
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            padding: 3px 10px;
+            font-size: 11px;
+            color: #475569;
+            display: inline-flex;
+            align-items: center;
+            font-weight: 500;
         }
 
+        .header-meta span strong {
+            color: #6366f1; /* Indigo labels */
+            text-transform: uppercase;
+            font-size: 9px;
+            letter-spacing: 0.5px;
+            margin-right: 6px;
+        }
+
+        /* SECTION DIVIDERS (Arch-style) */
+        .section-divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 32px 0 16px;
+            font-size: 14px;
+            font-weight: 700;
+            color: #1e293b;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .section-divider::after {
+            content: "";
+            flex: 1;
+            height: 2px;
+            background: linear-gradient(to right, #e2e8f0, transparent);
+        }
+
+        /* CARD-STYLE SECTIONS (.comp variant) */
         .section {
-            margin-bottom: 25px;
-            page-break-inside: avoid;
+            background: #ffffff;
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 2px 8px rgba(99, 102, 241, 0.04);
+            margin-bottom: 20px;
         }
 
+        /* TABLE UPDATES */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th {
+            background: #1e1b4b; /* Deep Indigo Header */
+            color: #ffffff;
+            padding: 12px;
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 0.5px;
+        }
         .section h3 {
             color: #2c3e50;
             font-size: 16px;
@@ -323,24 +391,118 @@
         }
 
         /* ── scorecard ───────────────────────────── */
-        .scorecard { border: 2px solid #2c3e50; border-radius: 6px; padding: 18px; margin-bottom: 28px; background: #fff; }
-        .sc-verdict { font-size: 17px; font-weight: 700; padding: 10px 16px; border-radius: 4px; margin-bottom: 16px; }
-        .sc-rag-red    { background: #fdecea; color: #c0392b; border-left: 5px solid #e74c3c; }
-        .sc-rag-amber  { background: #fef5e7; color: #d35400; border-left: 5px solid #e67e22; }
-        .sc-rag-green  { background: #eafaf1; color: #1e8449; border-left: 5px solid #27ae60; }
-        .sc-rag-neutral{ background: #f4f6f7; color: #555;    border-left: 5px solid #95a5a6; }
-        .sc-signals-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; margin-bottom: 16px; }
-        .sc-signal { padding: 10px; border-radius: 4px; text-align: center; }
-        .sc-sig-label { font-size: 11px; opacity: 0.85; }
-        .sc-sig-value { font-size: 15px; font-weight: 700; margin: 4px 0; }
-        .sc-sig-note  { font-size: 10px; opacity: 0.75; }
-        .sc-3col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 14px; }
-        .sc-col { padding: 10px 12px; border-radius: 4px; font-size: 12px; line-height: 1.7; }
-        .sc-col-head { font-weight: 700; font-size: 12px; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .sc-col-green { background: #eafaf1; }
-        .sc-col-red   { background: #fdecea; }
-        .sc-col-gray  { background: #f4f6f7; }
-        .sc-narrative { border-top: 1px solid #eee; padding-top: 12px; font-size: 13px; color: #444; line-height: 1.6; white-space: pre-line; }
+        .scorecard {
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 28px;
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+        .sc-verdict {
+            font-size: 16px;
+            font-weight: 800;
+            padding: 11px 18px;
+            border-radius: 6px;
+            margin-bottom: 18px;
+            letter-spacing: 0.3px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .sc-rag-red    { background: #fff3f0; color: #c2410c; border-left: 5px solid #f97316; }
+        .sc-rag-amber  { background: #fffbeb; color: #92400e; border-left: 5px solid #f59e0b; }
+        .sc-rag-green  { background: #f0f9ff; color: #0369a1; border-left: 5px solid #0ea5e9; }
+        .sc-rag-neutral{ background: #fafaf9; color: #57534e; border-left: 5px solid #a8a29e; }
+        .sc-signals-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 8px;
+            margin-bottom: 18px;
+        }
+        .sc-signal {
+            position: relative;
+            padding: 10px 8px 8px;
+            border-radius: 6px;
+            text-align: center;
+            border-bottom: 3px solid transparent;
+            cursor: default;
+        }
+        .sc-rag-red.sc-signal    { border-bottom-color: #fb7185; }
+        .sc-rag-amber.sc-signal  { border-bottom-color: #ca8a04; }
+        .sc-rag-green.sc-signal  { border-bottom-color: #2dd4bf; }
+        .sc-rag-neutral.sc-signal{ border-bottom-color: #818cf8; }
+        .sc-sig-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; opacity: 0.75; }
+        .sc-sig-value { font-size: 14px; font-weight: 800; margin: 5px 0 3px; }
+        .sc-sig-note  { font-size: 10px; opacity: 0.65; }
+        /* signal chip hover tooltip */
+        .sc-tooltip {
+            display: none;
+            position: absolute;
+            bottom: calc(100% + 8px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1e293b;
+            color: #e2e8f0;
+            font-size: 11px;
+            font-weight: 400;
+            text-align: left;
+            padding: 8px 10px;
+            border-radius: 6px;
+            width: 210px;
+            white-space: pre-line;
+            z-index: 200;
+            line-height: 1.5;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.35);
+            pointer-events: none;
+        }
+        .sc-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 5px solid transparent;
+            border-top-color: #1e293b;
+        }
+        .sc-signal:hover .sc-tooltip { display: block; }
+        .sc-3col {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+        .sc-col {
+            padding: 12px 14px;
+            border-radius: 6px;
+            font-size: 12px;
+            line-height: 1.75;
+            border-top: 3px solid transparent;
+        }
+        .sc-col-head {
+            font-weight: 800;
+            font-size: 11px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.7px;
+        }
+        .sc-col-green { background: #f0fdfa; border-top-color: #2dd4bf; color: #134e4a; }
+        .sc-col-green .sc-col-head { color: #0f766e; }
+        .sc-col-red   { background: #fff0f0; border-top-color: #fb7185; color: #4c0519; }
+        .sc-col-red   .sc-col-head { color: #9f1239; }
+        .sc-col-gray  { background: #eef2ff; border-top-color: #818cf8; color: #312e81; }
+        .sc-col-gray  .sc-col-head { color: #3730a3; }
+        .sc-col-item  { display: flex; align-items: flex-start; gap: 5px; padding: 1px 0; font-size: 11.5px; }
+        .sc-col-bullet{ flex-shrink: 0; margin-top: 2px; font-size: 11px; }
+        .sc-narrative {
+            border-top: 1px solid #e2e8f0;
+            padding-top: 14px;
+            font-size: 13px;
+            color: #374151;
+            line-height: 1.7;
+            white-space: pre-line;
+        }
     </style>
 </head>
 <body>
@@ -352,8 +514,6 @@
             
             <span><strong>Name:</strong> CHINTHAMALLA SANDEEP</span>
             
-            <span><strong>Generated:</strong> 2026-03-05</span>
-            <span><strong>Period:</strong> Last 6 months</span>
             <span><strong>Transactions:</strong> 36</span>
             
             
@@ -375,62 +535,91 @@
                 <div class="sc-sig-label">CC Util</div>
                 <div class="sc-sig-value">98%</div>
                 <div class="sc-sig-note">Over-utilized</div>
+                <div class="sc-tooltip">CC balance utilization: 98.0%.
+Thresholds: ≤30% = healthy · ≤75% = elevated · &gt;75% = over-utilized</div>
             </div>
             
             <div class="sc-signal sc-rag-red">
                 <div class="sc-sig-label">Enquiries</div>
                 <div class="sc-sig-value">11 in 12M</div>
                 <div class="sc-sig-note">High pressure</div>
+                <div class="sc-tooltip">Unsecured credit enquiries in last 12M: 11.
+Thresholds: ≤3 = minimal · ≤10 = moderate · &gt;10 = high pressure</div>
             </div>
             
             <div class="sc-signal sc-rag-green">
                 <div class="sc-sig-label">Payments</div>
                 <div class="sc-sig-value">0% missed</div>
                 <div class="sc-sig-note">18M window</div>
+                <div class="sc-tooltip">Missed payment rate over 18M: 0.0%.
+Thresholds: 0% = clean · ≤10% = some · &gt;10% = frequent</div>
+            </div>
+            
+            <div class="sc-signal sc-rag-green">
+                <div class="sc-sig-label">Exposure 12M</div>
+                <div class="sc-sig-value">↓ 18% declining</div>
+                <div class="sc-sig-note">vs 12M ago</div>
+                <div class="sc-tooltip">Sanctioned exposure: Mar 2026 = ₹8.3L · 12M ago = ₹10.0L.
+Change: -17.5%. Thresholds: ≤−5% = declining · ≤+30% = growing · &gt;+30% = rapid</div>
+            </div>
+            
+            <div class="sc-signal sc-rag-green">
+                <div class="sc-sig-label">Exposure 6M</div>
+                <div class="sc-sig-value">↓ 17% declining</div>
+                <div class="sc-sig-note">6M avg trend</div>
+                <div class="sc-tooltip">Recent 6M avg: ₹8.5L · Prior 6M avg: ₹10.2L.
+Change: -17.3%. Thresholds: ≤−5% = declining · ≤+30% = growing · &gt;+30% = rapid</div>
             </div>
             
             <div class="sc-signal sc-rag-green">
                 <div class="sc-sig-label">Income</div>
                 <div class="sc-sig-value">INR 34,495 /mo</div>
                 <div class="sc-sig-note">Salary</div>
+                <div class="sc-tooltip">Source: internal salary algorithm (RG SAL).
+Amount: INR 34,495/mo · Transactions detected: 3 · Employer: Salary</div>
             </div>
             
             <div class="sc-signal sc-rag-green">
                 <div class="sc-sig-label">FOIR</div>
                 <div class="sc-sig-value">0%</div>
                 <div class="sc-sig-note">EMI+Rent/Salary</div>
+                <div class="sc-tooltip">EMI: INR 0  +  Rent: INR 0  ÷  Salary: INR 34,495  =  0.0%.
+Thresholds: ≤40% = comfortable · ≤65% = stretched · &gt;65% = over-leveraged</div>
             </div>
             
             <div class="sc-signal sc-rag-green">
-                <div class="sc-sig-label">Red Flags</div>
+                <div class="sc-sig-label">Transaction Red flag</div>
                 <div class="sc-sig-value">None</div>
                 <div class="sc-sig-note">No flag categories</div>
+                <div class="sc-tooltip">No betting, gaming, or flagged transaction categories detected.</div>
             </div>
             
             <div class="sc-signal sc-rag-red">
                 <div class="sc-sig-label">Account Type</div>
                 <div class="sc-sig-value">Conduit</div>
                 <div class="sc-sig-note">Score 20/100</div>
+                <div class="sc-tooltip">Account classification: Conduit · Confidence score: 20/100.
+Primary = main salary/income account · Secondary = supplementary · Conduit = pass-through</div>
             </div>
             
         </div>
         
         <div class="sc-3col">
             <div class="sc-col sc-col-green">
-                <div class="sc-col-head">Strengths</div>
-                <div>&#10003; No delinquency detected across the portfolio</div><div>&#10003; Zero DPD across all products in recent 6-9 month windows</div><div>&#10003; No missed payments in last 18 months</div>
+                <div class="sc-col-head">&#10003; Strengths</div>
+                <div class="sc-col-item"><span class="sc-col-bullet" style="color:#2dd4bf">●</span><span>No delinquency detected across the portfolio</span></div><div class="sc-col-item"><span class="sc-col-bullet" style="color:#2dd4bf">●</span><span>Zero DPD across all products in recent 6-9 month windows</span></div><div class="sc-col-item"><span class="sc-col-bullet" style="color:#2dd4bf">●</span><span>No missed payments in last 18 months</span></div>
             </div>
             <div class="sc-col sc-col-red">
-                <div class="sc-col-head">Concerns</div>
-                <div>&#9888; Credit card utilization at 98% [Opened: Jan 2023 | Active]</div><div>&#9888; Unsecured sanction is 95% of total (INR 20,88,493 of INR 21,97,493)</div><div>&#9888; 11 unsecured enquiries in last 12 months</div>
+                <div class="sc-col-head">&#9888; Concerns</div>
+                <div class="sc-col-item"><span class="sc-col-bullet" style="color:#fb7185">●</span><span>Credit card utilization at 98% [Opened: Jan 2023 | Active]</span></div><div class="sc-col-item"><span class="sc-col-bullet" style="color:#fb7185">●</span><span>Unsecured sanction is 95% of total (INR 20,88,493 of INR 21,97,493)</span></div><div class="sc-col-item"><span class="sc-col-bullet" style="color:#fb7185">●</span><span>11 unsecured enquiries in last 12 months</span></div>
             </div>
             <div class="sc-col sc-col-gray">
-                <div class="sc-col-head">Verify</div>
-                <div>&#8594; Verify all 5 live tradelines are reflected in banking obligations</div>
+                <div class="sc-col-head">&#8594; Verify</div>
+                <div class="sc-col-item"><span class="sc-col-bullet" style="color:#818cf8">●</span><span>Verify all 5 live tradelines are reflected in banking obligations</span></div>
             </div>
         </div>
         
-        <div class="sc-narrative">The customer exhibits a relatively stable financial situation, with a monthly net income of ₹18,000 and a salary of ₹39,210 per month, sourced from two transactions. Their spending pattern shows a majority allocation towards self (₹48,000), followed by other expenses (₹27,300) and food and restaurants (₹1,970). The customer&#39;s cash flow indicates a net balance of ₹37, with no recurring obligations such as EMI, utility bills, or rent commitments. However, a notable transaction event occurred on December 2025, where ₹43,000 was transferred to their own account shortly after receiving credit through UPI/CHINTAMALLA SAN. The customer&#39;s tradeline portfolio consists of 14 live and closed accounts with a sanctioned exposure of INR 21,97,493 and outstanding balances of INR 6,48,087 for all products combined. Elevated enquiry pressure (11 unsecured enquiries in the last 12 months) and high credit card utilization percentage (98.0%) indicate potential credit risks.
+        <div class="sc-narrative">The customer exhibits a stable financial situation, with a monthly net income of ₹18,000 and a total inflow of ₹78,428. However, their spending discipline is questionable, as they immediately transferred ₹43,000 to another account upon receiving their salary in December 2025. This behavior suggests some liquidity issues or impulsive spending habits. The customer&#39;s credit portfolio consists of 14 live and closed accounts, with a sanctioned exposure of INR 21,97,493, primarily driven by unsecured outstanding amounts. High credit card utilization (98.0%) indicates over-utilization, while elevated enquiry pressure (11 unsecured enquiries in the last 12 months) may signal loan stacking or other high-risk behaviors. Overall, the customer&#39;s creditworthiness assessment is cautious due to elevated leverage and liquidity concerns.
 
 Note: This is a synthesised summary based on automated banking and bureau analyses. Independent verification is recommended before final credit decisions.</div>
         
@@ -527,6 +716,9 @@ Note: This is a synthesised summary based on automated banking and bureau analys
             <div class="chart-card chart-timeseries">
                 <h4>Portfolio Exposure Over Time (Stacked by Product)</h4>
                 <canvas id="cmbChartTimeseries"></canvas>
+                
+                <p style="margin-top:10px; font-size:12.5px; color:#444; line-height:1.6; border-top:1px solid #eee; padding-top:8px;">Sanctioned exposure peaked at ₹11.5L in Jul 2025, led by PL (₹8.8L) and CC (₹1.2L). Current exposure stands at ₹8.3L (PL, CC, GL active), down 28% from peak — trend declining.</p>
+                
             </div>
 
             <!-- 6. DPD Event Timeline — hidden by JS if no events -->
@@ -715,9 +907,9 @@ Note: This is a synthesised summary based on automated banking and bureau analys
     <div class="section">
         <h3>Bureau Executive Summary</h3>
         <div class="summary-box">
-            <p>The customer&#39;s tradeline portfolio consists of a total of 14 live and closed accounts, with a sanctioned exposure of INR 21,97,493 and outstanding balances of INR 6,48,087 for all products combined. The portfolio is predominantly composed of personal loans (9 accounts), followed by consumer durable loans (3 accounts) and credit cards (1 account). Notably, the customer has a high credit card utilization percentage of 98.0%, indicating over-utilization. Additionally, there are no outstanding balances on consumer durable loans.
+            <p>The customer&#39;s tradeline portfolio consists of a total of 14 live and closed accounts, with a mix of personal loan, consumer durable, credit card, and gold loan products. The sanctioned exposure is INR 21,97,493, with unsecured outstanding amount accounting for 83% of the total outstanding. Notably, the customer has a high credit card utilization percentage of 98.0%, indicating over-utilization. Additionally, there are no missed payments in the last 18 months, and the ratio of good closed personal loan loans is 100%. The sanctioned exposure trend shows a decrease of 18% over the past 12 months.
 
-The behavioral insights suggest that the customer&#39;s credit behavior is characterized by elevated enquiry pressure, with 11 unsecured enquiries in the last 12 months. The trade-to-enquiry ratio is also elevated at 29.41%. However, the customer has a strong repayment discipline, with zero missed payments and a 100% good closure track record for personal loans. The credit card utilization percentage is a red flag, indicating over-utilization. Furthermore, the frequent loan acquisitions, as indicated by an average interpurchase time of 1.07 months for personal loans, may suggest loan stacking or other risky lending behaviors.</p>
+The customer&#39;s behavioral features suggest some red flags. Elevated enquiry pressure is indicated by 11 unsecured enquiries in the last 12 months, which may signal loan stacking or other high-risk behaviors. Furthermore, the credit card utilization percentage is a concern, as it exceeds the threshold for moderate risk. On the positive side, there are no missed payments, and the trade-to-enquiry ratio is relatively low at 29.4%. The customer&#39;s loan acquisition velocity is also noteworthy, with frequent acquisitions over the past year. Overall, the composite risk signals suggest a clean repayment profile, elevated leverage due to high credit card utilization, and low conversion rates, indicating possible rejections.</p>
         </div>
     </div>
     
@@ -1114,40 +1306,41 @@ The behavioral insights suggest that the customer&#39;s credit behavior is chara
     
     <div class="section">
         <h3>Relationship Profile</h3>
-        <div class="info-grid">
+        <div class="rf-subhead">Customer Classification</div>
+        <div class="rf-grid">
             
-            <div class="info-item">
+            <div class="rf-item">
                 <label>Relationship</label>
                 <div class="value">CorpSal</div>
             </div>
             
             
-            <div class="info-item">
+            <div class="rf-item">
                 <label>Segment</label>
                 <div class="value">True Salary</div>
             </div>
             
             
-            <div class="info-item">
+            <div class="rf-item">
                 <label>Banking Group</label>
                 <div class="value">Banking Thin</div>
             </div>
             
             
-            <div class="info-item">
+            <div class="rf-item">
                 <label>Bureau Group</label>
                 <div class="value">BU thick</div>
             </div>
             
             
-            <div class="info-item">
+            <div class="rf-item">
                 <label>Affluence Amount</label>
                 <div class="value">INR 34,495</div>
-                <div style="font-size: 12px; color: #666; margin-top: 3px;">Salary_SLC</div>
+                <div style="font-size: 10px; color: #666; margin-top: 2px;">Salary_SLC</div>
             </div>
             
             
-            <div class="info-item">
+            <div class="rf-item">
                 <label>Customer Persona</label>
                 <div class="value">Dormant</div>
             </div>
@@ -1169,9 +1362,9 @@ The behavioral insights suggest that the customer&#39;s credit behavior is chara
     <div class="section">
         <h3>Executive Summary</h3>
         <div class="summary-box">
-            <p>The customer&#39;s banking profile indicates a relatively stable financial situation. Their average monthly net income is ₹18,000, with an average salary of ₹39,210 per month, sourced from two transactions. The majority of their spending goes towards self (₹48,000), followed by other expenses (₹27,300) and food and restaurants (₹1,970). Their monthly cash flow shows a total inflow of ₹78,428 and an outflow of ₹78,391, resulting in a net balance of ₹37. The customer does not have any recurring obligations such as EMI, utility bills, or rent commitments.
+            <p>The customer&#39;s banking profile indicates a stable financial situation. Their average monthly net income is ₹18,000, with a total inflow of ₹78,428 and outflow of ₹78,391. The majority of their expenses are allocated to self (48,000), followed by other categories (27,300) and food/restaurant expenses (1,970). There are no recurring obligations such as EMI, utility bills, or rent commitments detected in the customer&#39;s banking profile.
 
-A notable transaction event occurred on December 2025, where ₹43,000 (98% of the customer&#39;s salary) was transferred to their own account 1 day after receiving credit through UPI/CHINTAMALLA SAN/541064911213/Payment from Ph.</p>
+In December 2025, the customer transferred ₹43,000 from their own account to another account (UPI/CHINTAMALLA SAN/541064911213/Payment from Ph) just one day after receiving their salary. Additionally, the customer received a salary of ₹43,925 and transferred 98% of it to their own account within three days of credit in two consecutive months.</p>
         </div>
     </div>
     
@@ -1344,7 +1537,7 @@ A notable transaction event occurred on December 2025, where ₹43,000 (98% of t
     <div class="section-divider">Combined Executive Summary</div>
     <div class="section">
         <div class="summary-box" style="border-left: 4px solid #2c3e50;">
-            <p>The customer exhibits a relatively stable financial situation, with a monthly net income of ₹18,000 and a salary of ₹39,210 per month, sourced from two transactions. Their spending pattern shows a majority allocation towards self (₹48,000), followed by other expenses (₹27,300) and food and restaurants (₹1,970). The customer&#39;s cash flow indicates a net balance of ₹37, with no recurring obligations such as EMI, utility bills, or rent commitments. However, a notable transaction event occurred on December 2025, where ₹43,000 was transferred to their own account shortly after receiving credit through UPI/CHINTAMALLA SAN. The customer&#39;s tradeline portfolio consists of 14 live and closed accounts with a sanctioned exposure of INR 21,97,493 and outstanding balances of INR 6,48,087 for all products combined. Elevated enquiry pressure (11 unsecured enquiries in the last 12 months) and high credit card utilization percentage (98.0%) indicate potential credit risks.
+            <p>The customer exhibits a stable financial situation, with a monthly net income of ₹18,000 and a total inflow of ₹78,428. However, their spending discipline is questionable, as they immediately transferred ₹43,000 to another account upon receiving their salary in December 2025. This behavior suggests some liquidity issues or impulsive spending habits. The customer&#39;s credit portfolio consists of 14 live and closed accounts, with a sanctioned exposure of INR 21,97,493, primarily driven by unsecured outstanding amounts. High credit card utilization (98.0%) indicates over-utilization, while elevated enquiry pressure (11 unsecured enquiries in the last 12 months) may signal loan stacking or other high-risk behaviors. Overall, the customer&#39;s creditworthiness assessment is cautious due to elevated leverage and liquidity concerns.
 
 Note: This is a synthesised summary based on automated banking and bureau analyses. Independent verification is recommended before final credit decisions.</p>
         </div>
@@ -1353,7 +1546,7 @@ Note: This is a synthesised summary based on automated banking and bureau analys
 
     <div class="footer">
         
-        <p>Generated on 2026-03-05 | Currency: INR</p>
+        <p>Generated on 2026-03-06 | Currency: INR</p>
         
     </div>
 </body>

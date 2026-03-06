@@ -22,27 +22,43 @@
         }
 
         .header {
-            border-bottom: 3px solid #2c3e50;
-            padding-bottom: 15px;
-            margin-bottom: 25px;
+            background: #1e293b;
+            padding: 22px 24px;
+            border-radius: 8px;
+            margin-bottom: 28px;
         }
 
         .header h1 {
-            color: #2c3e50;
-            font-size: 24px;
-            margin-bottom: 10px;
+            color: #f8fafc;
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: -0.2px;
+            margin-bottom: 14px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
         }
 
         .header-meta {
             display: flex;
             flex-wrap: wrap;
-            gap: 20px;
-            color: #666;
-            font-size: 13px;
+            gap: 8px;
         }
 
         .header-meta span {
-            display: inline-block;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-size: 12px;
+            color: #94a3b8;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .header-meta span strong {
+            color: #cbd5e1;
+            font-weight: 600;
+            margin-right: 4px;
         }
 
         .section {
@@ -148,25 +164,163 @@
             }
         }
 
+        /* Compact grid for key-value sections */
+        .rf-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+            margin-bottom: 4px;
+        }
+
+        .rf-item {
+            padding: 7px 10px;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+
+        .rf-item label {
+            display: block;
+            font-size: 10.5px;
+            color: #666;
+            margin-bottom: 2px;
+            line-height: 1.3;
+        }
+
+        .rf-item .value {
+            font-size: 15px;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+
+        .rf-item .value.risk { color: #e74c3c; }
+        .rf-item .value.safe { color: #27ae60; }
+
+        .rf-subhead {
+            font-size: 11px;
+            font-weight: 700;
+            color: #475569;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin: 12px 0 5px;
+            padding: 2px 8px;
+            background: #e2e8f0;
+            border-radius: 3px;
+            display: inline-block;
+        }
+
         /* ── scorecard ───────────────────────────── */
-        .scorecard { border: 2px solid #2c3e50; border-radius: 6px; padding: 18px; margin-bottom: 28px; background: #fff; }
-        .sc-verdict { font-size: 17px; font-weight: 700; padding: 10px 16px; border-radius: 4px; margin-bottom: 16px; }
-        .sc-rag-red    { background: #fdecea; color: #c0392b; border-left: 5px solid #e74c3c; }
-        .sc-rag-amber  { background: #fef5e7; color: #d35400; border-left: 5px solid #e67e22; }
-        .sc-rag-green  { background: #eafaf1; color: #1e8449; border-left: 5px solid #27ae60; }
-        .sc-rag-neutral{ background: #f4f6f7; color: #555;    border-left: 5px solid #95a5a6; }
-        .sc-signals-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; margin-bottom: 16px; }
-        .sc-signal { padding: 10px; border-radius: 4px; text-align: center; }
-        .sc-sig-label { font-size: 11px; opacity: 0.85; }
-        .sc-sig-value { font-size: 15px; font-weight: 700; margin: 4px 0; }
-        .sc-sig-note  { font-size: 10px; opacity: 0.75; }
-        .sc-3col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 14px; }
-        .sc-col { padding: 10px 12px; border-radius: 4px; font-size: 12px; line-height: 1.7; }
-        .sc-col-head { font-weight: 700; font-size: 12px; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .sc-col-green { background: #eafaf1; }
-        .sc-col-red   { background: #fdecea; }
-        .sc-col-gray  { background: #f4f6f7; }
-        .sc-narrative { border-top: 1px solid #eee; padding-top: 12px; font-size: 13px; color: #444; line-height: 1.6; white-space: pre-line; }
+        .scorecard {
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 28px;
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+        .sc-verdict {
+            font-size: 16px;
+            font-weight: 800;
+            padding: 11px 18px;
+            border-radius: 6px;
+            margin-bottom: 18px;
+            letter-spacing: 0.3px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .sc-rag-red    { background: #fff0f0; color: #9f1239; border-left: 5px solid #fb7185; }
+        .sc-rag-amber  { background: #fefce8; color: #854d0e; border-left: 5px solid #ca8a04; }
+        .sc-rag-green  { background: #f0fdfa; color: #0f766e; border-left: 5px solid #2dd4bf; }
+        .sc-rag-neutral{ background: #eef2ff; color: #3730a3; border-left: 5px solid #818cf8; }
+        .sc-signals-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 8px;
+            margin-bottom: 18px;
+        }
+        .sc-signal {
+            position: relative;
+            padding: 10px 8px 8px;
+            border-radius: 6px;
+            text-align: center;
+            border-bottom: 3px solid transparent;
+            cursor: default;
+        }
+        .sc-rag-red.sc-signal    { border-bottom-color: #fb7185; }
+        .sc-rag-amber.sc-signal  { border-bottom-color: #ca8a04; }
+        .sc-rag-green.sc-signal  { border-bottom-color: #2dd4bf; }
+        .sc-rag-neutral.sc-signal{ border-bottom-color: #818cf8; }
+        .sc-sig-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; opacity: 0.75; }
+        .sc-sig-value { font-size: 14px; font-weight: 800; margin: 5px 0 3px; }
+        .sc-sig-note  { font-size: 10px; opacity: 0.65; }
+        /* signal chip hover tooltip */
+        .sc-tooltip {
+            display: none;
+            position: absolute;
+            bottom: calc(100% + 8px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1e293b;
+            color: #e2e8f0;
+            font-size: 11px;
+            font-weight: 400;
+            text-align: left;
+            padding: 8px 10px;
+            border-radius: 6px;
+            width: 210px;
+            white-space: pre-line;
+            z-index: 200;
+            line-height: 1.5;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.35);
+            pointer-events: none;
+        }
+        .sc-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 5px solid transparent;
+            border-top-color: #1e293b;
+        }
+        .sc-signal:hover .sc-tooltip { display: block; }
+        .sc-3col {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+        .sc-col {
+            padding: 12px 14px;
+            border-radius: 6px;
+            font-size: 12px;
+            line-height: 1.75;
+            border-top: 3px solid transparent;
+        }
+        .sc-col-head {
+            font-weight: 800;
+            font-size: 11px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.7px;
+        }
+        .sc-col-green { background: #f0fdfa; border-top-color: #2dd4bf; color: #134e4a; }
+        .sc-col-green .sc-col-head { color: #0f766e; }
+        .sc-col-red   { background: #fff0f0; border-top-color: #fb7185; color: #4c0519; }
+        .sc-col-red   .sc-col-head { color: #9f1239; }
+        .sc-col-gray  { background: #eef2ff; border-top-color: #818cf8; color: #312e81; }
+        .sc-col-gray  .sc-col-head { color: #3730a3; }
+        .sc-col-item  { display: flex; align-items: flex-start; gap: 5px; padding: 1px 0; font-size: 11.5px; }
+        .sc-col-bullet{ flex-shrink: 0; margin-top: 2px; font-size: 11px; }
+        .sc-narrative {
+            border-top: 1px solid #e2e8f0;
+            padding-top: 14px;
+            font-size: 13px;
+            color: #374151;
+            line-height: 1.7;
+            white-space: pre-line;
+        }
     </style>
 </head>
 <body>
@@ -174,8 +328,6 @@
         <h1>Customer Financial Report</h1>
         <div class="header-meta">
             <span><strong>Customer ID:</strong> ###0028</span>
-            <span><strong>Generated:</strong> 2026-03-05</span>
-            <span><strong>Period:</strong> Last 6 months</span>
             <span><strong>Transactions:</strong> 36</span>
         </div>
     </div>
@@ -193,40 +345,47 @@
                 <div class="sc-sig-label">Income</div>
                 <div class="sc-sig-value">INR 34,495 /mo</div>
                 <div class="sc-sig-note">Salary</div>
+                <div class="sc-tooltip">Source: internal salary algorithm (RG SAL).
+Amount: INR 34,495/mo · Transactions detected: 3 · Employer: Salary</div>
             </div>
             
             <div class="sc-signal sc-rag-green">
                 <div class="sc-sig-label">FOIR</div>
                 <div class="sc-sig-value">0%</div>
                 <div class="sc-sig-note">EMI+Rent/Salary</div>
+                <div class="sc-tooltip">EMI: INR 0  +  Rent: INR 0  ÷  Salary: INR 34,495  =  0.0%.
+Thresholds: ≤40% = comfortable · ≤65% = stretched · &gt;65% = over-leveraged</div>
             </div>
             
             <div class="sc-signal sc-rag-green">
-                <div class="sc-sig-label">Red Flags</div>
+                <div class="sc-sig-label">Transaction Red flag</div>
                 <div class="sc-sig-value">None</div>
                 <div class="sc-sig-note">No flag categories</div>
+                <div class="sc-tooltip">No betting, gaming, or flagged transaction categories detected.</div>
             </div>
             
             <div class="sc-signal sc-rag-red">
                 <div class="sc-sig-label">Account Type</div>
                 <div class="sc-sig-value">Conduit</div>
                 <div class="sc-sig-note">Score 20/100</div>
+                <div class="sc-tooltip">Account classification: Conduit · Confidence score: 20/100.
+Primary = main salary/income account · Secondary = supplementary · Conduit = pass-through</div>
             </div>
             
         </div>
         
         <div class="sc-3col">
             <div class="sc-col sc-col-green">
-                <div class="sc-col-head">Strengths</div>
-                <div>&#10003; Income: INR 34,495 /mo</div><div>&#10003; FOIR: 0%</div><div>&#10003; Red Flags: None</div>
+                <div class="sc-col-head">&#10003; Strengths</div>
+                <div class="sc-col-item"><span class="sc-col-bullet" style="color:#2dd4bf">●</span><span>Income: INR 34,495 /mo</span></div><div class="sc-col-item"><span class="sc-col-bullet" style="color:#2dd4bf">●</span><span>FOIR: 0%</span></div><div class="sc-col-item"><span class="sc-col-bullet" style="color:#2dd4bf">●</span><span>Transaction Red flag: None</span></div>
             </div>
             <div class="sc-col sc-col-red">
-                <div class="sc-col-head">Concerns</div>
-                <div>&#9888; Account Type: Conduit (Score 20/100)</div>
+                <div class="sc-col-head">&#9888; Concerns</div>
+                <div class="sc-col-item"><span class="sc-col-bullet" style="color:#fb7185">●</span><span>Account Type: Conduit (Score 20/100)</span></div>
             </div>
             <div class="sc-col sc-col-gray">
-                <div class="sc-col-head">Verify</div>
-                <div>&#8594; Confirm income source from employer or IT returns</div>
+                <div class="sc-col-head">&#8594; Verify</div>
+                <div class="sc-col-item"><span class="sc-col-bullet" style="color:#818cf8">●</span><span>Confirm income source from employer or IT returns</span></div>
             </div>
         </div>
         
@@ -237,40 +396,41 @@
     
     <div class="section">
         <h3>Relationship Profile</h3>
-        <div class="info-grid">
+        <div class="rf-subhead">Customer Classification</div>
+        <div class="rf-grid">
             
-            <div class="info-item">
+            <div class="rf-item">
                 <label>Relationship</label>
                 <div class="value">CorpSal</div>
             </div>
             
             
-            <div class="info-item">
+            <div class="rf-item">
                 <label>Segment</label>
                 <div class="value">True Salary</div>
             </div>
             
             
-            <div class="info-item">
+            <div class="rf-item">
                 <label>Banking Group</label>
                 <div class="value">Banking Thin</div>
             </div>
             
             
-            <div class="info-item">
+            <div class="rf-item">
                 <label>Bureau Group</label>
                 <div class="value">BU thick</div>
             </div>
             
             
-            <div class="info-item">
+            <div class="rf-item">
                 <label>Affluence Amount</label>
                 <div class="value">INR 34,495</div>
-                <div style="font-size: 12px; color: #666; margin-top: 3px;">Salary_SLC</div>
+                <div style="font-size: 10px; color: #666; margin-top: 2px;">Salary_SLC</div>
             </div>
             
             
-            <div class="info-item">
+            <div class="rf-item">
                 <label>Customer Persona</label>
                 <div class="value">Dormant</div>
             </div>
@@ -283,9 +443,9 @@
     <div class="section">
         <h3>Executive Summary</h3>
         <div class="summary-box">
-            <p>The customer&#39;s banking profile indicates a relatively stable financial situation. Their average monthly net income is ₹18,000, with an average salary of ₹39,210 per month, sourced from two transactions. The majority of their spending goes towards self (₹48,000), followed by other expenses (₹27,300) and food and restaurants (₹1,970). Their monthly cash flow shows a total inflow of ₹78,428 and an outflow of ₹78,391, resulting in a net balance of ₹37. The customer does not have any recurring obligations such as EMI, utility bills, or rent commitments.
+            <p>The customer&#39;s banking profile indicates a stable financial situation. Their average monthly net income is ₹18,000, with a total inflow of ₹78,428 and outflow of ₹78,391. The majority of their expenses are allocated to self (48,000), followed by other categories (27,300) and food/restaurant expenses (1,970). There are no recurring obligations such as EMI, utility bills, or rent commitments detected in the customer&#39;s banking profile.
 
-A notable transaction event occurred on December 2025, where ₹43,000 (98% of the customer&#39;s salary) was transferred to their own account 1 day after receiving credit through UPI/CHINTAMALLA SAN/541064911213/Payment from Ph.</p>
+In December 2025, the customer transferred ₹43,000 from their own account to another account (UPI/CHINTAMALLA SAN/541064911213/Payment from Ph) just one day after receiving their salary. Additionally, the customer received a salary of ₹43,925 and transferred 98% of it to their own account within three days of credit in two consecutive months.</p>
         </div>
     </div>
     
@@ -449,7 +609,7 @@ A notable transaction event occurred on December 2025, where ₹43,000 (98% of t
     
 
     <div class="footer">
-        <p>Generated on 2026-03-05 | Currency: INR</p>
+        <p>Generated on 2026-03-06 | Currency: INR</p>
     </div>
 </body>
 </html>

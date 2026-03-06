@@ -51,6 +51,87 @@ def _rag(value, green_max=None, amber_max=None, green_min=None, amber_min=None,
         return "red"
 
 
+def _rag_exposure(pct_change: float) -> tuple[str, str]:
+    """Return (rag, direction_label) for an exposure % change."""
+    if pct_change <= -5:
+        return "green", f"↓ {abs(pct_change):.0f}% declining"
+    elif pct_change < 5:
+        return "neutral", "Stable"
+    elif pct_change <= 30:
+        return "amber", f"↑ {pct_change:.0f}% growing"
+    else:
+        return "red", f"↑ {pct_change:.0f}% rapid growth"
+
+
+def _exposure_signals(monthly_exposure: dict) -> list:
+    """Compute 6M and 12M sanctioned exposure trend signals independently.
+
+    Returns a list of 0, 1, or 2 signal chips depending on how much history
+    is available.  Each chip only appears if its window has enough data.
+
+    Windows:
+      12M: current month vs exactly 12M ago   (requires n >= 13 data points)
+       6M: last-6M avg vs prior-6M avg        (requires n >= 7 data points)
+
+    RAG convention (lender perspective — growing debt = risk):
+      green:   ≤ −5%  (deleveraging)
+      neutral: −5% to +5% (stable)
+      amber:   +5% to +30% (growing)
+      red:     > +30% (rapid accumulation)
+    """
+    if not monthly_exposure:
+        return []
+
+    months = monthly_exposure.get("months", [])
+    series = monthly_exposure.get("series", {})
+    if not months or not series:
+        return []
+
+    n = len(months)
+    totals = [
+        sum(series[lt][i] for lt in series if i < len(series[lt]))
+        for i in range(n)
+    ]
+
+    if all(t == 0 for t in totals):
+        return []
+
+    chips = []
+
+    # ── 12M point-in-time ────────────────────────────────────────────────────
+    if n >= 13:
+        current = totals[-1]
+        ago_12m = totals[-13]
+        if ago_12m > 0:
+            pct_12m = (current - ago_12m) / ago_12m * 100
+        else:
+            pct_12m = 100.0 if current > 0 else 0.0
+        rag, direction = _rag_exposure(pct_12m)
+        tooltip = (
+            f"Sanctioned exposure: {months[-1]} = ₹{current/100000:.1f}L · 12M ago = ₹{ago_12m/100000:.1f}L.\n"
+            f"Change: {pct_12m:+.1f}%. Thresholds: ≤−5% = declining · ≤+30% = growing · >+30% = rapid"
+        )
+        chips.append({"label": "Exposure 12M", "value": direction, "rag": rag, "note": "vs 12M ago", "tooltip": tooltip})
+
+    # ── 6M avg vs prior-6M avg ───────────────────────────────────────────────
+    if n >= 7:
+        recent_avg = sum(totals[-6:]) / 6
+        prior_slice = totals[-12:-6] if n >= 12 else totals[:max(1, n - 6)]
+        prior_avg = sum(prior_slice) / len(prior_slice) if prior_slice else 0
+        if prior_avg > 0:
+            pct_6m = (recent_avg - prior_avg) / prior_avg * 100
+        else:
+            pct_6m = 100.0 if recent_avg > 0 else 0.0
+        rag, direction = _rag_exposure(pct_6m)
+        tooltip = (
+            f"Recent 6M avg: ₹{recent_avg/100000:.1f}L · Prior 6M avg: ₹{prior_avg/100000:.1f}L.\n"
+            f"Change: {pct_6m:+.1f}%. Thresholds: ≤−5% = declining · ≤+30% = growing · >+30% = rapid"
+        )
+        chips.append({"label": "Exposure 6M", "value": direction, "rag": rag, "note": "6M avg trend", "tooltip": tooltip})
+
+    return chips
+
+
 def _bureau_signals(bureau_report) -> list:
     """Compute bureau risk signals from BureauReport."""
     signals = []
@@ -67,7 +148,12 @@ def _bureau_signals(bureau_report) -> list:
         if ei.max_dpd_months_ago is not None:
             note_parts.append(f"{ei.max_dpd_months_ago}M ago")
         note = ", ".join(note_parts) if note_parts else ("Clean" if dpd == 0 else "Delinquent")
-        signals.append({"label": "Max DPD", "value": f"{dpd} days", "rag": rag, "note": note})
+        dpd_ctx = f"{ei.max_dpd_loan_type or 'loan'}, {ei.max_dpd_months_ago}M ago" if ei.max_dpd_months_ago is not None else (ei.max_dpd_loan_type or "")
+        tooltip = (
+            f"Max DPD: {dpd} days{(' (' + dpd_ctx + ')') if dpd_ctx else ''}.\n"
+            f"Thresholds: 0 = clean · 1–{T.DPD_MODERATE_RISK} = amber · >{T.DPD_MODERATE_RISK} = high risk"
+        )
+        signals.append({"label": "Max DPD", "value": f"{dpd} days", "rag": rag, "note": note, "tooltip": tooltip})
 
     # 2. CC Utilization
     if tl and tl.cc_balance_utilization_pct is not None:
@@ -76,7 +162,11 @@ def _bureau_signals(bureau_report) -> list:
         label_note = "Over-utilized" if util > T.CC_UTIL_HIGH_RISK else (
             "Elevated" if util > T.CC_UTIL_MODERATE_RISK else "Healthy"
         )
-        signals.append({"label": "CC Util", "value": f"{util:.0f}%", "rag": rag, "note": label_note})
+        tooltip = (
+            f"CC balance utilization: {util:.1f}%.\n"
+            f"Thresholds: ≤{T.CC_UTIL_HEALTHY}% = healthy · ≤{T.CC_UTIL_HIGH_RISK}% = elevated · >{T.CC_UTIL_HIGH_RISK}% = over-utilized"
+        )
+        signals.append({"label": "CC Util", "value": f"{util:.0f}%", "rag": rag, "note": label_note, "tooltip": tooltip})
 
     # 3. Enquiry Pressure
     if tl and tl.unsecured_enquiries_12m is not None:
@@ -85,7 +175,11 @@ def _bureau_signals(bureau_report) -> list:
         note = "High pressure" if enq > T.ENQUIRY_MODERATE_RISK else (
             "Moderate" if enq > T.ENQUIRY_HEALTHY else "Minimal"
         )
-        signals.append({"label": "Enquiries", "value": f"{enq} in 12M", "rag": rag, "note": note})
+        tooltip = (
+            f"Unsecured credit enquiries in last 12M: {enq}.\n"
+            f"Thresholds: ≤{T.ENQUIRY_HEALTHY} = minimal · ≤{T.ENQUIRY_MODERATE_RISK} = moderate · >{T.ENQUIRY_MODERATE_RISK} = high pressure"
+        )
+        signals.append({"label": "Enquiries", "value": f"{enq} in 12M", "rag": rag, "note": note, "tooltip": tooltip})
 
     # 4. Loan Stacking (new PLs in 6M)
     if tl and tl.new_trades_6m_pl is not None:
@@ -94,7 +188,11 @@ def _bureau_signals(bureau_report) -> list:
         note = "Rapid stacking" if new_pl >= T.NEW_PL_6M_HIGH_RISK else (
             "Multiple" if new_pl >= T.NEW_PL_6M_MODERATE_RISK else ("1 new PL" if new_pl == 1 else "None")
         )
-        signals.append({"label": "Loan Stack", "value": f"{new_pl} new PLs", "rag": rag, "note": "6M window"})
+        tooltip = (
+            f"New personal loans opened in last 6M: {new_pl}.\n"
+            f"Thresholds: 0 = none · 1 = amber · ≥{T.NEW_PL_6M_MODERATE_RISK} = multiple · ≥{T.NEW_PL_6M_HIGH_RISK} = rapid stacking"
+        )
+        signals.append({"label": "Loan Stack", "value": f"{new_pl} new PLs", "rag": rag, "note": "6M window", "tooltip": tooltip})
 
     # 5. Missed Payments
     if tl and tl.pct_missed_payments_18m is not None:
@@ -103,7 +201,11 @@ def _bureau_signals(bureau_report) -> list:
         note = "Frequent missed" if missed > T.MISSED_PAYMENTS_HIGH_RISK else (
             "Some missed" if missed > 0 else "None missed"
         )
-        signals.append({"label": "Payments", "value": f"{missed:.0f}% missed", "rag": rag, "note": "18M window"})
+        tooltip = (
+            f"Missed payment rate over 18M: {missed:.1f}%.\n"
+            f"Thresholds: 0% = clean · ≤{T.MISSED_PAYMENTS_HIGH_RISK:.0f}% = some · >{T.MISSED_PAYMENTS_HIGH_RISK:.0f}% = frequent"
+        )
+        signals.append({"label": "Payments", "value": f"{missed:.0f}% missed", "rag": rag, "note": "18M window", "tooltip": tooltip})
 
     # 6. Adverse Events (forced event flags across all loan type vectors)
     all_flags = []
@@ -114,12 +216,20 @@ def _bureau_signals(bureau_report) -> list:
         mod_adv = [f for f in all_flags if f in _ADVERSE_MODERATE]
         unique_flags = sorted(set(all_flags))
         rag = "red" if high_adv else ("amber" if mod_adv else "neutral")
+        tooltip = (
+            f"Forced event flags: {', '.join(unique_flags)}.\n"
+            f"High risk: WRF / SET / SMA · Moderate: SUB / DBT / LSS / WOF"
+        )
         signals.append({
             "label": "Adverse Events",
             "value": ", ".join(unique_flags[:3]),
             "rag": rag,
-            "note": "Forced events detected"
+            "note": "Forced events detected",
+            "tooltip": tooltip,
         })
+
+    # 7–8. Exposure Trend (12M point-in-time + 6M avg — each shown only if data available)
+    signals.extend(_exposure_signals(getattr(bureau_report, "monthly_exposure", None)))
 
     return signals
 
@@ -139,24 +249,36 @@ def _banking_signals(customer_report, rg_salary_data: dict = None) -> list:
         merchant = rg_sal.get("merchant", "")
         rag = "green" if n >= 3 else "amber"
         note = f"{merchant}" if merchant else ("Consistent" if rag == "green" else "Irregular")
+        tooltip = (
+            f"Source: internal salary algorithm (RG SAL).\n"
+            f"Amount: INR {amt:,.0f}/mo · Transactions detected: {n}"
+            + (f" · Employer: {merchant}" if merchant else "")
+        )
         signals.append({
             "label": "Income",
             "value": f"INR {format_inr(amt)} /mo",
             "rag": rag,
             "note": note,
+            "tooltip": tooltip,
         })
     elif customer_report.salary:
         avg = customer_report.salary.avg_amount
         freq = customer_report.salary.frequency
         rag = "green" if freq >= 3 else "amber"
+        tooltip = (
+            f"Source: banking transaction salary detection.\n"
+            f"Avg amount: INR {avg:,.0f} · Occurrences: {freq}"
+        )
         signals.append({
             "label": "Income",
             "value": f"INR {format_inr(avg)} avg",
             "rag": rag,
             "note": "Consistent" if rag == "green" else "Irregular",
+            "tooltip": tooltip,
         })
     else:
-        signals.append({"label": "Income", "value": "Not detected", "rag": "red", "note": "No salary found"})
+        signals.append({"label": "Income", "value": "Not detected", "rag": "red", "note": "No salary found",
+                        "tooltip": "No salary transactions detected in the analysis period."})
 
     # 8. FOIR (Fixed Obligation to Income Ratio)
     _salary_for_foir = (rg_sal.get("salary_amount") if rg_sal else None) or (
@@ -168,11 +290,16 @@ def _banking_signals(customer_report, rg_salary_data: dict = None) -> list:
         rent_amt = customer_report.rent.amount if customer_report.rent else 0
         foir = (emi_total + rent_amt) / salary * 100
         rag = _rag(foir, green_max=40, amber_max=65)
+        tooltip = (
+            f"EMI: INR {emi_total:,.0f}  +  Rent: INR {rent_amt:,.0f}  ÷  Salary: INR {salary:,.0f}  =  {foir:.1f}%.\n"
+            f"Thresholds: ≤40% = comfortable · ≤65% = stretched · >65% = over-leveraged"
+        )
         signals.append({
             "label": "FOIR",
             "value": f"{foir:.0f}%",
             "rag": rag,
-            "note": "EMI+Rent/Salary"
+            "note": "EMI+Rent/Salary",
+            "tooltip": tooltip,
         })
 
     # 9. Red Flag Spending
@@ -184,14 +311,20 @@ def _banking_signals(customer_report, rg_salary_data: dict = None) -> list:
                 break
     if betting > 0:
         rag = "red" if betting >= 500 else "amber"
+        tooltip = (
+            f"Betting / Gaming spend detected: INR {betting:,.0f}.\n"
+            f"Thresholds: < INR 500 = amber · ≥ INR 500 = red flag"
+        )
         signals.append({
-            "label": "Red Flags",
+            "label": "Transaction Red flag",
             "value": f"INR {format_inr(betting)}",
             "rag": rag,
-            "note": "Betting/Gaming detected"
+            "note": "Betting/Gaming detected",
+            "tooltip": tooltip,
         })
     else:
-        signals.append({"label": "Red Flags", "value": "None", "rag": "green", "note": "No flag categories"})
+        signals.append({"label": "Transaction Red flag", "value": "None", "rag": "green", "note": "No flag categories",
+                        "tooltip": "No betting, gaming, or flagged transaction categories detected."})
 
     # 10. Account Type (from account_quality)
     if customer_report.account_quality:
@@ -200,11 +333,16 @@ def _banking_signals(customer_report, rg_salary_data: dict = None) -> list:
         score        = aq.get("primary_score", 50)
         rag_map      = {"primary": "green", "secondary": "amber", "conduit": "red", "unknown": "neutral"}
         rag          = rag_map.get(account_type, "neutral")
+        tooltip = (
+            f"Account classification: {account_type.title()} · Confidence score: {score}/100.\n"
+            f"Primary = main salary/income account · Secondary = supplementary · Conduit = pass-through"
+        )
         signals.append({
             "label": "Account Type",
             "value": account_type.title(),
             "rag":   rag,
             "note":  f"Score {score}/100",
+            "tooltip": tooltip,
         })
 
     return signals

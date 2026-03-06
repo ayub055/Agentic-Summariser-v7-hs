@@ -53,6 +53,7 @@ def create_summary_chain(model_name: str = _SUMMARY_MODEL):
 
 def generate_customer_review(
     report: CustomerReport,
+    rg_salary_data: dict = None,
     model_name: str = _SUMMARY_MODEL,
 ) -> Optional[str]:
     """
@@ -66,13 +67,15 @@ def generate_customer_review(
 
     Args:
         report: CustomerReport with populated sections
+        rg_salary_data: Optional RG salary algorithm output — used to prefer
+                        the authoritative salary amount over banking detection.
         model_name: Ollama model to use
 
     Returns:
         Generated review string, or None if generation fails
     """
     # Build data summary from populated sections only
-    sections = _build_data_summary(report)
+    sections = _build_data_summary(report, rg_salary_data=rg_salary_data)
 
     if not sections:
         return None
@@ -92,7 +95,7 @@ def generate_customer_review(
         return None
 
 
-def _build_data_summary(report: CustomerReport) -> list:
+def _build_data_summary(report: CustomerReport, rg_salary_data: dict = None) -> list:
     """
     Build data summary lines from populated report sections.
 
@@ -101,11 +104,23 @@ def _build_data_summary(report: CustomerReport) -> list:
 
     Args:
         report: CustomerReport to summarize
+        rg_salary_data: Optional RG salary algorithm output dict.
 
     Returns:
         List of summary strings for each populated section
     """
     sections = []
+
+    # Resolve authoritative salary — rg_sal first (same priority as scorecard)
+    _rg_sal = (rg_salary_data or {}).get("rg_sal") if rg_salary_data else None
+    _auth_salary_amt = (
+        (_rg_sal.get("salary_amount") if _rg_sal else None)
+        or (report.salary.avg_amount if report.salary else None)
+    )
+    _auth_salary_merchant = (
+        (_rg_sal.get("merchant") if _rg_sal else None)
+        or (report.salary.narration.split()[0].title() if report.salary and report.salary.narration else None)
+    )
 
     # Category spending
     if report.category_overview:
@@ -127,11 +142,12 @@ def _build_data_summary(report: CustomerReport) -> list:
             f"(Total in: {total_inflow:,.0f}, out: {total_outflow:,.0f})"
         )
 
-    # Salary
-    if report.salary:
+    # Salary — use authoritative amount (rg_sal preferred, same as scorecard)
+    if _auth_salary_amt:
+        merchant_str = f" from {_auth_salary_merchant}" if _auth_salary_merchant else ""
+        freq_str = f" ({report.salary.frequency} transactions)" if report.salary else ""
         sections.append(
-            f"Salary income: {report.salary.avg_amount:,.0f} INR average "
-            f"({report.salary.frequency} transactions)"
+            f"Salary income: {_auth_salary_amt:,.0f} INR average{merchant_str}{freq_str}"
         )
 
     # EMIs
@@ -597,12 +613,13 @@ def _compute_interaction_signals(tf_dict: dict) -> list:
     return signals
 
 
-def _build_bureau_data_summary(executive_inputs, tradeline_features=None) -> str:
+def _build_bureau_data_summary(executive_inputs, tradeline_features=None, monthly_exposure=None) -> str:
     """Format BureauExecutiveSummaryInputs into a text block for the LLM prompt.
 
     Args:
         executive_inputs: BureauExecutiveSummaryInputs dataclass instance.
         tradeline_features: Optional TradelineFeatures dataclass instance.
+        monthly_exposure: Optional monthly_exposure dict from BureauReport.
 
     Returns:
         Formatted text summary string.
@@ -665,12 +682,49 @@ def _build_bureau_data_summary(executive_inputs, tradeline_features=None) -> str
         lines.append("\nBehavioral & Risk Features:")
         lines.append(_format_tradeline_features_for_prompt(tradeline_features))
 
+    # Exposure trend (12M point-in-time + 6M avg)
+    if monthly_exposure:
+        months_list = monthly_exposure.get("months", [])
+        series = monthly_exposure.get("series", {})
+        if months_list and series:
+            n = len(months_list)
+            totals = [
+                sum(series[lt][i] for lt in series if i < len(series[lt]))
+                for i in range(n)
+            ]
+            if any(t > 0 for t in totals):
+                trend_lines = []
+                if n >= 13:
+                    cur, ago = totals[-1], totals[-13]
+                    if ago > 0:
+                        pct = (cur - ago) / ago * 100
+                        direction = "increased" if pct > 0 else "decreased"
+                        trend_lines.append(
+                            f"Sanctioned exposure 12M trend: {direction} by {abs(pct):.0f}% "
+                            f"({_inr(ago)} → {_inr(cur)})"
+                        )
+                if n >= 7:
+                    recent_avg = sum(totals[-6:]) / 6
+                    prior_slice = totals[-12:-6] if n >= 12 else totals[:max(1, n - 6)]
+                    prior_avg = sum(prior_slice) / len(prior_slice) if prior_slice else 0
+                    if prior_avg > 0:
+                        pct6 = (recent_avg - prior_avg) / prior_avg * 100
+                        direction6 = "increased" if pct6 > 0 else "decreased"
+                        trend_lines.append(
+                            f"Sanctioned exposure 6M avg trend: {direction6} by {abs(pct6):.0f}% "
+                            f"(prior 6M avg {_inr(prior_avg)} → recent 6M avg {_inr(recent_avg)})"
+                        )
+                if trend_lines:
+                    lines.append("\nSanctioned Exposure Trend:")
+                    lines.extend(trend_lines)
+
     return "\n".join(lines)
 
 
 def generate_bureau_review(
     executive_inputs,
     tradeline_features=None,
+    monthly_exposure=None,
     model_name: str = _SUMMARY_MODEL,
 ) -> Optional[str]:
     """Generate an LLM-based bureau portfolio review from executive summary inputs.
@@ -680,12 +734,13 @@ def generate_bureau_review(
     Args:
         executive_inputs: BureauExecutiveSummaryInputs (dataclass or dict).
         tradeline_features: Optional TradelineFeatures (dataclass or dict).
+        monthly_exposure: Optional monthly_exposure dict from BureauReport.
         model_name: Ollama model to use.
 
     Returns:
         Generated narrative string, or None if generation fails.
     """
-    data_summary = _build_bureau_data_summary(executive_inputs, tradeline_features)
+    data_summary = _build_bureau_data_summary(executive_inputs, tradeline_features, monthly_exposure)
 
     if not data_summary:
         return None
@@ -743,3 +798,122 @@ def generate_combined_executive_summary(
     except Exception as e:
         logger.warning("Combined executive summary generation failed: %s", e)
         return None
+
+
+# =============================================================================
+# Shared helpers
+# =============================================================================
+
+def _inr(amt: float) -> str:
+    """Format INR amount as ₹X.XL (lakhs) or ₹X.XCr (crores)."""
+    if amt >= 1e7:
+        return f"₹{amt / 1e7:.1f}Cr"
+    elif amt >= 1e5:
+        return f"₹{amt / 1e5:.1f}L"
+    else:
+        return f"₹{amt:,.0f}"
+
+
+# =============================================================================
+# Loan Exposure Timeline Summary  (deterministic — no LLM)
+# =============================================================================
+
+def summarize_exposure_timeline(monthly_exposure: dict) -> str:
+    """Generate a 2-sentence plain-English summary of the loan exposure chart.
+
+    Reads the pre-computed monthly_exposure dict (from BureauReport.monthly_exposure)
+    and returns two sentences covering:
+      1. Peak total exposure — when it occurred, which products drove it.
+      2. Current exposure vs peak — trend direction, active products.
+
+    Args:
+        monthly_exposure: {"months": [...], "series": {"PL": [...], "CC": [...], ...}}
+
+    Returns:
+        Two-sentence string, or empty string if data is missing/empty.
+    """
+    if not monthly_exposure:
+        return ""
+
+    months = monthly_exposure.get("months", [])
+    series = monthly_exposure.get("series", {})
+
+    if not months or not series:
+        return ""
+
+    n = len(months)
+
+    # ── Per-month totals ──────────────────────────────────────────────────────
+    totals = [sum(series[lt][i] for lt in series if i < len(series[lt])) for i in range(n)]
+
+    peak_idx = totals.index(max(totals))
+    peak_total = totals[peak_idx]
+    peak_month = months[peak_idx]
+    current_total = totals[-1]
+    current_month = months[-1]
+
+    if peak_total == 0:
+        return ""
+
+    # ── Sentence 1: peak breakdown ────────────────────────────────────────────
+    # Top-2 products at peak month
+    peak_by_product = {
+        lt: series[lt][peak_idx]
+        for lt in series
+        if peak_idx < len(series[lt]) and series[lt][peak_idx] > 0
+    }
+    top_products = sorted(peak_by_product.items(), key=lambda x: x[1], reverse=True)[:2]
+    product_str = " and ".join(f"{lt} ({_inr(amt)})" for lt, amt in top_products)
+
+    if product_str:
+        sent1 = (
+            f"Sanctioned exposure peaked at {_inr(peak_total)} in {peak_month}, "
+            f"led by {product_str}."
+        )
+    else:
+        sent1 = f"Sanctioned exposure peaked at {_inr(peak_total)} in {peak_month}."
+
+    # ── Sentence 2: current state + trend ────────────────────────────────────
+    # Active products: non-zero in last 3 months
+    recent_window = min(3, n)
+    active_now = [
+        lt for lt in series
+        if any(series[lt][-(recent_window - j)] > 0 for j in range(recent_window)
+               if -(recent_window - j) != 0 or n > 0)
+    ]
+    # Simpler: just check last value
+    active_now = [lt for lt in series if series[lt][-1] > 0]
+    active_str = ", ".join(active_now) if active_now else "none"
+
+    # Trend: compare last 6M avg vs prior 6M avg
+    if n >= 12:
+        recent_avg = sum(totals[-6:]) / 6
+        prior_avg = sum(totals[-12:-6]) / 6
+        if prior_avg > 0:
+            pct_change = (recent_avg - prior_avg) / prior_avg * 100
+            if pct_change <= -10:
+                trend = "declining"
+            elif pct_change >= 10:
+                trend = "rising"
+            else:
+                trend = "stable"
+        else:
+            trend = "rising" if recent_avg > 0 else "stable"
+    else:
+        trend = "stable"
+
+    if current_total == 0:
+        sent2 = f"As of {current_month}, no active sanctioned exposure remains."
+    elif current_total == peak_total:
+        sent2 = (
+            f"Current exposure of {_inr(current_total)} ({active_str}) "
+            f"remains at peak levels — trend {trend}."
+        )
+    else:
+        pct_from_peak = (peak_total - current_total) / peak_total * 100
+        sent2 = (
+            f"Current exposure stands at {_inr(current_total)} ({active_str} active), "
+            f"down {pct_from_peak:.0f}% from peak — trend {trend}."
+        )
+
+    return f"{sent1} {sent2}"

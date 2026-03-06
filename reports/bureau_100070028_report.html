@@ -42,27 +42,43 @@
         }
 
         .header {
-            border-bottom: 3px solid #2c3e50;
-            padding-bottom: 15px;
-            margin-bottom: 25px;
+            background: #1e293b;
+            padding: 22px 24px;
+            border-radius: 8px;
+            margin-bottom: 28px;
         }
 
         .header h1 {
-            color: #2c3e50;
-            font-size: 24px;
-            margin-bottom: 10px;
+            color: #f8fafc;
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: -0.2px;
+            margin-bottom: 14px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
         }
 
         .header-meta {
             display: flex;
             flex-wrap: wrap;
-            gap: 20px;
-            color: #666;
-            font-size: 13px;
+            gap: 8px;
         }
 
         .header-meta span {
-            display: inline-block;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-size: 12px;
+            color: #94a3b8;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .header-meta span strong {
+            color: #cbd5e1;
+            font-weight: 600;
+            margin-right: 4px;
         }
 
         .section {
@@ -271,24 +287,118 @@
         }
 
         /* ── scorecard ───────────────────────────── */
-        .scorecard { border: 2px solid #2c3e50; border-radius: 6px; padding: 18px; margin-bottom: 28px; background: #fff; }
-        .sc-verdict { font-size: 17px; font-weight: 700; padding: 10px 16px; border-radius: 4px; margin-bottom: 16px; }
-        .sc-rag-red    { background: #fdecea; color: #c0392b; border-left: 5px solid #e74c3c; }
-        .sc-rag-amber  { background: #fef5e7; color: #d35400; border-left: 5px solid #e67e22; }
-        .sc-rag-green  { background: #eafaf1; color: #1e8449; border-left: 5px solid #27ae60; }
-        .sc-rag-neutral{ background: #f4f6f7; color: #555;    border-left: 5px solid #95a5a6; }
-        .sc-signals-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; margin-bottom: 16px; }
-        .sc-signal { padding: 10px; border-radius: 4px; text-align: center; }
-        .sc-sig-label { font-size: 11px; opacity: 0.85; }
-        .sc-sig-value { font-size: 15px; font-weight: 700; margin: 4px 0; }
-        .sc-sig-note  { font-size: 10px; opacity: 0.75; }
-        .sc-3col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 14px; }
-        .sc-col { padding: 10px 12px; border-radius: 4px; font-size: 12px; line-height: 1.7; }
-        .sc-col-head { font-weight: 700; font-size: 12px; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .sc-col-green { background: #eafaf1; }
-        .sc-col-red   { background: #fdecea; }
-        .sc-col-gray  { background: #f4f6f7; }
-        .sc-narrative { border-top: 1px solid #eee; padding-top: 12px; font-size: 13px; color: #444; line-height: 1.6; white-space: pre-line; }
+        .scorecard {
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 28px;
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+        .sc-verdict {
+            font-size: 16px;
+            font-weight: 800;
+            padding: 11px 18px;
+            border-radius: 6px;
+            margin-bottom: 18px;
+            letter-spacing: 0.3px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .sc-rag-red    { background: #fff0f0; color: #9f1239; border-left: 5px solid #fb7185; }
+        .sc-rag-amber  { background: #fefce8; color: #854d0e; border-left: 5px solid #ca8a04; }
+        .sc-rag-green  { background: #f0fdfa; color: #0f766e; border-left: 5px solid #2dd4bf; }
+        .sc-rag-neutral{ background: #eef2ff; color: #3730a3; border-left: 5px solid #818cf8; }
+        .sc-signals-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 8px;
+            margin-bottom: 18px;
+        }
+        .sc-signal {
+            position: relative;
+            padding: 10px 8px 8px;
+            border-radius: 6px;
+            text-align: center;
+            border-bottom: 3px solid transparent;
+            cursor: default;
+        }
+        .sc-rag-red.sc-signal    { border-bottom-color: #fb7185; }
+        .sc-rag-amber.sc-signal  { border-bottom-color: #ca8a04; }
+        .sc-rag-green.sc-signal  { border-bottom-color: #2dd4bf; }
+        .sc-rag-neutral.sc-signal{ border-bottom-color: #818cf8; }
+        .sc-sig-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; opacity: 0.75; }
+        .sc-sig-value { font-size: 14px; font-weight: 800; margin: 5px 0 3px; }
+        .sc-sig-note  { font-size: 10px; opacity: 0.65; }
+        /* signal chip hover tooltip */
+        .sc-tooltip {
+            display: none;
+            position: absolute;
+            bottom: calc(100% + 8px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1e293b;
+            color: #e2e8f0;
+            font-size: 11px;
+            font-weight: 400;
+            text-align: left;
+            padding: 8px 10px;
+            border-radius: 6px;
+            width: 210px;
+            white-space: pre-line;
+            z-index: 200;
+            line-height: 1.5;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.35);
+            pointer-events: none;
+        }
+        .sc-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 5px solid transparent;
+            border-top-color: #1e293b;
+        }
+        .sc-signal:hover .sc-tooltip { display: block; }
+        .sc-3col {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+        .sc-col {
+            padding: 12px 14px;
+            border-radius: 6px;
+            font-size: 12px;
+            line-height: 1.75;
+            border-top: 3px solid transparent;
+        }
+        .sc-col-head {
+            font-weight: 800;
+            font-size: 11px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.7px;
+        }
+        .sc-col-green { background: #f0fdfa; border-top-color: #2dd4bf; color: #134e4a; }
+        .sc-col-green .sc-col-head { color: #0f766e; }
+        .sc-col-red   { background: #fff0f0; border-top-color: #fb7185; color: #4c0519; }
+        .sc-col-red   .sc-col-head { color: #9f1239; }
+        .sc-col-gray  { background: #eef2ff; border-top-color: #818cf8; color: #312e81; }
+        .sc-col-gray  .sc-col-head { color: #3730a3; }
+        .sc-col-item  { display: flex; align-items: flex-start; gap: 5px; padding: 1px 0; font-size: 11.5px; }
+        .sc-col-bullet{ flex-shrink: 0; margin-top: 2px; font-size: 11px; }
+        .sc-narrative {
+            border-top: 1px solid #e2e8f0;
+            padding-top: 14px;
+            font-size: 13px;
+            color: #374151;
+            line-height: 1.7;
+            white-space: pre-line;
+        }
         .chart-dpd canvas { max-width: 100% !important; max-height: none !important; width: 100% !important; height: 260px !important; }
 
         /* KEY FINDINGS — 2-column grid */
@@ -311,7 +421,6 @@
         <h1>Bureau Tradeline Report</h1>
         <div class="header-meta">
             <span><strong>Customer ID:</strong> ###0028</span>
-            <span><strong>Generated:</strong> 2026-03-05</span>
             <span><strong>Currency:</strong> INR</span>
             <span><strong>Tradelines:</strong> 14</span>
         </div>
@@ -330,40 +439,62 @@
                 <div class="sc-sig-label">CC Util</div>
                 <div class="sc-sig-value">98%</div>
                 <div class="sc-sig-note">Over-utilized</div>
+                <div class="sc-tooltip">CC balance utilization: 98.0%.
+Thresholds: ≤30% = healthy · ≤75% = elevated · &gt;75% = over-utilized</div>
             </div>
             
             <div class="sc-signal sc-rag-red">
                 <div class="sc-sig-label">Enquiries</div>
                 <div class="sc-sig-value">11 in 12M</div>
                 <div class="sc-sig-note">High pressure</div>
+                <div class="sc-tooltip">Unsecured credit enquiries in last 12M: 11.
+Thresholds: ≤3 = minimal · ≤10 = moderate · &gt;10 = high pressure</div>
             </div>
             
             <div class="sc-signal sc-rag-green">
                 <div class="sc-sig-label">Payments</div>
                 <div class="sc-sig-value">0% missed</div>
                 <div class="sc-sig-note">18M window</div>
+                <div class="sc-tooltip">Missed payment rate over 18M: 0.0%.
+Thresholds: 0% = clean · ≤10% = some · &gt;10% = frequent</div>
+            </div>
+            
+            <div class="sc-signal sc-rag-green">
+                <div class="sc-sig-label">Exposure 12M</div>
+                <div class="sc-sig-value">↓ 18% declining</div>
+                <div class="sc-sig-note">vs 12M ago</div>
+                <div class="sc-tooltip">Sanctioned exposure: Mar 2026 = ₹8.3L · 12M ago = ₹10.0L.
+Change: -17.5%. Thresholds: ≤−5% = declining · ≤+30% = growing · &gt;+30% = rapid</div>
+            </div>
+            
+            <div class="sc-signal sc-rag-green">
+                <div class="sc-sig-label">Exposure 6M</div>
+                <div class="sc-sig-value">↓ 17% declining</div>
+                <div class="sc-sig-note">6M avg trend</div>
+                <div class="sc-tooltip">Recent 6M avg: ₹8.5L · Prior 6M avg: ₹10.2L.
+Change: -17.3%. Thresholds: ≤−5% = declining · ≤+30% = growing · &gt;+30% = rapid</div>
             </div>
             
         </div>
         
         <div class="sc-3col">
             <div class="sc-col sc-col-green">
-                <div class="sc-col-head">Strengths</div>
-                <div>&#10003; No delinquency detected across the portfolio</div><div>&#10003; Zero DPD across all products in recent 6-9 month windows</div><div>&#10003; No missed payments in last 18 months</div>
+                <div class="sc-col-head">&#10003; Strengths</div>
+                <div class="sc-col-item"><span class="sc-col-bullet" style="color:#2dd4bf">●</span><span>No delinquency detected across the portfolio</span></div><div class="sc-col-item"><span class="sc-col-bullet" style="color:#2dd4bf">●</span><span>Zero DPD across all products in recent 6-9 month windows</span></div><div class="sc-col-item"><span class="sc-col-bullet" style="color:#2dd4bf">●</span><span>No missed payments in last 18 months</span></div>
             </div>
             <div class="sc-col sc-col-red">
-                <div class="sc-col-head">Concerns</div>
-                <div>&#9888; Credit card utilization at 98% [Opened: Jan 2023 | Active]</div><div>&#9888; Unsecured sanction is 95% of total (INR 20,88,493 of INR 21,97,493)</div><div>&#9888; 11 unsecured enquiries in last 12 months</div>
+                <div class="sc-col-head">&#9888; Concerns</div>
+                <div class="sc-col-item"><span class="sc-col-bullet" style="color:#fb7185">●</span><span>Credit card utilization at 98% [Opened: Jan 2023 | Active]</span></div><div class="sc-col-item"><span class="sc-col-bullet" style="color:#fb7185">●</span><span>Unsecured sanction is 95% of total (INR 20,88,493 of INR 21,97,493)</span></div><div class="sc-col-item"><span class="sc-col-bullet" style="color:#fb7185">●</span><span>11 unsecured enquiries in last 12 months</span></div>
             </div>
             <div class="sc-col sc-col-gray">
-                <div class="sc-col-head">Verify</div>
-                <div>&#8594; Verify all 5 live tradelines are reflected in banking obligations</div>
+                <div class="sc-col-head">&#8594; Verify</div>
+                <div class="sc-col-item"><span class="sc-col-bullet" style="color:#818cf8">●</span><span>Verify all 5 live tradelines are reflected in banking obligations</span></div>
             </div>
         </div>
         
-        <div class="sc-narrative">The customer&#39;s tradeline portfolio consists of a total of 14 live and closed accounts, with a sanctioned exposure of INR 21,97,493 and outstanding balances of INR 6,48,087 for all products combined. The portfolio is predominantly composed of personal loans (9 accounts), followed by consumer durable loans (3 accounts) and credit cards (1 account). Notably, the customer has a high credit card utilization percentage of 98.0%, indicating over-utilization. Additionally, there are no outstanding balances on consumer durable loans.
+        <div class="sc-narrative">The customer&#39;s tradeline portfolio consists of a total of 14 live and closed accounts, with a mix of personal loan, consumer durable, credit card, and gold loan products. The sanctioned exposure is INR 21,97,493, with unsecured outstanding amount accounting for 83% of the total outstanding. Notably, the customer has a high credit card utilization percentage of 98.0%, indicating over-utilization. Additionally, there are no missed payments in the last 18 months, and the ratio of good closed personal loan loans is 100%. The sanctioned exposure trend shows a decrease of 18% over the past 12 months.
 
-The behavioral insights suggest that the customer&#39;s credit behavior is characterized by elevated enquiry pressure, with 11 unsecured enquiries in the last 12 months. The trade-to-enquiry ratio is also elevated at 29.41%. However, the customer has a strong repayment discipline, with zero missed payments and a 100% good closure track record for personal loans. The credit card utilization percentage is a red flag, indicating over-utilization. Furthermore, the frequent loan acquisitions, as indicated by an average interpurchase time of 1.07 months for personal loans, may suggest loan stacking or other risky lending behaviors.</div>
+The customer&#39;s behavioral features suggest some red flags. Elevated enquiry pressure is indicated by 11 unsecured enquiries in the last 12 months, which may signal loan stacking or other high-risk behaviors. Furthermore, the credit card utilization percentage is a concern, as it exceeds the threshold for moderate risk. On the positive side, there are no missed payments, and the trade-to-enquiry ratio is relatively low at 29.4%. The customer&#39;s loan acquisition velocity is also noteworthy, with frequent acquisitions over the past year. Overall, the composite risk signals suggest a clean repayment profile, elevated leverage due to high credit card utilization, and low conversion rates, indicating possible rejections.</div>
         
     </div>
     
@@ -457,6 +588,9 @@ The behavioral insights suggest that the customer&#39;s credit behavior is chara
             <div class="chart-card chart-timeseries">
                 <h4>Portfolio Exposure Over Time (Stacked by Product)</h4>
                 <canvas id="chartTimeseries"></canvas>
+                
+                <p style="margin-top:10px; font-size:12.5px; color:#444; line-height:1.6; border-top:1px solid #eee; padding-top:8px;">Sanctioned exposure peaked at ₹11.5L in Jul 2025, led by PL (₹8.8L) and CC (₹1.2L). Current exposure stands at ₹8.3L (PL, CC, GL active), down 28% from peak — trend declining.</p>
+                
             </div>
 
             <!-- 6. DPD Event Timeline (full-width bar chart) — hidden by JS if no events -->
@@ -648,9 +782,9 @@ The behavioral insights suggest that the customer&#39;s credit behavior is chara
     <div class="section">
         <h3>Executive Summary</h3>
         <div class="summary-box">
-            <p>The customer&#39;s tradeline portfolio consists of a total of 14 live and closed accounts, with a sanctioned exposure of INR 21,97,493 and outstanding balances of INR 6,48,087 for all products combined. The portfolio is predominantly composed of personal loans (9 accounts), followed by consumer durable loans (3 accounts) and credit cards (1 account). Notably, the customer has a high credit card utilization percentage of 98.0%, indicating over-utilization. Additionally, there are no outstanding balances on consumer durable loans.
+            <p>The customer&#39;s tradeline portfolio consists of a total of 14 live and closed accounts, with a mix of personal loan, consumer durable, credit card, and gold loan products. The sanctioned exposure is INR 21,97,493, with unsecured outstanding amount accounting for 83% of the total outstanding. Notably, the customer has a high credit card utilization percentage of 98.0%, indicating over-utilization. Additionally, there are no missed payments in the last 18 months, and the ratio of good closed personal loan loans is 100%. The sanctioned exposure trend shows a decrease of 18% over the past 12 months.
 
-The behavioral insights suggest that the customer&#39;s credit behavior is characterized by elevated enquiry pressure, with 11 unsecured enquiries in the last 12 months. The trade-to-enquiry ratio is also elevated at 29.41%. However, the customer has a strong repayment discipline, with zero missed payments and a 100% good closure track record for personal loans. The credit card utilization percentage is a red flag, indicating over-utilization. Furthermore, the frequent loan acquisitions, as indicated by an average interpurchase time of 1.07 months for personal loans, may suggest loan stacking or other risky lending behaviors.</p>
+The customer&#39;s behavioral features suggest some red flags. Elevated enquiry pressure is indicated by 11 unsecured enquiries in the last 12 months, which may signal loan stacking or other high-risk behaviors. Furthermore, the credit card utilization percentage is a concern, as it exceeds the threshold for moderate risk. On the positive side, there are no missed payments, and the trade-to-enquiry ratio is relatively low at 29.4%. The customer&#39;s loan acquisition velocity is also noteworthy, with frequent acquisitions over the past year. Overall, the composite risk signals suggest a clean repayment profile, elevated leverage due to high credit card utilization, and low conversion rates, indicating possible rejections.</p>
         </div>
     </div>
     
@@ -1030,7 +1164,7 @@ The behavioral insights suggest that the customer&#39;s credit behavior is chara
     
 
     <div class="footer">
-        <p>Generated on 2026-03-05 | Currency: INR</p>
+        <p>Generated on 2026-03-06 | Currency: INR</p>
     </div>
 </body>
 </html>

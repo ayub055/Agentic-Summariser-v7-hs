@@ -6,6 +6,7 @@ unavailable the report is still generated with the available source.
 """
 
 import logging
+import os
 from typing import Optional, Tuple
 
 from schemas.customer_report import CustomerReport
@@ -14,6 +15,12 @@ from pipeline.reports.report_orchestrator import generate_customer_report_pdf
 from tools.bureau import generate_bureau_report_pdf
 
 logger = logging.getLogger(__name__)
+
+# Directory where per-customer Excel files are written
+_EXCEL_OUTPUT_DIR = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+    "reports", "excel"
+)
 
 
 def generate_combined_report_pdf(
@@ -78,5 +85,21 @@ def generate_combined_report_pdf(
         customer_report, bureau_report, combined_summary=combined_summary,
         rg_salary_data=rg_salary_data,
     )
+
+    # 4. Export one-row Excel file for this customer (batch-merge later)
+    try:
+        from tools.excel_exporter import build_excel_row, export_row_to_excel
+        row = build_excel_row(
+            customer_id=customer_id,
+            customer_report=customer_report,
+            bureau_report=bureau_report,
+            combined_summary=combined_summary,
+            pdf_path=pdf_path,
+            rg_salary_data=rg_salary_data,
+        )
+        excel_path = os.path.join(_EXCEL_OUTPUT_DIR, f"{customer_id}.xlsx")
+        export_row_to_excel(row, excel_path)
+    except Exception as exc:
+        logger.warning("Excel export failed for %s: %s", customer_id, exc)
 
     return customer_report, bureau_report, pdf_path

@@ -453,6 +453,11 @@ def render_combined_report_html(
     if combined_summary:
         scorecard["narrative"] = combined_summary
 
+    from pipeline.reports.report_summary_chain import summarize_exposure_timeline
+    exposure_summary = summarize_exposure_timeline(
+        bureau_report.monthly_exposure if bureau_report else None
+    )
+
     template = env.get_template("combined_report.html")
     return template.render(
         customer_report=customer_report,
@@ -464,4 +469,5 @@ def render_combined_report_html(
         chart_data=chart_data,
         rg_salary_data=rg_salary_data,
         scorecard=scorecard,
+        exposure_summary=exposure_summary,
     )

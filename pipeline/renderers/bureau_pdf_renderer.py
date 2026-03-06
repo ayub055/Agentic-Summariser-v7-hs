@@ -399,6 +399,9 @@ def render_bureau_report_html(report: BureauReport) -> str:
     from tools.scorecard import compute_scorecard
     scorecard = compute_scorecard(bureau_report=report)
 
+    from pipeline.reports.report_summary_chain import summarize_exposure_timeline
+    exposure_summary = summarize_exposure_timeline(report.monthly_exposure)
+
     template = env.get_template("bureau_report.html")
     return template.render(
         report=report,
@@ -407,4 +410,5 @@ def render_bureau_report_html(report: BureauReport) -> str:
         key_findings=key_findings_data,
         chart_data=chart_data,
         scorecard=scorecard,
+        exposure_summary=exposure_summary,
     )

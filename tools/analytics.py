@@ -49,7 +49,7 @@ def get_total_income(customer_id: int) -> Dict[str, Any]:
         "customer_id": customer_id,
         "total_income": float(filtered['tran_amt_in_ac'].sum()),
         "transaction_count": len(filtered),
-        "currency": "USD"
+        "currency": "INR"
     }
 
 
@@ -97,7 +97,7 @@ def top_spending_categories(customer_id: int, top_n: int = 5) -> Dict[str, Any]:
         "customer_id": customer_id,
         "top_n": top_n,
         "top_categories": {cat: float(amt) for cat, amt in top_cats.items()},
-        "currency": "USD"
+        "currency": "INR"
     }
 
 
@@ -120,7 +120,7 @@ def spending_in_date_range(
         "end_date": end_date,
         "total_spending": float(filtered['tran_amt_in_ac'].sum()),
         "transaction_count": len(filtered),
-        "currency": "USD"
+        "currency": "INR"
     }
 
 
@@ -160,7 +160,7 @@ def get_credit_statistics(customer_id: int) -> Dict[str, Any]:
             "monthly_avg_amount": 0,
             "monthly_avg_count": 0,
             "quarterly_avg_amount": 0,
-            "currency": "USD"
+            "currency": "INR"
         }
 
     # Sort by amount for top transactions
@@ -207,7 +207,7 @@ def get_credit_statistics(customer_id: int) -> Dict[str, Any]:
         "monthly_avg_count": float(monthly_counts.mean()) if len(monthly_counts) > 0 else 0,
         "monthly_median_count": float(monthly_counts.median()) if len(monthly_counts) > 0 else 0,
         "quarterly_avg_amount": float(quarterly_amounts.mean()) if len(quarterly_amounts) > 0 else 0,
-        "currency": "USD"
+        "currency": "INR"
     }
 
 
@@ -225,7 +225,7 @@ def get_debit_statistics(customer_id: int) -> Dict[str, Any]:
             "total_debit_count": 0,
             "monthly_avg_amount": 0,
             "monthly_avg_count": 0,
-            "currency": "USD"
+            "currency": "INR"
         }
 
     sorted_debits = debits.sort_values('tran_amt_in_ac', ascending=False)
@@ -250,7 +250,7 @@ def get_debit_statistics(customer_id: int) -> Dict[str, Any]:
         "monthly_median_amount": float(monthly_amounts.median()) if len(monthly_amounts) > 0 else 0,
         "monthly_avg_count": float(monthly_counts.mean()) if len(monthly_counts) > 0 else 0,
         "monthly_median_count": float(monthly_counts.median()) if len(monthly_counts) > 0 else 0,
-        "currency": "USD"
+        "currency": "INR"
     }
 
 
@@ -298,7 +298,7 @@ def get_balance_trend(customer_id: int) -> Dict[str, Any]:
             "max_balance": 0,
             "final_balance": 0,
             "trend": "no_data",
-            "currency": "USD"
+            "currency": "INR"
         }
 
     cust_df = cust_df.sort_values('tran_date')
@@ -332,7 +332,7 @@ def get_balance_trend(customer_id: int) -> Dict[str, Any]:
         "max_balance": float(cust_df['running_balance'].max()),
         "final_balance": float(cust_df['running_balance'].iloc[-1]),
         "trend": trend,
-        "currency": "USD"
+        "currency": "INR"
     }
 
 
@@ -348,7 +348,7 @@ def detect_anomalies(customer_id: int, threshold_std: float = 2.0) -> Dict[str, 
         "debit_spikes": [],
         "credit_spike_count": 0,
         "debit_spike_count": 0,
-        "currency": "USD"
+        "currency": "INR"
     }
 
     for indicator, key in [('C', 'credit_spikes'), ('D', 'debit_spikes')]:
@@ -381,7 +381,7 @@ def get_income_stability(customer_id: int) -> Dict[str, Any]:
             "stability_score": 0,
             "income_sources": {},
             "salary_regularity": "no_data",
-            "currency": "USD"
+            "currency": "INR"
         }
 
     credits_copy = credits.copy()
@@ -424,7 +424,7 @@ def get_income_stability(customer_id: int) -> Dict[str, Any]:
         "salary_regularity": salary_regularity,
         "monthly_income_avg": float(income_mean),
         "monthly_income_std": float(income_std),
-        "currency": "USD"
+        "currency": "INR"
     }
 
 
@@ -440,7 +440,7 @@ def get_cash_flow(customer_id: int) -> Dict[str, Any]:
             "avg_monthly_inflow": 0,
             "avg_monthly_outflow": 0,
             "avg_net_cash_flow": 0,
-            "currency": "USD"
+            "currency": "INR"
         }
 
     # cust_df['month'] = cust_df['tran_date'].str[:7]
@@ -593,5 +593,5 @@ def generate_lender_profile(customer_id: int) -> Dict[str, Any]:
         # Recommendation
         "lending_recommendation": "approve" if risk_level == "low_risk" else "review" if risk_level == "medium_risk" else "decline",
 
-        "currency": "USD"
+        "currency": "INR"
     }
