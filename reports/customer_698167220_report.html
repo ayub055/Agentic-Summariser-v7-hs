@@ -337,7 +337,7 @@
         <h1>Customer Financial Report</h1>
         <div class="header-meta">
             <span><strong>Customer ID:</strong> ###7220</span>
-            <span><strong>Transactions:</strong> 36</span>
+            <span><strong>Transactions:</strong> 4</span>
         </div>
         <div class="header-disclaimer">
             ⓘ Bins, thresholds &amp; verification values are calibrated on Jan '26 FPD portfolio behaviour.
@@ -347,26 +347,17 @@
     <!-- Risk Scorecard -->
     
     <div class="scorecard">
-        <div class="sc-verdict sc-rag-green">
-            ● Overall Risk: LOW RISK
+        <div class="sc-verdict sc-rag-amber">
+            ● Overall Risk: CAUTION
         </div>
         
         <div class="sc-signals-grid">
             
-            <div class="sc-signal sc-rag-amber">
+            <div class="sc-signal sc-rag-red">
                 <div class="sc-sig-label">Income</div>
-                <div class="sc-sig-value">INR 39,210 avg</div>
-                <div class="sc-sig-note">Txn avg · Irregular</div>
-                <div class="sc-tooltip">Source: banking transaction salary detection.
-Avg amount: INR 39,210 · Occurrences: 2</div>
-            </div>
-            
-            <div class="sc-signal sc-rag-green">
-                <div class="sc-sig-label">FOIR</div>
-                <div class="sc-sig-value">0%</div>
-                <div class="sc-sig-note">EMI+Rent/Salary</div>
-                <div class="sc-tooltip">EMI: INR 0  +  Rent: INR 0  ÷  Salary: INR 39,210  =  0.0%.
-Thresholds: ≤40% = comfortable · ≤65% = stretched · &gt;65% = over-leveraged</div>
+                <div class="sc-sig-value">Not detected</div>
+                <div class="sc-sig-note">No salary found</div>
+                <div class="sc-tooltip">No salary transactions detected in the analysis period.</div>
             </div>
             
             <div class="sc-signal sc-rag-green">
@@ -376,11 +367,11 @@ Thresholds: ≤40% = comfortable · ≤65% = stretched · &gt;65% = over-leverag
                 <div class="sc-tooltip">No betting, gaming, or flagged transaction categories detected.</div>
             </div>
             
-            <div class="sc-signal sc-rag-amber">
+            <div class="sc-signal sc-rag-neutral">
                 <div class="sc-sig-label">Account Type</div>
-                <div class="sc-sig-value">Secondary</div>
-                <div class="sc-sig-note">Score 50/100</div>
-                <div class="sc-tooltip">Account classification: Secondary · Confidence score: 50/100.
+                <div class="sc-sig-value">Unknown</div>
+                <div class="sc-sig-note">Score 35/100</div>
+                <div class="sc-tooltip">Account classification: Unknown · Confidence score: 35/100.
 Primary = main salary/income account · Secondary = supplementary · Conduit = pass-through</div>
             </div>
             
@@ -389,11 +380,11 @@ Primary = main salary/income account · Secondary = supplementary · Conduit = p
         <div class="sc-3col">
             <div class="sc-col sc-col-green">
                 <div class="sc-col-head">&#10003; Strengths</div>
-                <div class="sc-col-item"><span class="sc-col-bullet" style="color:#2dd4bf">●</span><span>FOIR: 0%</span></div><div class="sc-col-item"><span class="sc-col-bullet" style="color:#2dd4bf">●</span><span>Transaction Red flag: None</span></div>
+                <div class="sc-col-item"><span class="sc-col-bullet" style="color:#2dd4bf">●</span><span>Transaction Red flag: None</span></div>
             </div>
             <div class="sc-col sc-col-red">
                 <div class="sc-col-head">&#9888; Concerns</div>
-                <div style="color:#94a3b8;font-size:11px">None identified</div>
+                <div class="sc-col-item"><span class="sc-col-bullet" style="color:#fb7185">●</span><span>Income: Not detected (No salary found)</span></div>
             </div>
             <div class="sc-col sc-col-gray">
                 <div class="sc-col-head">&#8594; Verify</div>
@@ -452,35 +443,7 @@ Primary = main salary/income account · Secondary = supplementary · Conduit = p
     
 
     
-    <div class="section">
-        <h3>Executive Summary</h3>
-        <div class="summary-box">
-            <p>The customer&#39;s banking profile indicates a stable financial situation. Their monthly cash flow is characterized by an average net inflow of ₹18, with total inflows exceeding outflows by ₹37. The customer&#39;s key spending categories include self expenses at ₹48,000, other expenses at ₹27,300, and food and restaurant expenditures at ₹1,970. Additionally, the customer has a relatively comfortable obligation-to-income ratio, as indicated by their Banking FOIR, which stands at 0.0% and is classified as comfortable.
 
-There are no detected transaction events to report.</p>
-        </div>
-    </div>
-    
-
-    
-    <div class="section">
-        <h3>Salary Information</h3>
-        <div class="info-grid">
-            <div class="info-item">
-                <label>Average Amount</label>
-                <div class="value">39,210.00 INR</div>
-            </div>
-            <div class="info-item">
-                <label>Transactions</label>
-                <div class="value">2</div>
-            </div>
-        </div>
-        
-        <p style="margin-top: 10px; color: #666; font-size: 12px;">
-            <strong>Sample:</strong> SYMED SALARY OCT 2025
-        </p>
-        
-    </div>
     
 
     
@@ -498,33 +461,13 @@ There are no detected transaction events to report.</p>
             <tbody>
                 
                 <tr>
-                    <td>self</td>
-                    <td class="amount">48,000.00</td>
-                </tr>
-                
-                <tr>
                     <td>other</td>
-                    <td class="amount">27,300.00</td>
+                    <td class="amount">2,100.00</td>
                 </tr>
                 
                 <tr>
                     <td>Food_restaurants</td>
-                    <td class="amount">1,970.00</td>
-                </tr>
-                
-                <tr>
-                    <td>Home_commodity_services</td>
-                    <td class="amount">590.00</td>
-                </tr>
-                
-                <tr>
-                    <td>Utility_Bills</td>
-                    <td class="amount">500.00</td>
-                </tr>
-                
-                <tr>
-                    <td>Entertainment_Luxury</td>
-                    <td class="amount">31.00</td>
+                    <td class="amount">150.00</td>
                 </tr>
                 
             </tbody>
@@ -548,19 +491,19 @@ There are no detected transaction events to report.</p>
                 
                 <tr>
                     <td>2025-11</td>
-                    <td class="amount positive">34,495</td>
-                    <td class="amount negative">34,471</td>
-                    <td class="amount positive">
-                        24
+                    <td class="amount positive">0</td>
+                    <td class="amount negative">2,100</td>
+                    <td class="amount negative">
+                        -2,100
                     </td>
                 </tr>
                 
                 <tr>
                     <td>2025-12</td>
-                    <td class="amount positive">43,933</td>
-                    <td class="amount negative">43,920</td>
-                    <td class="amount positive">
-                        13
+                    <td class="amount positive">0</td>
+                    <td class="amount negative">150</td>
+                    <td class="amount negative">
+                        -150
                     </td>
                 </tr>
                 

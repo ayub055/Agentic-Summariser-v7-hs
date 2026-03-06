@@ -360,32 +360,32 @@ by merging the banking and bureau analyses below into EXACTLY TWO paragraphs.
 STRICT RULES:
 - Formal third-person throughout ("The customer…", never "we" or "I")
 - Do NOT repeat source summaries verbatim — distil and merge
-- Do NOT invent numbers not present in the inputs
-- Do NOT mention numeric scores or classifications by label (e.g. do NOT write "primary score 35/100") \
-— narrate the underlying fact instead (e.g. "salary credited monthly from employer X")
+- Do NOT invent, estimate, or infer ANY figure, name, or entity not explicitly stated word-for-word in the inputs — if it is not in the data, do not mention it
+- Do NOT name an employer, company, or organisation unless that exact name appears in the banking or relationship-profile inputs
+- Do NOT mention numeric scores or classifications by label (e.g. do NOT write "primary score 35/100") — narrate the underlying fact instead
+- Do NOT use phrases that reveal internal data structure: never write "behavioral features indicate", "exposure commentary indicates", "scorecard", "feature vector", or similar
+- Do NOT repeat the risk/creditworthiness assessment — it must appear ONLY as the final sentence of paragraph 2, nowhere else
+- If BANKING SUMMARY is "(not available)", omit all transaction-based observations: net cashflow, salary detected in transactions, spending categories, EMI/rent detected in banking — rely solely on bureau data and relationship-profile income
 - If a section is absent, skip it — do not say "data not available"
 - Do NOT add meta-commentary, disclaimers, or remarks about the writing process
 
 PARAGRAPH 1 — INCOME & CREDIT PROFILE (4-5 lines):
-- Income: if an affluence/relationship-profile income figure is present, state the exact INR amount \
-and the income source label (e.g. "salaried", "self-employed"); otherwise state the banking-detected \
-salary amount and employer/source. Quote the exact figure — do not round.
+- Income: state only the income figure that is explicitly present in the inputs — if an affluence/relationship-profile income figure is given, use that exact INR amount and income source type; if only a banking-detected salary amount is given, use that; if an employer name is explicitly stated in the data, include it — otherwise omit the employer entirely. Quote the exact figure — do not round or estimate.
 - Monthly cashflow: state net monthly cashflow (average inflow minus outflow), key spending categories, \
 and any EMI or rent obligations detected in banking.
 - Credit portfolio: state "N total tradelines (M live, P closed)" using the exact Live Tradelines and \
-Closed Tradelines counts — do NOT use Total as the live count. Do no state as N= X closed or open, just state the counts. List loan product types present. \
+Closed Tradelines counts — do NOT use Total as the live count. Do not state as N= X closed or open, just state the counts. List loan product types present. \
 State total sanctioned INR, total outstanding INR, and unsecured exposure INR. \
-If CC utilization is present, include the exact percentage. 
+If CC utilization is present, include the exact percentage.
 
 PARAGRAPH 2 — OBLIGATIONS, RISK & ASSESSMENT (3-4 lines):
 - FOIR: if bureau FOIR is present, quote exact total FOIR%, unsecured FOIR%, total EMI obligation INR, \
 and affluence income INR verbatim. If banking FOIR is present, quote it (EMI+Rent/Salary%). \
 Do NOT omit or round these figures.
-- Exposure: if "Exposure Commentary" is in Additional Data, quote the exact INR peak amount, peak month, \
-current INR amount, and stated trend direction word-for-word — do not paraphrase.
+- Exposure: if Exposure Commentary is present in the inputs, state the exact INR peak amount, peak month, \
+current INR amount, and stated trend direction — do not paraphrase or expand beyond what is stated.
 - DPD: if Max DPD > 0, state the exact days, loan type, and how many months ago.
-- Final sentence: a clear one-sentence creditworthiness assessment (positive, cautious, or negative) \
-that summarises the overall risk picture.
+- Final sentence: a single clear creditworthiness assessment (positive, cautious, or negative) — this is the ONLY place a risk conclusion should appear.
 
 After both paragraphs, add on a new line:
 Note: This is a synthesised summary based on automated banking and bureau analyses. \

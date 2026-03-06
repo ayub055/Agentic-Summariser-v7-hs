@@ -44,6 +44,8 @@ TEMPLATE_COLUMNS = [
     "Enquiries",
     "Payments Missed in l 18M",
     "Foir",
+    "Exposure Commentary",
+    "TU Score",
     "Transaction Red flag",
     "Concerns",
     "Intelligent Report",
@@ -61,6 +63,7 @@ def build_excel_row(
     combined_summary: Optional[str],
     pdf_path: Optional[str],
     rg_salary_data: Optional[dict] = None,
+    exposure_summary: Optional[str] = None,
 ) -> Dict[str, Any]:
     """
     Map all available report data onto the 18 template columns.
@@ -215,19 +218,27 @@ def build_excel_row(
     else:
         row["Payments Missed in l 18M"] = None
 
-    # ── FOIR (Fixed Obligation to Income Ratio) ────────────────────────────────
-    # FOIR = (total EMI + rent) / avg_monthly_salary
-    # Salary source: rg_sal (algorithm output) → fallback to banking salary
-    foir: Optional[float] = None
-    _foir_salary = (
-        (rg_salary_data.get("rg_sal", {}).get("salary_amount") if rg_salary_data else None)
-        or (customer_report.salary.avg_amount if customer_report and customer_report.salary else None)
-    )
-    if _foir_salary and _foir_salary > 0:
-        total_emi = sum(e.amount for e in customer_report.emis) if customer_report and customer_report.emis else 0.0
-        total_rent = customer_report.rent.amount if customer_report and customer_report.rent else 0.0
-        foir = round((total_emi + total_rent) / _foir_salary, 4)
-    row["Foir"] = foir
+    # ── FOIR (Bureau — from tradeline_features) ───────────────────────────────
+    # Uses pre-computed bureau FOIR: aff_emi / affluence_amt × 100
+    if bureau_report and bureau_report.tradeline_features:
+        _tf = bureau_report.tradeline_features
+        _foir_parts = []
+        if _tf.foir is not None:
+            _foir_parts.append(f"{_tf.foir:.1f}%")
+        if _tf.foir_unsec is not None:
+            _foir_parts.append(f"Unsec: {_tf.foir_unsec:.1f}%")
+        row["Foir"] = " / ".join(_foir_parts) if _foir_parts else None
+    else:
+        row["Foir"] = None
+
+    # ── Exposure Commentary ───────────────────────────────────────────────────
+    row["Exposure Commentary"] = exposure_summary or None
+
+    # ── TU Score (TransUnion CIBIL score) ─────────────────────────────────────
+    if bureau_report and bureau_report.executive_inputs:
+        row["TU Score"] = getattr(bureau_report.executive_inputs, "tu_score", None)
+    else:
+        row["TU Score"] = None
 
     # ── Transaction Red flag ──────────────────────────────────────────────────
     # Total spend in Digital_Betting_Gaming category

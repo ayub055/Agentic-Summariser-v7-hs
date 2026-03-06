@@ -58,6 +58,7 @@ def generate_combined_report_pdf(
 
     # 2.5 Generate combined executive summary (fail-soft)
     combined_summary = None
+    exposure_text = None
     banking_text = (customer_report.customer_review or "") if customer_report else ""
     bureau_text = (bureau_report.narrative or "") if bureau_report else ""
     try:
@@ -115,6 +116,7 @@ def generate_combined_report_pdf(
             combined_summary=combined_summary,
             pdf_path=pdf_path,
             rg_salary_data=rg_salary_data,
+            exposure_summary=exposure_text,
         )
         excel_path = os.path.join(_EXCEL_OUTPUT_DIR, f"{customer_id}.xlsx")
         export_row_to_excel(row, excel_path)

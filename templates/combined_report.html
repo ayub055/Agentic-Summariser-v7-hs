@@ -1171,6 +1171,15 @@
 
     {% if customer_report %}
 
+    {% if customer_report.meta.transaction_count < 10 %}
+    <div class="section">
+        <div class="absence-note" style="border-left: 4px solid #f59e0b; background: #fffbeb; padding: 12px 16px;">
+            <strong>Insufficient Banking Data</strong><br>
+            Only {{ customer_report.meta.transaction_count }} banking transaction{{ 's' if customer_report.meta.transaction_count != 1 else '' }} available for this customer — a minimum of 10 is required for a complete banking analysis. Customer Profile and Executive Summary sections are not generated. Available data (relationship profile, salary credits, transaction details) is shown below where present.
+        </div>
+    </div>
+    {% endif %}
+
     <!-- Relationship Profile (from tl_features) -->
     {% if tl_features %}
     <div class="section">

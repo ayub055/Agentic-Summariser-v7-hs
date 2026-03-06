@@ -395,13 +395,20 @@ def render_combined_report(
     pdf = _build_combined_pdf(customer_report, bureau_report, combined_summary)
     pdf.output(str(output_file))
 
-    # Also save HTML version
+    # Also save HTML version alongside the PDF
     html_path = str(output_file).replace(".pdf", ".html")
     html_content = render_combined_report_html(
         customer_report, bureau_report, combined_summary=combined_summary,
         rg_salary_data=rg_salary_data,
     )
     with open(html_path, "w", encoding="utf-8") as f:
+        f.write(html_content)
+
+    # Also copy HTML to dedicated combined_report_html_version folder
+    html_version_dir = output_file.parent / "combined_report_html_version"
+    html_version_dir.mkdir(parents=True, exist_ok=True)
+    html_version_path = html_version_dir / Path(html_path).name
+    with open(str(html_version_path), "w", encoding="utf-8") as f:
         f.write(html_content)
 
     return str(output_file)
