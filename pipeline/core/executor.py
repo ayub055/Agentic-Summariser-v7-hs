@@ -10,8 +10,6 @@ from tools.bureau_chat import (
     bureau_delinquency_check, bureau_overview,
 )
 from ..reports.report_orchestrator import generate_customer_report_pdf
-from tools.bureau import generate_bureau_report_pdf
-from tools.combined_report import generate_combined_report_pdf as _gen_combined_pdf
 
 
 def _generate_customer_report_with_pdf(customer_id: int, **kwargs) -> Dict[str, Any]:
@@ -33,6 +31,7 @@ def _generate_bureau_report_with_pdf(customer_id: int, **kwargs) -> Dict[str, An
 
     Wraps the bureau tool to return data suitable for the pipeline.
     """
+    from tools.bureau import generate_bureau_report_pdf  # lazy — avoids circular import
     report, pdf_path = generate_bureau_report_pdf(customer_id)
     result = asdict(report.executive_inputs)
     result['feature_vectors'] = {
@@ -49,6 +48,7 @@ def _generate_combined_report_with_pdf(customer_id: int, **kwargs) -> Dict[str, 
 
     Wraps the combined report tool to return data suitable for the pipeline.
     """
+    from tools.combined_report import generate_combined_report_pdf as _gen_combined_pdf  # lazy — avoids circular import
     customer_report, bureau_report, pdf_path = _gen_combined_pdf(customer_id)
     result = customer_report.model_dump() if customer_report else {}
     result['pdf_path'] = pdf_path
