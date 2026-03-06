@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Combined Report - ###0028</title>
+    <title>Combined Report - ###7220</title>
     <script>/**
  * Skipped minification because the original files appears to be already minified.
  * Original file: /npm/chart.js@4.4.0/dist/chart.umd.js
@@ -89,6 +89,15 @@
             font-size: 9px;
             letter-spacing: 0.5px;
             margin-right: 6px;
+        }
+
+        .header-disclaimer {
+            font-size: 10px;
+            color: #a0aec0;
+            font-style: italic;
+            border-top: 1px solid #e8edf2;
+            padding-top: 8px;
+            margin-top: 2px;
         }
 
         /* SECTION DIVIDERS (Arch-style) */
@@ -239,6 +248,10 @@
             color: #2c3e50;
         }
 
+        .info-item .value.warning {
+            color: #d35400;
+        }
+
         .info-item .value.risk {
             color: #e74c3c;
         }
@@ -277,6 +290,21 @@
 
         .rf-item .value.risk { color: #e74c3c; }
         .rf-item .value.safe { color: #27ae60; }
+
+        /* Grid signal chips (Portfolio section) */
+        .tl-chips { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 14px; }
+        .tl-chip {
+            display: inline-flex; flex-direction: column;
+            padding: 5px 9px; border-radius: 5px;
+            font-size: 11px; min-width: 90px; max-width: 145px;
+            border-left: 3px solid #cbd5e1; cursor: default;
+        }
+        .tl-chip-label { font-size: 9px; font-weight: 600; text-transform: uppercase;
+                         letter-spacing: 0.4px; opacity: 0.65; margin-bottom: 2px; }
+        .tl-chip-value { font-size: 12px; font-weight: 700; }
+        .tl-chip.chip-green { background:#f0fdf4; border-left-color:#22c55e; color:#14532d; }
+        .tl-chip.chip-red   { background:#fff1f2; border-left-color:#f43f5e; color:#881337; }
+        .tl-chip.chip-gray  { background:#f8fafc; border-left-color:#94a3b8; color:#475569; }
 
         .rf-subhead {
             font-size: 11px;
@@ -469,7 +497,7 @@
         .sc-signal:hover .sc-tooltip { display: block; }
         .sc-3col {
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-columns: 1fr 1fr;
             gap: 10px;
             margin-bottom: 16px;
         }
@@ -487,12 +515,10 @@
             text-transform: uppercase;
             letter-spacing: 0.7px;
         }
-        .sc-col-green { background: #f0fdfa; border-top-color: #2dd4bf; color: #134e4a; }
-        .sc-col-green .sc-col-head { color: #0f766e; }
-        .sc-col-red   { background: #fff0f0; border-top-color: #fb7185; color: #4c0519; }
-        .sc-col-red   .sc-col-head { color: #9f1239; }
-        .sc-col-gray  { background: #eef2ff; border-top-color: #818cf8; color: #312e81; }
-        .sc-col-gray  .sc-col-head { color: #3730a3; }
+        .sc-col-green { background: #f5fbf7; border-top-color: #34d399; color: #1a3a2a; }
+        .sc-col-green .sc-col-head { color: #059669; }
+        .sc-col-red   { background: #fdf6f0; border-top-color: #f97316; color: #431407; }
+        .sc-col-red   .sc-col-head { color: #c2410c; }
         .sc-col-item  { display: flex; align-items: flex-start; gap: 5px; padding: 1px 0; font-size: 11.5px; }
         .sc-col-bullet{ flex-shrink: 0; margin-top: 2px; font-size: 11px; }
         .sc-narrative {
@@ -510,40 +536,43 @@
         <h1>Combined Financial & Bureau Report</h1>
         <div class="header-meta">
             
-            <span><strong>Customer ID:</strong> ###0028</span>
+            <span><strong>Customer ID:</strong> ###7220</span>
             
             <span><strong>Name:</strong> CHINTHAMALLA SANDEEP</span>
             
             <span><strong>Transactions:</strong> 36</span>
             
             
-            <span><strong>Tradelines:</strong> 14</span>
+            <span><strong>Tradelines:</strong> 27</span>
             
+        </div>
+        <div class="header-disclaimer">
+            ⓘ Bins, thresholds &amp; verification values are calibrated on Jan '26 FPD portfolio behaviour.
         </div>
     </div>
 
     <!-- Risk Scorecard -->
     
     <div class="scorecard">
-        <div class="sc-verdict sc-rag-red">
-            ● Overall Risk: HIGH RISK
+        <div class="sc-verdict sc-rag-amber">
+            ● Overall Risk: CAUTION
         </div>
         
         <div class="sc-signals-grid">
             
-            <div class="sc-signal sc-rag-red">
+            <div class="sc-signal sc-rag-green">
                 <div class="sc-sig-label">CC Util</div>
-                <div class="sc-sig-value">98%</div>
-                <div class="sc-sig-note">Over-utilized</div>
-                <div class="sc-tooltip">CC balance utilization: 98.0%.
+                <div class="sc-sig-value">9%</div>
+                <div class="sc-sig-note">Healthy</div>
+                <div class="sc-tooltip">CC balance utilization: 9.0%.
 Thresholds: ≤30% = healthy · ≤75% = elevated · &gt;75% = over-utilized</div>
             </div>
             
-            <div class="sc-signal sc-rag-red">
+            <div class="sc-signal sc-rag-green">
                 <div class="sc-sig-label">Enquiries</div>
-                <div class="sc-sig-value">11 in 12M</div>
-                <div class="sc-sig-note">High pressure</div>
-                <div class="sc-tooltip">Unsecured credit enquiries in last 12M: 11.
+                <div class="sc-sig-value">0 in 12M</div>
+                <div class="sc-sig-note">Minimal</div>
+                <div class="sc-tooltip">Unsecured credit enquiries in last 12M: 0.
 Thresholds: ≤3 = minimal · ≤10 = moderate · &gt;10 = high pressure</div>
             </div>
             
@@ -555,35 +584,47 @@ Thresholds: ≤3 = minimal · ≤10 = moderate · &gt;10 = high pressure</div>
 Thresholds: 0% = clean · ≤10% = some · &gt;10% = frequent</div>
             </div>
             
-            <div class="sc-signal sc-rag-green">
+            <div class="sc-signal sc-rag-red">
+                <div class="sc-sig-label">FOIR</div>
+                <div class="sc-sig-value">68.5%</div>
+                <div class="sc-sig-note">Over-leveraged</div>
+                <div class="sc-tooltip">Bureau obligation-to-income ratio.
+Total EMI burden (aff_emi): INR 47,937
+Affluence income (6M estimate): INR 70,000
+FOIR = aff_emi ÷ affluence_amt × 100 = 68.5%
+FOIR (unsecured only): 60.8%
+Thresholds: ≤40% = comfortable · ≤65% = stretched · &gt;65% = over-leveraged</div>
+            </div>
+            
+            <div class="sc-signal sc-rag-neutral">
                 <div class="sc-sig-label">Exposure 12M</div>
-                <div class="sc-sig-value">↓ 18% declining</div>
+                <div class="sc-sig-value">Stable</div>
                 <div class="sc-sig-note">vs 12M ago</div>
-                <div class="sc-tooltip">Sanctioned exposure: Mar 2026 = ₹8.3L · 12M ago = ₹10.0L.
-Change: -17.5%. Thresholds: ≤−5% = declining · ≤+30% = growing · &gt;+30% = rapid</div>
+                <div class="sc-tooltip">Sanctioned exposure: Mar 2026 = ₹64.1L · 12M ago = ₹66.6L.
+Change: -3.7%. Thresholds: ≤−5% = declining · ≤+30% = growing · &gt;+30% = rapid</div>
             </div>
             
-            <div class="sc-signal sc-rag-green">
+            <div class="sc-signal sc-rag-neutral">
                 <div class="sc-sig-label">Exposure 6M</div>
-                <div class="sc-sig-value">↓ 17% declining</div>
+                <div class="sc-sig-value">Stable</div>
                 <div class="sc-sig-note">6M avg trend</div>
-                <div class="sc-tooltip">Recent 6M avg: ₹8.5L · Prior 6M avg: ₹10.2L.
-Change: -17.3%. Thresholds: ≤−5% = declining · ≤+30% = growing · &gt;+30% = rapid</div>
+                <div class="sc-tooltip">Recent 6M avg: ₹64.3L · Prior 6M avg: ₹66.6L.
+Change: -3.5%. Thresholds: ≤−5% = declining · ≤+30% = growing · &gt;+30% = rapid</div>
             </div>
             
-            <div class="sc-signal sc-rag-green">
+            <div class="sc-signal sc-rag-amber">
                 <div class="sc-sig-label">Income</div>
-                <div class="sc-sig-value">INR 34,495 /mo</div>
-                <div class="sc-sig-note">Salary</div>
-                <div class="sc-tooltip">Source: internal salary algorithm (RG SAL).
-Amount: INR 34,495/mo · Transactions detected: 3 · Employer: Salary</div>
+                <div class="sc-sig-value">INR 39,210 avg</div>
+                <div class="sc-sig-note">Irregular</div>
+                <div class="sc-tooltip">Source: banking transaction salary detection.
+Avg amount: INR 39,210 · Occurrences: 2</div>
             </div>
             
             <div class="sc-signal sc-rag-green">
                 <div class="sc-sig-label">FOIR</div>
                 <div class="sc-sig-value">0%</div>
                 <div class="sc-sig-note">EMI+Rent/Salary</div>
-                <div class="sc-tooltip">EMI: INR 0  +  Rent: INR 0  ÷  Salary: INR 34,495  =  0.0%.
+                <div class="sc-tooltip">EMI: INR 0  +  Rent: INR 0  ÷  Salary: INR 39,210  =  0.0%.
 Thresholds: ≤40% = comfortable · ≤65% = stretched · &gt;65% = over-leveraged</div>
             </div>
             
@@ -594,12 +635,189 @@ Thresholds: ≤40% = comfortable · ≤65% = stretched · &gt;65% = over-leverag
                 <div class="sc-tooltip">No betting, gaming, or flagged transaction categories detected.</div>
             </div>
             
-            <div class="sc-signal sc-rag-red">
+            <div class="sc-signal sc-rag-amber">
                 <div class="sc-sig-label">Account Type</div>
-                <div class="sc-sig-value">Conduit</div>
-                <div class="sc-sig-note">Score 20/100</div>
-                <div class="sc-tooltip">Account classification: Conduit · Confidence score: 20/100.
+                <div class="sc-sig-value">Secondary</div>
+                <div class="sc-sig-note">Score 50/100</div>
+                <div class="sc-tooltip">Account classification: Secondary · Confidence score: 50/100.
 Primary = main salary/income account · Secondary = supplementary · Conduit = pass-through</div>
+            </div>
+            
+            
+            
+            <div class="sc-signal sc-rag-red">
+                <div class="sc-sig-label">Mo Last PL</div>
+                <div class="sc-sig-value">20.1</div>
+                <div class="sc-sig-note">Amber</div>
+                <div class="sc-tooltip">monsnclasttrop_pl_onc&#10;Months since last PL trade&#10;&#10;&lt;3.17 → Super Green&#10;3.17–15.99 → Green ✓&#10;15.99–25.76 → Amber&#10;&gt;25.76 → Red&#10;Missing → Red</div>
+            </div>
+            
+            <div class="sc-signal sc-rag-green">
+                <div class="sc-sig-label">Mo Last Uns</div>
+                <div class="sc-sig-value">20.1</div>
+                <div class="sc-sig-note">Green</div>
+                <div class="sc-tooltip">monsnclasttrop_uns_onc&#10;Months since last unsecured trade&#10;&#10;&lt;9.66 → Super Green / Green&#10;9.66–32.18 → Green ✓&#10;&gt;32.18 → Red&#10;Missing → Red</div>
+            </div>
+            
+            <div class="sc-signal sc-rag-red">
+                <div class="sc-sig-label">New PL 6M</div>
+                <div class="sc-sig-value">N/A</div>
+                <div class="sc-sig-note">Missing</div>
+                <div class="sc-tooltip">no_tr_open_l6m_pl_onc&#10;New PL trades opened in last 6M&#10;&#10;Any value → Super Green ✓&#10;Missing → Red</div>
+            </div>
+            
+            <div class="sc-signal sc-rag-green">
+                <div class="sc-sig-label">Total Trades</div>
+                <div class="sc-sig-value">27</div>
+                <div class="sc-sig-note">Green</div>
+                <div class="sc-tooltip">no_trades_all_onc&#10;Total number of all trades&#10;&#10;&lt;3.5 → Red&#10;3.5–18.5 → Amber&#10;&gt;18.5 → Green ✓&#10;Missing → No segment</div>
+            </div>
+            
+            <div class="sc-signal sc-rag-green">
+                <div class="sc-sig-label">Max DPD 6M CC</div>
+                <div class="sc-sig-value">0</div>
+                <div class="sc-sig-note">Green</div>
+                <div class="sc-tooltip">max_dpd_l6m_cc_onc&#10;Max days past due, last 6M (CC)&#10;&#10;&lt;3.5 days → Green ✓&#10;&gt;=3.5 days → Red&#10;Missing → Red</div>
+            </div>
+            
+            <div class="sc-signal sc-rag-neutral">
+                <div class="sc-sig-label">Max DPD 6M PL</div>
+                <div class="sc-sig-value">0</div>
+                <div class="sc-sig-note">No segment</div>
+                <div class="sc-tooltip">max_dpd_l6m_pl_onc&#10;Max days past due, last 6M (PL)&#10;&#10;Grid: "Does not make sense"&#10;No meaningful segment assigned</div>
+            </div>
+            
+            <div class="sc-signal sc-rag-green">
+                <div class="sc-sig-label">Max DPD 9M CC</div>
+                <div class="sc-sig-value">0</div>
+                <div class="sc-sig-note">Green</div>
+                <div class="sc-tooltip">max_dpd_l9m_cc_onc&#10;Max days past due, last 9M (CC)&#10;&#10;&lt;3.5 days → Green ✓&#10;&gt;=3.5 days → Red&#10;Missing → Red</div>
+            </div>
+            
+            <div class="sc-signal sc-rag-green">
+                <div class="sc-sig-label">Mo 0+DPD Uns</div>
+                <div class="sc-sig-value">N/A</div>
+                <div class="sc-sig-note">Green (clean)</div>
+                <div class="sc-tooltip">mon_sin_last_0p_uns_op&#10;Months since last 0+ DPD (unsecured)&#10;&#10;Missing → Green ✓ (no delinquency)&#10;Any value → Red (had 0+ DPD event)</div>
+            </div>
+            
+            <div class="sc-signal sc-rag-red">
+                <div class="sc-sig-label">Mo 0+DPD PL</div>
+                <div class="sc-sig-value">N/A</div>
+                <div class="sc-sig-note">Amber</div>
+                <div class="sc-tooltip">monsinlast_0p_pl_onc&#10;Months since last 0+ DPD (PL)&#10;&#10;&lt;19.44 → Red&#10;19.44–55.38 → Green ✓&#10;&gt;55.38 → Super Green ✓&#10;Missing → Amber</div>
+            </div>
+            
+            <div class="sc-signal sc-rag-green">
+                <div class="sc-sig-label">% 0+DPD 24M</div>
+                <div class="sc-sig-value">0.00</div>
+                <div class="sc-sig-note">Green</div>
+                <div class="sc-tooltip">pct_0p_l24m_all_onc&#10;% of months with 0+ DPD, last 24M (all)&#10;&#10;&lt;1.15% → Green ✓&#10;1.15–2.35% → Amber&#10;&gt;2.35% → Red&#10;Missing → Red</div>
+            </div>
+            
+            <div class="sc-signal sc-rag-green">
+                <div class="sc-sig-label">% 0+DPD 24M PL</div>
+                <div class="sc-sig-value">0.00</div>
+                <div class="sc-sig-note">Green</div>
+                <div class="sc-tooltip">pct_0p_l24m_pl_onc&#10;% of months with 0+ DPD, last 24M (PL)&#10;&#10;&lt;1.71% → Green ✓&#10;&gt;=1.71% → Amber&#10;Missing → Red</div>
+            </div>
+            
+            <div class="sc-signal sc-rag-neutral">
+                <div class="sc-sig-label">% Missed 18M</div>
+                <div class="sc-sig-value">0.00</div>
+                <div class="sc-sig-note">No segment</div>
+                <div class="sc-tooltip">pct_missed_pymt_last18m_all&#10;% missed payments, last 18M&#10;&#10;No grid segment assigned&#10;(event rate rises with value)</div>
+            </div>
+            
+            <div class="sc-signal sc-rag-green">
+                <div class="sc-sig-label">% Tr 0+DPD 12M</div>
+                <div class="sc-sig-value">N/A</div>
+                <div class="sc-sig-note">Green (clean)</div>
+                <div class="sc-tooltip">pct_tr_0p_l12m_all_onc&#10;% trades with 0+ DPD, last 12M (all)&#10;&#10;Missing → Green ✓ (no delinquency)&#10;&lt;19.52% → Amber&#10;&gt;=19.52% → Red</div>
+            </div>
+            
+            <div class="sc-signal sc-rag-neutral">
+                <div class="sc-sig-label">Uns Enq 12M</div>
+                <div class="sc-sig-value">0</div>
+                <div class="sc-sig-note">No segment</div>
+                <div class="sc-tooltip">uns_enq_l12m&#10;Unsecured enquiries in last 12M&#10;&#10;No grid segment assigned</div>
+            </div>
+            
+            <div class="sc-signal sc-rag-neutral">
+                <div class="sc-sig-label">Good Closed PL</div>
+                <div class="sc-sig-value">N/A</div>
+                <div class="sc-sig-note">Not in grid</div>
+                <div class="sc-tooltip">ratio_good_closed_loans_pl&#10;Ratio of good closed PL loans&#10;&#10;Variable not present in grid.csv</div>
+            </div>
+            
+            <div class="sc-signal sc-rag-green">
+                <div class="sc-sig-label">CC Util %</div>
+                <div class="sc-sig-value">9.0</div>
+                <div class="sc-sig-note">Super Green</div>
+                <div class="sc-tooltip">pct_bal_cc_lv&#10;CC balance as % of sanctioned limit&#10;&#10;&lt;29.19% → Super Green ✓&#10;29.19–83.2% → Green ✓&#10;&gt;83.2% → Amber&#10;Missing → Red</div>
+            </div>
+            
+            <div class="sc-signal sc-rag-green">
+                <div class="sc-sig-label">PL Bal %</div>
+                <div class="sc-sig-value">53.5</div>
+                <div class="sc-sig-note">Green</div>
+                <div class="sc-tooltip">pct_bal_pl_lv&#10;PL outstanding balance as % of sanctioned&#10;&#10;&lt;37.1% → Super Green ✓&#10;37.1–87.06% → Green ✓&#10;&gt;87.06% → Amber&#10;Missing → Red</div>
+            </div>
+            
+            <div class="sc-signal sc-rag-green">
+                <div class="sc-sig-label">Tr/Enq Uns 24M</div>
+                <div class="sc-sig-value">40.0</div>
+                <div class="sc-sig-note">Green</div>
+                <div class="sc-tooltip">tr_to_enq_ratio_uns_l24m&#10;Trade-to-enquiry ratio (unsecured, 24M)&#10;&#10;&gt;=13.74 → Green ✓&#10;&lt;13.74 → Red&#10;Missing → Red</div>
+            </div>
+            
+            <div class="sc-signal sc-rag-red">
+                <div class="sc-sig-label">IP 12M CL</div>
+                <div class="sc-sig-value">N/A</div>
+                <div class="sc-sig-note">Missing</div>
+                <div class="sc-tooltip">interpurchase_time_l12m_cl&#10;Avg months between consumer loan opens (12M)&#10;&#10;&lt;0.81 → Red&#10;&gt;=0.81 → Green ✓&#10;Missing → Red</div>
+            </div>
+            
+            <div class="sc-signal sc-rag-red">
+                <div class="sc-sig-label">IP 12M PL/BL</div>
+                <div class="sc-sig-value">N/A</div>
+                <div class="sc-sig-note">Missing</div>
+                <div class="sc-tooltip">interpurchase_time_l12m_plbl&#10;Avg months between PL/BL opens (12M)&#10;&#10;Any value → Green ✓&#10;Missing → Red</div>
+            </div>
+            
+            <div class="sc-signal sc-rag-green">
+                <div class="sc-sig-label">IP 24M All</div>
+                <div class="sc-sig-value">3.45</div>
+                <div class="sc-sig-note">Green</div>
+                <div class="sc-tooltip">interpurchase_time_l24m_all&#10;Avg months between all loan opens (24M)&#10;&#10;&lt;2.54 → Amber&#10;2.54–4.22 → Green ✓&#10;&gt;4.22 → Super Green ✓&#10;Missing → Red</div>
+            </div>
+            
+            <div class="sc-signal sc-rag-red">
+                <div class="sc-sig-label">IP 24M HL/LAP</div>
+                <div class="sc-sig-value">N/A</div>
+                <div class="sc-sig-note">Missing</div>
+                <div class="sc-tooltip">interpurchase_time_l24m_hl_lap&#10;Avg months between HL/LAP opens (24M)&#10;&#10;Any value → Green ✓&#10;Missing → Red</div>
+            </div>
+            
+            <div class="sc-signal sc-rag-neutral">
+                <div class="sc-sig-label">IP 24M TWL</div>
+                <div class="sc-sig-value">N/A</div>
+                <div class="sc-sig-note">No segment</div>
+                <div class="sc-tooltip">interpurchase_time_l24m_twl&#10;Avg months between two-wheeler opens (24M)&#10;&#10;No grid segment assigned</div>
+            </div>
+            
+            <div class="sc-signal sc-rag-red">
+                <div class="sc-sig-label">IP 6M PL/BL</div>
+                <div class="sc-sig-value">N/A</div>
+                <div class="sc-sig-note">Missing</div>
+                <div class="sc-tooltip">interpurchase_time_l6m_plbl&#10;Avg months between PL/BL opens (6M)&#10;&#10;&lt;0.62 → Amber&#10;&gt;=0.62 → Green ✓&#10;Missing → Red</div>
+            </div>
+            
+            <div class="sc-signal sc-rag-red">
+                <div class="sc-sig-label">IP 9M HL/LAP</div>
+                <div class="sc-sig-value">N/A</div>
+                <div class="sc-sig-note">Missing</div>
+                <div class="sc-tooltip">interpurchase_time_l9m_hl_lap&#10;Avg months between HL/LAP opens (9M)&#10;&#10;Any value → Green ✓&#10;Missing → Red</div>
             </div>
             
         </div>
@@ -607,22 +825,19 @@ Primary = main salary/income account · Secondary = supplementary · Conduit = p
         <div class="sc-3col">
             <div class="sc-col sc-col-green">
                 <div class="sc-col-head">&#10003; Strengths</div>
-                <div class="sc-col-item"><span class="sc-col-bullet" style="color:#2dd4bf">●</span><span>No delinquency detected across the portfolio</span></div><div class="sc-col-item"><span class="sc-col-bullet" style="color:#2dd4bf">●</span><span>Zero DPD across all products in recent 6-9 month windows</span></div><div class="sc-col-item"><span class="sc-col-bullet" style="color:#2dd4bf">●</span><span>No missed payments in last 18 months</span></div>
+                <div class="sc-col-item"><span class="sc-col-bullet" style="color:#34d399">●</span><span>No delinquency detected across the portfolio</span></div><div class="sc-col-item"><span class="sc-col-bullet" style="color:#34d399">●</span><span>Credit card utilization at 9% [Opened: Aug 2018 – Nov 2025 | Last Closed: Nov 2025]</span></div><div class="sc-col-item"><span class="sc-col-bullet" style="color:#34d399">●</span><span>Zero DPD across all products in recent 6-9 month windows</span></div>
             </div>
             <div class="sc-col sc-col-red">
                 <div class="sc-col-head">&#9888; Concerns</div>
-                <div class="sc-col-item"><span class="sc-col-bullet" style="color:#fb7185">●</span><span>Credit card utilization at 98% [Opened: Jan 2023 | Active]</span></div><div class="sc-col-item"><span class="sc-col-bullet" style="color:#fb7185">●</span><span>Unsecured sanction is 95% of total (INR 20,88,493 of INR 21,97,493)</span></div><div class="sc-col-item"><span class="sc-col-bullet" style="color:#fb7185">●</span><span>11 unsecured enquiries in last 12 months</span></div>
-            </div>
-            <div class="sc-col sc-col-gray">
-                <div class="sc-col-head">&#8594; Verify</div>
-                <div class="sc-col-item"><span class="sc-col-bullet" style="color:#818cf8">●</span><span>Verify all 5 live tradelines are reflected in banking obligations</span></div>
+                <div class="sc-col-item"><span class="sc-col-bullet" style="color:#f97316">●</span><span>Unsecured sanction is 100% of total (INR 72,48,130 of INR 72,48,130)</span></div>
             </div>
         </div>
         
-        <div class="sc-narrative">The customer exhibits a stable financial situation, with a monthly net income of ₹18,000 and a total inflow of ₹78,428. However, their spending discipline is questionable, as they immediately transferred ₹43,000 to another account upon receiving their salary in December 2025. This behavior suggests some liquidity issues or impulsive spending habits. The customer&#39;s credit portfolio consists of 14 live and closed accounts, with a sanctioned exposure of INR 21,97,493, primarily driven by unsecured outstanding amounts. High credit card utilization (98.0%) indicates over-utilization, while elevated enquiry pressure (11 unsecured enquiries in the last 12 months) may signal loan stacking or other high-risk behaviors. Overall, the customer&#39;s creditworthiness assessment is cautious due to elevated leverage and liquidity concerns.
+        <div class="sc-narrative">The customer exhibits a relatively stable financial situation, with a balanced monthly cash flow and manageable expenses. Their spending categories include self-expenses, other expenses, food and restaurant bills, and a rent commitment, although the exact amount is not specified. The customer&#39;s income is steady, as evidenced by their recent salary receipt of ₹72,000 in Jun 2025, which was immediately transferred to their own account. This demonstrates discipline in managing their finances. However, there are some concerns regarding credit portfolio exposure, with a high sanctioned exposure of INR 72,48,130 and elevated credit card utilization at 9.0%. The customer&#39;s repayment profile is generally healthy, with no missed payments over the past 18 months and zero DPD across all products and windows. Overall, the customer&#39;s creditworthiness assessment is cautious due to the high credit portfolio exposure and moderate credit card utilization.
 
 Note: This is a synthesised summary based on automated banking and bureau analyses. Independent verification is recommended before final credit decisions.</div>
         
+
     </div>
     
 
@@ -640,40 +855,40 @@ Note: This is a synthesised summary based on automated banking and bureau analys
         <div class="info-grid">
             <div class="info-item">
                 <label>Total / Live Tradelines</label>
-                <div class="value">14 / 5</div>
+                <div class="value">27 / 22</div>
             </div>
             <div class="info-item">
                 <label>Total Sanction Amount</label>
-                <div class="value">INR 21.97 L</div>
+                <div class="value">INR 72.48 L</div>
             </div>
             <div class="info-item">
                 <label>Total Outstanding</label>
                 <div class="value">
-                    INR 6.48 L
+                    INR 8.23 L
                     
-                        <span style="font-size: 13px; color: #666; font-weight: 400;">(29% of sanctioned)</span>
+                        <span style="font-size: 13px; color: #666; font-weight: 400;">(11% of sanctioned)</span>
                     
                 </div>
             </div>
             <div class="info-item">
                 <label>Unsecured Sanction Amount</label>
                 <div class="value">
-                    INR 20.88 L
+                    INR 72.48 L
                     
-                        <span style="font-size: 13px; color: #666; font-weight: 400;">(95% of total)</span>
+                        <span style="font-size: 13px; color: #666; font-weight: 400;">(100% of total)</span>
                     
                 </div>
             </div>
             <div class="info-item">
                 <label>Unsecured Outstanding</label>
                 <div class="value">
-                    INR 5.39 L
+                    INR 8.23 L
                     <span style="font-size: 13px; color: #666; font-weight: 400;">
                         
-                            (83% of outstanding
+                            (100% of outstanding
                         
                         
-                             | 25% of sanctioned)
+                             | 11% of sanctioned)
                         
                     </span>
                 </div>
@@ -686,6 +901,28 @@ Note: This is a synthesised summary based on automated banking and bureau analys
                     
                 </div>
             </div>
+            
+            <div class="info-item">
+                <label>FOIR <span style="font-size:11px;color:#888;font-weight:400">(Bureau · aff_emi ÷ income)</span></label>
+                <div class="value risk">
+                    68.5%
+                    
+                    <span style="font-size:12px;color:#666;font-weight:400"> · Unsec: 60.8%</span>
+                    
+                </div>
+            </div>
+            
+            
+            <div class="info-item">
+                <label>EMI Obligation <span style="font-size:11px;color:#888;font-weight:400">(Bureau)</span></label>
+                <div class="value">
+                    INR 47,937
+                    
+                    <span style="font-size:12px;color:#666;font-weight:400"> · Unsec: INR 42,537</span>
+                    
+                </div>
+            </div>
+            
         </div>
     </div>
 
@@ -717,7 +954,7 @@ Note: This is a synthesised summary based on automated banking and bureau analys
                 <h4>Portfolio Exposure Over Time (Stacked by Product)</h4>
                 <canvas id="cmbChartTimeseries"></canvas>
                 
-                <p style="margin-top:10px; font-size:12.5px; color:#444; line-height:1.6; border-top:1px solid #eee; padding-top:8px;">Sanctioned exposure peaked at ₹11.5L in Jul 2025, led by PL (₹8.8L) and CC (₹1.2L). Current exposure stands at ₹8.3L (PL, CC, GL active), down 28% from peak — trend declining.</p>
+                <p style="margin-top:10px; font-size:12.5px; color:#444; line-height:1.6; border-top:1px solid #eee; padding-top:8px;">Sanctioned exposure peaked at ₹66.6L in Feb 2025, led by CC (₹63.5L) and PL (₹3.1L). Current exposure stands at ₹64.1L (CC, PL active), down 4% from peak — trend stable.</p>
                 
             </div>
 
@@ -791,7 +1028,7 @@ Note: This is a synthesised summary based on automated banking and bureau analys
             });
         }
 
-        const CD = {"product_mix": {"labels": ["Personal Loan", "Consumer Durable", "Credit Card", "Gold Loan"], "values": [9, 3, 1, 1]}, "secured_split": {"labels": ["Secured", "Unsecured"], "values": [1, 13]}, "onus_offus": {"labels": ["On-Us (Kotak)", "Off-Us"], "values": [0, 14]}, "unsec_outstanding": {"labels": ["Personal Loan", "Credit Card"], "values": [423401.0, 115686.0]}, "timeseries": {"months": ["Apr 2024", "May 2024", "Jun 2024", "Jul 2024", "Aug 2024", "Sep 2024", "Oct 2024", "Nov 2024", "Dec 2024", "Jan 2025", "Feb 2025", "Mar 2025", "Apr 2025", "May 2025", "Jun 2025", "Jul 2025", "Aug 2025", "Sep 2025", "Oct 2025", "Nov 2025", "Dec 2025", "Jan 2026", "Feb 2026", "Mar 2026"], "series": {"PL": [666126.0, 666126.0, 666126.0, 666126.0, 832893.0, 832893.0, 832893.0, 832893.0, 832893.0, 832893.0, 844893.0, 844893.0, 844893.0, 894893.0, 882893.0, 882893.0, 766767.0, 600000.0, 600000.0, 600000.0, 600000.0, 600000.0, 600000.0, 600000.0], "CD": [40000.0, 40000.0, 40000.0, 40000.0, 40000.0, 40000.0, 40000.0, 40000.0, 40000.0, 40000.0, 40000.0, 40000.0, 40000.0, 40000.0, 40000.0, 40000.0, 40000.0, 40000.0, 40000.0, 40000.0, 40000.0, 0.0, 0.0, 0.0], "CC": [118000.0, 118000.0, 118000.0, 118000.0, 118000.0, 118000.0, 118000.0, 118000.0, 118000.0, 118000.0, 118000.0, 118000.0, 118000.0, 118000.0, 118000.0, 118000.0, 118000.0, 118000.0, 118000.0, 118000.0, 118000.0, 118000.0, 118000.0, 118000.0], "GL": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 109000.0, 109000.0, 109000.0, 109000.0, 109000.0, 109000.0, 109000.0, 109000.0, 109000.0]}}, "dpd_timeline": {"months": ["Apr 2024", "May 2024", "Jun 2024", "Jul 2024", "Aug 2024", "Sep 2024", "Oct 2024", "Nov 2024", "Dec 2024", "Jan 2025", "Feb 2025", "Mar 2025", "Apr 2025", "May 2025", "Jun 2025", "Jul 2025", "Aug 2025", "Sep 2025", "Oct 2025", "Nov 2025", "Dec 2025", "Jan 2026", "Feb 2026", "Mar 2026"], "events": [], "historical": []}};
+        const CD = {"product_mix": {"labels": ["Credit Card", "Personal Loan"], "values": [26, 1]}, "secured_split": {"labels": ["Secured", "Unsecured"], "values": [0, 27]}, "onus_offus": {"labels": ["On-Us (Kotak)", "Off-Us"], "values": [1, 26]}, "unsec_outstanding": {"labels": ["Credit Card", "Personal Loan"], "values": [655918.0, 166761.0]}, "timeseries": {"months": ["Apr 2024", "May 2024", "Jun 2024", "Jul 2024", "Aug 2024", "Sep 2024", "Oct 2024", "Nov 2024", "Dec 2024", "Jan 2025", "Feb 2025", "Mar 2025", "Apr 2025", "May 2025", "Jun 2025", "Jul 2025", "Aug 2025", "Sep 2025", "Oct 2025", "Nov 2025", "Dec 2025", "Jan 2026", "Feb 2026", "Mar 2026"], "series": {"CC": [5192000.0, 5192000.0, 5192000.0, 5619000.0, 5619000.0, 5619000.0, 5619000.0, 5619000.0, 6046000.0, 6046000.0, 6346000.0, 6346000.0, 6346000.0, 6346000.0, 6346000.0, 6346000.0, 6346000.0, 6346000.0, 6146000.0, 6147205.0, 6097205.0, 6097205.0, 6097205.0, 6097205.0], "PL": [0.0, 311925.0, 311925.0, 311925.0, 311925.0, 311925.0, 311925.0, 311925.0, 311925.0, 311925.0, 311925.0, 311925.0, 311925.0, 311925.0, 311925.0, 311925.0, 311925.0, 311925.0, 311925.0, 311925.0, 311925.0, 311925.0, 311925.0, 311925.0]}}, "dpd_timeline": {"months": ["Apr 2024", "May 2024", "Jun 2024", "Jul 2024", "Aug 2024", "Sep 2024", "Oct 2024", "Nov 2024", "Dec 2024", "Jan 2025", "Feb 2025", "Mar 2025", "Apr 2025", "May 2025", "Jun 2025", "Jul 2025", "Aug 2025", "Sep 2025", "Oct 2025", "Nov 2025", "Dec 2025", "Jan 2026", "Feb 2026", "Mar 2026"], "events": [], "historical": []}};
         mkDonut("cmbChartProductMix", CD.product_mix.labels,   CD.product_mix.values,   productColor);
         mkDonut("cmbChartSecured",    CD.secured_split.labels, CD.secured_split.values, (_, i) => SECURED_COLORS[i % SECURED_COLORS.length]);
         mkDonut("cmbChartOnUs",       CD.onus_offus.labels,    CD.onus_offus.values,    (_, i) => ONUS_COLORS[i % ONUS_COLORS.length]);
@@ -907,9 +1144,9 @@ Note: This is a synthesised summary based on automated banking and bureau analys
     <div class="section">
         <h3>Bureau Executive Summary</h3>
         <div class="summary-box">
-            <p>The customer&#39;s tradeline portfolio consists of a total of 14 live and closed accounts, with a mix of personal loan, consumer durable, credit card, and gold loan products. The sanctioned exposure is INR 21,97,493, with unsecured outstanding amount accounting for 83% of the total outstanding. Notably, the customer has a high credit card utilization percentage of 98.0%, indicating over-utilization. Additionally, there are no missed payments in the last 18 months, and the ratio of good closed personal loan loans is 100%. The sanctioned exposure trend shows a decrease of 18% over the past 12 months.
+            <p>The customer&#39;s tradeline portfolio consists of a total of 27 live and closed accounts, with 26 credit card accounts and 1 personal loan account. The sanctioned exposure is INR 72,48,130, with unsecured outstanding balances accounting for 100% of the total outstanding amount. Key highlights include a credit card utilization percentage of 9.0%, indicating moderate usage, and no missed payments over the past 18 months. Additionally, there are 5 closed credit card accounts, suggesting some churn in the portfolio.
 
-The customer&#39;s behavioral features suggest some red flags. Elevated enquiry pressure is indicated by 11 unsecured enquiries in the last 12 months, which may signal loan stacking or other high-risk behaviors. Furthermore, the credit card utilization percentage is a concern, as it exceeds the threshold for moderate risk. On the positive side, there are no missed payments, and the trade-to-enquiry ratio is relatively low at 29.4%. The customer&#39;s loan acquisition velocity is also noteworthy, with frequent acquisitions over the past year. Overall, the composite risk signals suggest a clean repayment profile, elevated leverage due to high credit card utilization, and low conversion rates, indicating possible rejections.</p>
+The customer&#39;s behavioral features indicate a relatively healthy repayment profile, with zero DPD across all products and windows, and no missed payments over the past 18 months. The credit card utilization is elevated at 9.0%, but this is still within the moderate range. The loan acquisition velocity is moderate, with an average interpurchase time of 3.45 months. However, there are some red flags, including [HIGH RISK] loan stacking indicated by 3 new personal loans in 6 months, and a high trade-to-enquiry ratio of 40.00%.</p>
         </div>
     </div>
     
@@ -920,80 +1157,14 @@ The customer&#39;s behavioral features suggest some red flags. Elevated enquiry 
         <h3>Key Findings & Inferences</h3>
         <div class="findings-grid">
             
-            <div class="finding-card" style="border-left: 4px solid #e74c3c;">
-                <div class="finding-body">
-                    <div class="finding-meta">
-                        <span class="sev-badge sev-high_risk">HIGH RISK</span>
-                        <span style="font-size: 10.5px; color: #888;">Utilization</span>
-                    </div>
-                    <div class="finding-text">Credit card utilization at 98% [Opened: Jan 2023 | Active]</div>
-                    <div class="finding-inference">Over-utilization of credit card limits signals high credit dependency and potential cash flow stress</div>
-                </div>
-            </div>
-            
             <div class="finding-card" style="border-left: 4px solid #e67e22;">
                 <div class="finding-body">
                     <div class="finding-meta">
                         <span class="sev-badge sev-moderate_risk">MOD RISK</span>
                         <span style="font-size: 10.5px; color: #888;">Portfolio</span>
                     </div>
-                    <div class="finding-text">Unsecured sanction is 95% of total (INR 20,88,493 of INR 21,97,493)</div>
+                    <div class="finding-text">Unsecured sanction is 100% of total (INR 72,48,130 of INR 72,48,130)</div>
                     <div class="finding-inference">Heavily skewed towards unsecured lending; higher risk in absence of collateral</div>
-                </div>
-            </div>
-            
-            <div class="finding-card" style="border-left: 4px solid #e67e22;">
-                <div class="finding-body">
-                    <div class="finding-meta">
-                        <span class="sev-badge sev-moderate_risk">MOD RISK</span>
-                        <span style="font-size: 10.5px; color: #888;">Enquiry Behavior</span>
-                    </div>
-                    <div class="finding-text">11 unsecured enquiries in last 12 months</div>
-                    <div class="finding-inference">Elevated enquiry activity; may indicate difficulty securing credit</div>
-                </div>
-            </div>
-            
-            <div class="finding-card" style="border-left: 4px solid #e67e22;">
-                <div class="finding-body">
-                    <div class="finding-meta">
-                        <span class="sev-badge sev-moderate_risk">MOD RISK</span>
-                        <span style="font-size: 10.5px; color: #888;">Composite Signal</span>
-                    </div>
-                    <div class="finding-text">CC utilization at 98.0% [Opened: Jan 2023 | Active] and PL balance remaining at 70.6% [Opened: Nov 2021 – May 2025 | Last Closed: Aug 2025]</div>
-                    <div class="finding-inference">Elevated leverage across both revolving and term products; limited debt servicing headroom</div>
-                </div>
-            </div>
-            
-            <div class="finding-card" style="border-left: 4px solid #e67e22;">
-                <div class="finding-body">
-                    <div class="finding-meta">
-                        <span class="sev-badge sev-moderate_risk">MOD RISK</span>
-                        <span style="font-size: 10.5px; color: #888;">Composite Signal</span>
-                    </div>
-                    <div class="finding-text">High enquiries (11) but only 29.4% trade-to-enquiry conversion</div>
-                    <div class="finding-inference">Low conversion rate despite high enquiry volume suggests multiple lender rejections</div>
-                </div>
-            </div>
-            
-            <div class="finding-card" style="border-left: 4px solid #f39c12;">
-                <div class="finding-body">
-                    <div class="finding-meta">
-                        <span class="sev-badge sev-concern">CONCERN</span>
-                        <span style="font-size: 10.5px; color: #888;">Loan Velocity</span>
-                    </div>
-                    <div class="finding-text">Avg time between PL/BL acquisitions (12M): 1.1 months</div>
-                    <div class="finding-inference">Frequent loan acquisitions; borrower is actively accumulating unsecured debt</div>
-                </div>
-            </div>
-            
-            <div class="finding-card" style="border-left: 4px solid #95a5a6;">
-                <div class="finding-body">
-                    <div class="finding-meta">
-                        <span class="sev-badge sev-neutral">INFO</span>
-                        <span style="font-size: 10.5px; color: #888;">Portfolio</span>
-                    </div>
-                    <div class="finding-text">Portfolio spans 4 loan products (Personal Loan, Consumer Durable, Credit Card, Gold Loan)</div>
-                    <div class="finding-inference">Diversified credit portfolio indicates established borrowing history across products</div>
                 </div>
             </div>
             
@@ -1005,6 +1176,17 @@ The customer&#39;s behavioral features suggest some red flags. Elevated enquiry 
                     </div>
                     <div class="finding-text">No delinquency detected across the portfolio</div>
                     <div class="finding-inference">Clean delinquency record is a positive indicator for repayment discipline</div>
+                </div>
+            </div>
+            
+            <div class="finding-card" style="border-left: 4px solid #27ae60;">
+                <div class="finding-body">
+                    <div class="finding-meta">
+                        <span class="sev-badge sev-positive">POSITIVE</span>
+                        <span style="font-size: 10.5px; color: #888;">Utilization</span>
+                    </div>
+                    <div class="finding-text">Credit card utilization at 9% [Opened: Aug 2018 – Nov 2025 | Last Closed: Nov 2025]</div>
+                    <div class="finding-inference">Healthy utilization indicates disciplined credit card usage</div>
                 </div>
             </div>
             
@@ -1034,21 +1216,10 @@ The customer&#39;s behavioral features suggest some red flags. Elevated enquiry 
                 <div class="finding-body">
                     <div class="finding-meta">
                         <span class="sev-badge sev-positive">POSITIVE</span>
-                        <span style="font-size: 10.5px; color: #888;">Payment Behavior</span>
+                        <span style="font-size: 10.5px; color: #888;">Enquiry Behavior</span>
                     </div>
-                    <div class="finding-text">Good closure ratio for PL loans: 100%</div>
-                    <div class="finding-inference">Strong track record of closing personal loans in good standing</div>
-                </div>
-            </div>
-            
-            <div class="finding-card" style="border-left: 4px solid #27ae60;">
-                <div class="finding-body">
-                    <div class="finding-meta">
-                        <span class="sev-badge sev-positive">POSITIVE</span>
-                        <span style="font-size: 10.5px; color: #888;">Composite Signal</span>
-                    </div>
-                    <div class="finding-text">Zero DPD, no missed payments, and 100% good PL closure ratio</div>
-                    <div class="finding-inference">Exemplary repayment profile — strong candidate from a credit discipline standpoint</div>
+                    <div class="finding-text">0 unsecured enquiries in last 12 months</div>
+                    <div class="finding-inference">Minimal enquiry activity indicates stable credit position</div>
                 </div>
             </div>
             
@@ -1078,60 +1249,30 @@ The customer&#39;s behavioral features suggest some red flags. Elevated enquiry 
             <tbody>
                 
                 <tr>
-                    <td>Personal Loan</td>
-                    <td class="center secured-no">
-                        No
-                    </td>
-                    <td class="center">9</td>
-                    <td class="center">1</td>
-                    <td class="center">8</td>
-                    <td class="amount">19,13,893</td>
-                    <td class="amount">4,23,401</td>
-                    <td class="center">-</td>
-                    <td class="center">-</td>
-                    <td class="center">0</td>
-                </tr>
-                
-                <tr>
-                    <td>Consumer Durable</td>
-                    <td class="center secured-no">
-                        No
-                    </td>
-                    <td class="center">3</td>
-                    <td class="center">2</td>
-                    <td class="center">1</td>
-                    <td class="amount">56,600</td>
-                    <td class="amount">0</td>
-                    <td class="center">-</td>
-                    <td class="center">-</td>
-                    <td class="center">0</td>
-                </tr>
-                
-                <tr>
                     <td>Credit Card</td>
                     <td class="center secured-no">
                         No
                     </td>
-                    <td class="center">1</td>
-                    <td class="center">1</td>
-                    <td class="center">0</td>
-                    <td class="amount">1,18,000</td>
-                    <td class="amount">1,15,686</td>
+                    <td class="center">26</td>
+                    <td class="center">21</td>
+                    <td class="center">5</td>
+                    <td class="amount">69,36,205</td>
+                    <td class="amount">6,55,918</td>
                     <td class="center">-</td>
-                    <td class="center">98</td>
-                    <td class="center">0</td>
+                    <td class="center">9</td>
+                    <td class="center">1</td>
                 </tr>
                 
                 <tr>
-                    <td>Gold Loan</td>
-                    <td class="center secured-yes">
-                        Yes
+                    <td>Personal Loan</td>
+                    <td class="center secured-no">
+                        No
                     </td>
                     <td class="center">1</td>
                     <td class="center">1</td>
                     <td class="center">0</td>
-                    <td class="amount">1,09,000</td>
-                    <td class="amount">1,09,000</td>
+                    <td class="amount">3,11,925</td>
+                    <td class="amount">1,66,761</td>
                     <td class="center">-</td>
                     <td class="center">-</td>
                     <td class="center">0</td>
@@ -1152,15 +1293,15 @@ The customer&#39;s behavioral features suggest some red flags. Elevated enquiry 
         <div class="rf-grid">
             <div class="rf-item">
                 <label>Months Since Last PL Trade</label>
-                <div class="value">7.54</div>
+                <div class="value risk">20.13</div>
             </div>
             <div class="rf-item">
                 <label>Months Since Last Unsecured Trade</label>
-                <div class="value">7.54</div>
+                <div class="value safe">20.13</div>
             </div>
             <div class="rf-item">
                 <label>New PL Trades (6M)</label>
-                <div class="value">N/A</div>
+                <div class="value risk">N/A</div>
             </div>
         </div>
 
@@ -1175,7 +1316,7 @@ The customer&#39;s behavioral features suggest some red flags. Elevated enquiry 
             </div>
             <div class="rf-item">
                 <label>Max DPD 6M (PL)</label>
-                <div class="value safe">
+                <div class="value">
                     0
                 </div>
             </div>
@@ -1187,11 +1328,11 @@ The customer&#39;s behavioral features suggest some red flags. Elevated enquiry 
             </div>
             <div class="rf-item">
                 <label>Mo. Since Last 0+ DPD (Unsec)</label>
-                <div class="value">N/A</div>
+                <div class="value safe">N/A</div>
             </div>
             <div class="rf-item">
                 <label>Mo. Since Last 0+ DPD (PL)</label>
-                <div class="value">N/A</div>
+                <div class="value risk">N/A</div>
             </div>
         </div>
 
@@ -1212,18 +1353,18 @@ The customer&#39;s behavioral features suggest some red flags. Elevated enquiry 
             </div>
             <div class="rf-item">
                 <label>% Missed Payments (18M)</label>
-                <div class="value safe">
+                <div class="value">
                     0.00
                 </div>
             </div>
             <div class="rf-item">
                 <label>% Trades 0+ DPD in 12M (All)</label>
-                <div class="value">N/A</div>
+                <div class="value safe">N/A</div>
             </div>
             <div class="rf-item">
                 <label>Ratio Good Closed Loans (PL)</label>
-                <div class="value safe">
-                    100%
+                <div class="value">
+                    N/A
                 </div>
             </div>
         </div>
@@ -1233,23 +1374,23 @@ The customer&#39;s behavioral features suggest some red flags. Elevated enquiry 
         <div class="rf-grid">
             <div class="rf-item">
                 <label>CC Balance Utilization %</label>
-                <div class="value risk">
-                    98.04
+                <div class="value safe">
+                    8.97
                 </div>
             </div>
             <div class="rf-item">
                 <label>PL Balance Remaining %</label>
-                <div class="value">70.57</div>
+                <div class="value safe">53.46</div>
             </div>
             <div class="rf-item">
                 <label>Unsecured Enquiries (12M)</label>
-                <div class="value risk">
-                    11
+                <div class="value">
+                    0
                 </div>
             </div>
             <div class="rf-item">
                 <label>Trade-to-Enquiry Ratio (Unsec 24M)</label>
-                <div class="value">29.41</div>
+                <div class="value safe">40.00</div>
             </div>
         </div>
 
@@ -1258,23 +1399,23 @@ The customer&#39;s behavioral features suggest some red flags. Elevated enquiry 
         <div class="rf-grid">
             <div class="rf-item">
                 <label>Interpurchase 12M (PL/BL)</label>
-                <div class="value">1.07</div>
+                <div class="value risk">N/A</div>
             </div>
             <div class="rf-item">
                 <label>Interpurchase 6M (PL/BL)</label>
-                <div class="value">N/A</div>
+                <div class="value risk">N/A</div>
             </div>
             <div class="rf-item">
                 <label>Interpurchase 24M (All)</label>
-                <div class="value">2.78</div>
+                <div class="value safe">3.45</div>
             </div>
             <div class="rf-item">
                 <label>Interpurchase 9M (HL/LAP)</label>
-                <div class="value">N/A</div>
+                <div class="value risk">N/A</div>
             </div>
             <div class="rf-item">
                 <label>Interpurchase 24M (HL/LAP)</label>
-                <div class="value">N/A</div>
+                <div class="value risk">N/A</div>
             </div>
             <div class="rf-item">
                 <label>Interpurchase 24M (TWL)</label>
@@ -1282,7 +1423,7 @@ The customer&#39;s behavioral features suggest some red flags. Elevated enquiry 
             </div>
             <div class="rf-item">
                 <label>Interpurchase 12M (Consumer)</label>
-                <div class="value">N/A</div>
+                <div class="value risk">N/A</div>
             </div>
         </div>
     </div>
@@ -1311,7 +1452,7 @@ The customer&#39;s behavioral features suggest some red flags. Elevated enquiry 
             
             <div class="rf-item">
                 <label>Relationship</label>
-                <div class="value">CorpSal</div>
+                <div class="value">RL</div>
             </div>
             
             
@@ -1323,7 +1464,7 @@ The customer&#39;s behavioral features suggest some red flags. Elevated enquiry 
             
             <div class="rf-item">
                 <label>Banking Group</label>
-                <div class="value">Banking Thin</div>
+                <div class="value">Banking Thick</div>
             </div>
             
             
@@ -1335,14 +1476,14 @@ The customer&#39;s behavioral features suggest some red flags. Elevated enquiry 
             
             <div class="rf-item">
                 <label>Affluence Amount</label>
-                <div class="value">INR 34,495</div>
-                <div style="font-size: 10px; color: #666; margin-top: 2px;">Salary_SLC</div>
+                <div class="value">INR 70,000</div>
+                <div style="font-size: 10px; color: #666; margin-top: 2px;">RG_INCOME_Final</div>
             </div>
             
             
             <div class="rf-item">
                 <label>Customer Persona</label>
-                <div class="value">Dormant</div>
+                <div class="value">Seasonal Earner</div>
             </div>
             
         </div>
@@ -1353,7 +1494,7 @@ The customer&#39;s behavioral features suggest some red flags. Elevated enquiry 
     <div class="section">
         <h3>Customer Profile</h3>
         <div class="summary-box">
-            <p>Chinthamalla Sandeep is a young professional likely working in a mid-level corporate job, given their average salary of 39,210 INR. Their spending habits suggest a moderate lifestyle, with a focus on essential expenses and limited discretionary spending. Despite having a relatively stable income, Chinthamalla&#39;s financial discipline is lacking, as evidenced by their low savings rate (0.0%) and frequent large transactions. Overall, Chinthamalla&#39;s financial health is precarious, with a net position of just 37 INR after six months of analysis.</p>
+            <p>Chinthamalla Sandeep is a young professional likely working in a mid-level corporate job, given their average salary of 39,210 INR. Their spending habits suggest a moderate to high lifestyle, with significant expenses on food and entertainment. Despite having a relatively stable income, Chinthamalla&#39;s financial discipline is lacking, as evidenced by their low savings rate (0.0%) and frequent large transactions. Overall, Chinthamalla&#39;s financial health is precarious, with a net position of just 37 INR after six months of analysis.</p>
         </div>
     </div>
     
@@ -1362,9 +1503,9 @@ The customer&#39;s behavioral features suggest some red flags. Elevated enquiry 
     <div class="section">
         <h3>Executive Summary</h3>
         <div class="summary-box">
-            <p>The customer&#39;s banking profile indicates a stable financial situation. Their average monthly net income is ₹18,000, with a total inflow of ₹78,428 and outflow of ₹78,391. The majority of their expenses are allocated to self (48,000), followed by other categories (27,300) and food/restaurant expenses (1,970). There are no recurring obligations such as EMI, utility bills, or rent commitments detected in the customer&#39;s banking profile.
+            <p>The customer&#39;s banking profile indicates a stable financial situation. Their monthly cash flow is relatively balanced, with an average net of ₹18,000 and total inflows exceeding outflows by ₹37. The customer&#39;s key spending categories include self expenses at ₹48,000 per month, followed by other expenses at ₹27,300, and food and restaurant bills at ₹1,970. Additionally, the customer has a rent commitment, although the exact amount is not specified. Utility bills are also present in their monthly expenditure.
 
-In December 2025, the customer transferred ₹43,000 from their own account to another account (UPI/CHINTAMALLA SAN/541064911213/Payment from Ph) just one day after receiving their salary. Additionally, the customer received a salary of ₹43,925 and transferred 98% of it to their own account within three days of credit in two consecutive months.</p>
+In Jun 2025, the customer received ₹72,000 salary from Symed and transferred ₹72,000 to their own account the next day. In Jul 2025, the customer made a payment of ₹27,300 towards other expenses.</p>
         </div>
     </div>
     
@@ -1390,49 +1531,6 @@ In December 2025, the customer transferred ₹43,000 from their own account to a
     </div>
     
 
-    
-    <div class="section">
-        <h3>Internal Salary Analysis</h3>
-
-        
-        <h4 style="color: #2c3e50; font-size: 14px; margin-bottom: 8px;">RG SAL</h4>
-        <div class="summary-box">
-            <p>Estimated monthly salary of INR 34,495 from Salary, identified across 3 months.</p>
-        </div>
-        <table>
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Narration</th>
-                    <th class="amount">Amount (INR)</th>
-                </tr>
-            </thead>
-            <tbody>
-                
-                <tr>
-                    <td>2026-01-05</td>
-                    <td>SYMED SALARY DEC 2025</td>
-                    <td class="amount positive">43,923</td>
-                </tr>
-                
-                <tr>
-                    <td>2025-12-05</td>
-                    <td>SYMED SALARY NOV 2025</td>
-                    <td class="amount positive">43,925</td>
-                </tr>
-                
-                <tr>
-                    <td>2025-11-04</td>
-                    <td>SYMED SALARY OCT 2025</td>
-                    <td class="amount positive">34,495</td>
-                </tr>
-                
-            </tbody>
-        </table>
-        
-
-        
-    </div>
     
 
     
@@ -1537,7 +1635,7 @@ In December 2025, the customer transferred ₹43,000 from their own account to a
     <div class="section-divider">Combined Executive Summary</div>
     <div class="section">
         <div class="summary-box" style="border-left: 4px solid #2c3e50;">
-            <p>The customer exhibits a stable financial situation, with a monthly net income of ₹18,000 and a total inflow of ₹78,428. However, their spending discipline is questionable, as they immediately transferred ₹43,000 to another account upon receiving their salary in December 2025. This behavior suggests some liquidity issues or impulsive spending habits. The customer&#39;s credit portfolio consists of 14 live and closed accounts, with a sanctioned exposure of INR 21,97,493, primarily driven by unsecured outstanding amounts. High credit card utilization (98.0%) indicates over-utilization, while elevated enquiry pressure (11 unsecured enquiries in the last 12 months) may signal loan stacking or other high-risk behaviors. Overall, the customer&#39;s creditworthiness assessment is cautious due to elevated leverage and liquidity concerns.
+            <p>The customer exhibits a relatively stable financial situation, with a balanced monthly cash flow and manageable expenses. Their spending categories include self-expenses, other expenses, food and restaurant bills, and a rent commitment, although the exact amount is not specified. The customer&#39;s income is steady, as evidenced by their recent salary receipt of ₹72,000 in Jun 2025, which was immediately transferred to their own account. This demonstrates discipline in managing their finances. However, there are some concerns regarding credit portfolio exposure, with a high sanctioned exposure of INR 72,48,130 and elevated credit card utilization at 9.0%. The customer&#39;s repayment profile is generally healthy, with no missed payments over the past 18 months and zero DPD across all products and windows. Overall, the customer&#39;s creditworthiness assessment is cautious due to the high credit portfolio exposure and moderate credit card utilization.
 
 Note: This is a synthesised summary based on automated banking and bureau analyses. Independent verification is recommended before final credit decisions.</p>
         </div>

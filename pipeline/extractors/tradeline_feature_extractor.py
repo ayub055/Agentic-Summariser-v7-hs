@@ -42,6 +42,11 @@ _COLUMN_MAP = {
     "interpurchase_time_l24m_hl_lap": "interpurchase_time_24m_hl_lap",
     "interpurchase_time_l24m_twl": "interpurchase_time_24m_twl",
     "interpurchase_time_l12m_cl": "interpurchase_time_12m_cl",
+    # Obligation & FOIR
+    "aff_emi": "aff_emi",
+    "unsecured_emi": "unsecured_emi",
+    "foir": "foir",
+    "foir_unsec": "foir_unsec",
     # Customer profile
     "ktk_rel": "ktk_rel",
     "customer_segment_1_ordered": "customer_segment",

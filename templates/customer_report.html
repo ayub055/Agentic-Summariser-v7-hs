@@ -61,6 +61,15 @@
             margin-right: 4px;
         }
 
+        .header-disclaimer {
+            margin-top: 12px;
+            padding-top: 10px;
+            border-top: 1px solid rgba(255,255,255,0.08);
+            font-size: 10px;
+            color: rgba(255,255,255,0.38);
+            font-style: italic;
+        }
+
         .section {
             margin-bottom: 25px;
             page-break-inside: avoid;
@@ -329,6 +338,9 @@
         <div class="header-meta">
             <span><strong>Customer ID:</strong> {{ report.meta.customer_id|mask_id }}</span>
             <span><strong>Transactions:</strong> {{ report.meta.transaction_count }}</span>
+        </div>
+        <div class="header-disclaimer">
+            ⓘ Bins, thresholds &amp; verification values are calibrated on Jan '26 FPD portfolio behaviour.
         </div>
     </div>
 

@@ -1,0 +1,405 @@
+Variable	Bin	Segment	Count	Count (%)	Non-event	Event	Event rate
+monsnclasttrop_pl_onc	(-inf, 3.17)	Super Green	2901	16.21%	2887	14	0.48%
+monsnclasttrop_pl_onc	[3.17, 15.99)	Green	8773	49.02%	8704	69	0.79%
+monsnclasttrop_pl_onc	[15.99, 25.76)	Amber	2103	11.75%	2083	20	0.95%
+monsnclasttrop_pl_onc	[25.76, inf)	Red	2444	13.66%	2411	33	1.35%
+monsnclasttrop_pl_onc	Special		0	0.00%	0	0	0.00%
+monsnclasttrop_pl_onc	Missing	Red	1676	9.36%	1631	45	2.68%
+monsnclasttrop_uns_onc	(-inf, 0.84)	Super Green	905	5.06%	900	5	0.55%
+monsnclasttrop_uns_onc	[0.84, 3.03)	Super Green	3346	18.70%	3324	22	0.66%
+monsnclasttrop_uns_onc	[3.03, 9.66)	Green	5989	33.46%	5941	48	0.80%
+monsnclasttrop_uns_onc	[9.66, 32.18)	Green	5855	32.71%	5800	55	0.94%
+monsnclasttrop_uns_onc	[32.18, inf)	Red	1220	6.82%	1204	16	1.31%
+monsnclasttrop_uns_onc	Special		0	0.00%	0	0	0.00%
+monsnclasttrop_uns_onc	Missing	Red	582	3.25%	547	35	6.01%
+no_tr_open_l6m_pl_onc	(-inf, inf)	Super Green	5205	29.08%	5171	34	0.65%
+no_tr_open_l6m_pl_onc	Special		0	0.00%	0	0	0.00%
+no_tr_open_l6m_pl_onc	Missing	Red	12692	70.92%	12545	147	1.16%
+no_trades_all_onc	(-inf, 3.50)	Red	1336	7.46%	1320	16	1.20%
+no_trades_all_onc	[3.50, 18.50)	Amber	9368	52.34%	9278	90	0.96%
+no_trades_all_onc	[18.50, inf)	Green	7163	40.02%	7118	45	0.63%
+no_trades_all_onc	Special		0	0.00%	0	0	0.00%
+no_trades_all_onc	Missing		30	0.17%	0	30	0.00%
+max_dpd_l6m_cc_onc	(-inf, 3.50)	Green	15027	83.96%	14921	106	0.71%
+max_dpd_l6m_cc_onc	[3.50, inf)	Red	1018	5.69%	1002	16	1.57%
+max_dpd_l6m_cc_onc	Special		0	0.00%	0	0	0.00%
+max_dpd_l6m_cc_onc	Missing	Red	1852	10.35%	1793	59	3.19%
+max_dpd_l6m_pl_onc	(-inf, inf)	Does not make sense	16221	90.64%	16085	136	0.84%
+max_dpd_l6m_pl_onc	Special		0	0.00%	0	0	0.00%
+max_dpd_l6m_pl_onc	Missing	Does not make sense	1676	9.36%	1631	45	2.68%
+max_dpd_l9m_cc_onc	(-inf, 3.50)	Green	14682	82.04%	14580	102	0.69%
+max_dpd_l9m_cc_onc	[3.50, inf)	Red	1363	7.62%	1343	20	1.47%
+max_dpd_l9m_cc_onc	Special		0	0.00%	0	0	0.00%
+max_dpd_l9m_cc_onc	Missing	Red	1852	10.35%	1793	59	3.19%
+mon_sin_last_0p_uns_op	(-inf, inf)	Red	944	5.27%	926	18	1.91%
+mon_sin_last_0p_uns_op	Special		0	0.00%	0	0	0.00%
+mon_sin_last_0p_uns_op	Missing	Green	16953	94.73%	16790	163	0.96%
+monsinlast_0p_pl_onc	(-inf, 19.44)	Red	1169	6.53%	1148	21	1.80%
+monsinlast_0p_pl_onc	[19.44, 55.38)	Green	2059	11.50%	2041	18	0.87%
+monsinlast_0p_pl_onc	[55.38, inf)	Super Green	909	5.08%	905	4	0.44%
+monsinlast_0p_pl_onc	Special		0	0.00%	0	0	0.00%
+monsinlast_0p_pl_onc	Missing	Amber	13760	76.88%	13622	138	1.00%
+pct_0p_l24m_all_onc	(-inf, 1.15)	Green	14161	79.12%	14067	94	0.66%
+pct_0p_l24m_all_onc	[1.15, 2.35)	Amber	1205	6.73%	1192	13	1.08%
+pct_0p_l24m_all_onc	[2.35, inf)	Red	2456	13.72%	2412	44	1.79%
+pct_0p_l24m_all_onc	Special		0	0.00%	0	0	0.00%
+pct_0p_l24m_all_onc	Missing	Red	75	0.42%	45	30	40.00%
+pct_0p_l24m_pl_onc	(-inf, 1.71)	Green	14574	81.43%	14469	105	0.72%
+pct_0p_l24m_pl_onc	[1.71, inf)	Amber	1140	6.37%	1118	22	1.93%
+pct_0p_l24m_pl_onc	Special		0	0.00%	0	0	0.00%
+pct_0p_l24m_pl_onc	Missing	Red	2183	12.20%	2129	54	2.47%
+pct_missed_pymt_last18m_all	(-inf, 0.66)		14680	82.02%	14577	103	0.70%
+pct_missed_pymt_last18m_all	[0.66, 1.39)		1152	6.44%	1141	11	0.95%
+pct_missed_pymt_last18m_all	[1.39, 3.29)		1068	5.97%	1052	16	1.50%
+pct_missed_pymt_last18m_all	[3.29, inf)		898	5.02%	877	21	2.34%
+pct_missed_pymt_last18m_all	Special		0	0.00%	0	0	0.00%
+pct_missed_pymt_last18m_all	Missing		99	0.55%	69	30	30.30%
+pct_tr_0p_l12m_all_onc	(-inf, 19.52)	Amber	2344	13.10%	2317	27	1.15%
+pct_tr_0p_l12m_all_onc	[19.52, inf)	Red	1189	6.64%	1163	26	2.19%
+pct_tr_0p_l12m_all_onc	Special		0	0.00%	0	0	0.00%
+pct_tr_0p_l12m_all_onc	Missing	Green	14364	80.26%	14236	128	0.89%
+cnt_closed_pl	(-inf, 1.50)		6008	33.57%	5942	66	1.10%
+cnt_closed_pl	[1.50, inf)		11859	66.26%	11774	85	0.72%
+cnt_closed_pl	Special		0	0.00%	0	0	0.00%
+cnt_closed_pl	Missing		30	0.17%	0	30	0.00%
+cnt_good_closed_pl	(-inf, 20.50)		16958	94.75%	16816	142	0.84%
+cnt_good_closed_pl	[20.50, inf)		909	5.08%	900	9	0.99%
+cnt_good_closed_pl	Special		0	0.00%	0	0	0.00%
+cnt_good_closed_pl	Missing		30	0.17%	0	30	0.00%
+sum_sanc_amt_pl_lv	(-inf, 13745.00)		5005	27.97%	4946	59	1.18%
+sum_sanc_amt_pl_lv	[13745.00, 348839.50)		5929	33.13%	5875	54	0.91%
+sum_sanc_amt_pl_lv	[348839.50, inf)		6933	38.74%	6895	38	0.55%
+sum_sanc_amt_pl_lv	Special		0	0.00%	0	0	0.00%
+sum_sanc_amt_pl_lv	Missing		30	0.17%	0	30	0.00%
+sum_sanc_amt_cc_lv	(-inf, 20012.50)		3370	18.83%	3324	46	1.36%
+sum_sanc_amt_cc_lv	[20012.50, 37100.00)		910	5.08%	900	10	1.10%
+sum_sanc_amt_cc_lv	[37100.00, inf)		13587	75.92%	13492	95	0.70%
+sum_sanc_amt_cc_lv	Special		0	0.00%	0	0	0.00%
+sum_sanc_amt_cc_lv	Missing		30	0.17%	0	30	0.00%
+monsncfirsttrop_cc_lv	(-inf, 20.97)		1605	8.97%	1579	26	1.62%
+monsncfirsttrop_cc_lv	[20.97, 84.50)		9146	51.10%	9079	67	0.73%
+monsncfirsttrop_cc_lv	[84.50, 145.85)		3165	17.68%	3145	20	0.63%
+monsncfirsttrop_cc_lv	[145.85, inf)		1176	6.57%	1174	2	0.17%
+monsncfirsttrop_cc_lv	Special		0	0.00%	0	0	0.00%
+monsncfirsttrop_cc_lv	Missing		2805	15.67%	2739	66	2.35%
+monsnclasttrop_allsal1l_onc	(-inf, 24.35)		13845	77.36%	13718	127	0.92%
+monsnclasttrop_allsal1l_onc	[24.35, 50.81)		2683	14.99%	2666	17	0.63%
+monsnclasttrop_allsal1l_onc	[50.81, inf)		999	5.58%	996	3	0.30%
+monsnclasttrop_allsal1l_onc	Special		0	0.00%	0	0	0.00%
+monsnclasttrop_allsal1l_onc	Missing		370	2.07%	336	34	9.19%
+monsncfirsttrop_all_lv	(-inf, 21.46)		2455	13.72%	2415	40	1.63%
+monsncfirsttrop_all_lv	[21.46, 26.47)		922	5.15%	912	10	1.08%
+monsncfirsttrop_all_lv	[26.47, 84.50)		9248	51.67%	9175	73	0.79%
+monsncfirsttrop_all_lv	[84.50, 145.85)		3550	19.84%	3528	22	0.62%
+monsncfirsttrop_all_lv	[145.85, inf)		1353	7.56%	1350	3	0.22%
+monsncfirsttrop_all_lv	Special		0	0.00%	0	0	0.00%
+monsncfirsttrop_all_lv	Missing		369	2.06%	336	33	8.94%
+monsncfirsttrop_all_sag20k_lv	(-inf, 20.97)		2801	15.65%	2755	46	1.64%
+monsncfirsttrop_all_sag20k_lv	[20.97, 26.31)		1046	5.84%	1035	11	1.05%
+monsncfirsttrop_all_sag20k_lv	[26.31, 145.85)		12245	68.42%	12158	87	0.71%
+monsncfirsttrop_all_sag20k_lv	[145.85, inf)		1254	7.01%	1252	2	0.16%
+monsncfirsttrop_all_sag20k_lv	Special		0	0.00%	0	0	0.00%
+monsncfirsttrop_all_sag20k_lv	Missing		551	3.08%	516	35	6.35%
+monsnclasttrop_hra_onc	(-inf, 6.77)		3907	21.83%	3863	44	1.13%
+monsnclasttrop_hra_onc	[6.77, 16.47)		2916	16.29%	2887	29	0.99%
+monsnclasttrop_hra_onc	[16.47, 51.36)		5749	32.12%	5708	41	0.71%
+monsnclasttrop_hra_onc	[51.36, inf)		2142	11.97%	2133	9	0.42%
+monsnclasttrop_hra_onc	Special		0	0.00%	0	0	0.00%
+monsnclasttrop_hra_onc	Missing		3183	17.79%	3125	58	1.82%
+monsncfirsttrop_exccgled_lv	(-inf, 23.89)		8017	44.80%	7935	82	1.02%
+monsncfirsttrop_exccgled_lv	[23.89, 44.35)		4119	23.02%	4088	31	0.75%
+monsncfirsttrop_exccgled_lv	[44.35, 65.63)		1906	10.65%	1894	12	0.63%
+monsncfirsttrop_exccgled_lv	[65.63, inf)		1706	9.53%	1700	6	0.35%
+monsncfirsttrop_exccgled_lv	Special		0	0.00%	0	0	0.00%
+monsncfirsttrop_exccgled_lv	Missing		2149	12.01%	2099	50	2.33%
+monsnclasttrop_pl_sag20k_onc	(-inf, 5.27)		4085	22.83%	4064	21	0.51%
+monsnclasttrop_pl_sag20k_onc	[5.27, 16.51)		7304	40.81%	7247	57	0.78%
+monsnclasttrop_pl_sag20k_onc	[16.51, 33.10)		2745	15.34%	2720	25	0.91%
+monsnclasttrop_pl_sag20k_onc	[33.10, inf)		1518	8.48%	1498	20	1.32%
+monsnclasttrop_pl_sag20k_onc	Special		0	0.00%	0	0	0.00%
+monsnclasttrop_pl_sag20k_onc	Missing		2245	12.54%	2187	58	2.58%
+monsncfirsttrop_allsag1l_lv	(-inf, 22.44)		4394	24.55%	4341	53	1.21%
+monsncfirsttrop_allsag1l_lv	[22.44, 69.41)		5753	32.15%	5705	48	0.83%
+monsncfirsttrop_allsag1l_lv	[69.41, 145.85)		3669	20.50%	3645	24	0.65%
+monsncfirsttrop_allsag1l_lv	[145.85, inf)		978	5.46%	977	1	0.10%
+monsncfirsttrop_allsag1l_lv	Special		0	0.00%	0	0	0.00%
+monsncfirsttrop_allsag1l_lv	Missing		3103	17.34%	3048	55	1.77%
+monsncfirsttrop_allsal1l_lv	(-inf, 26.47)		4738	26.47%	4678	60	1.27%
+monsncfirsttrop_allsal1l_lv	[26.47, 96.93)		8267	46.19%	8209	58	0.70%
+monsncfirsttrop_allsal1l_lv	[96.93, inf)		1633	9.12%	1630	3	0.18%
+monsncfirsttrop_allsal1l_lv	Special		0	0.00%	0	0	0.00%
+monsncfirsttrop_allsal1l_lv	Missing		3259	18.21%	3199	60	1.84%
+monsncfirsttrop_cc_onc	(-inf, 20.97)		1168	6.53%	1146	22	1.88%
+monsncfirsttrop_cc_onc	[20.97, 100.01)		9852	55.05%	9774	78	0.79%
+monsncfirsttrop_cc_onc	[100.01, 145.85)		2686	15.01%	2670	16	0.60%
+monsncfirsttrop_cc_onc	[145.85, inf)		2339	13.07%	2333	6	0.26%
+monsncfirsttrop_cc_onc	Special		0	0.00%	0	0	0.00%
+monsncfirsttrop_cc_onc	Missing		1852	10.35%	1793	59	3.19%
+monsncfirsttrop_all_onc	(-inf, 31.78)		1191	6.65%	1170	21	1.76%
+monsncfirsttrop_all_onc	[31.78, 41.62)		1401	7.83%	1384	17	1.21%
+monsncfirsttrop_all_onc	[41.62, 166.01)		12123	67.74%	12022	101	0.83%
+monsncfirsttrop_all_onc	[166.01, 191.72)		907	5.07%	903	4	0.44%
+monsncfirsttrop_all_onc	[191.72, inf)		2245	12.54%	2237	8	0.36%
+monsncfirsttrop_all_onc	Special		0	0.00%	0	0	0.00%
+monsncfirsttrop_all_onc	Missing		30	0.17%	0	30	0.00%
+timesncfirsttrop_exc_cc_onc	(-inf, 21.78)		897	5.01%	882	15	1.67%
+timesncfirsttrop_exc_cc_onc	[21.78, 60.60)		5183	28.96%	5126	57	1.10%
+timesncfirsttrop_exc_cc_onc	[60.60, 164.21)		8729	48.77%	8664	65	0.74%
+timesncfirsttrop_exc_cc_onc	[164.21, inf)		2792	15.60%	2780	12	0.43%
+timesncfirsttrop_exc_cc_onc	Special		0	0.00%	0	0	0.00%
+timesncfirsttrop_exc_cc_onc	Missing		296	1.65%	264	32	10.81%
+monsnclasttrop_exccgled_lv	(-inf, 7.95)		9024	50.42%	8959	65	0.72%
+monsnclasttrop_exccgled_lv	[7.95, inf)		6724	37.57%	6658	66	0.98%
+monsnclasttrop_exccgled_lv	Special		0	0.00%	0	0	0.00%
+monsnclasttrop_exccgled_lv	Missing		2149	12.01%	2099	50	2.33%
+monsnclasttrop_cc_onc	(-inf, 6.32)		3164	17.68%	3133	31	0.98%
+monsnclasttrop_cc_onc	[6.32, 13.33)		2283	12.76%	2264	19	0.83%
+monsnclasttrop_cc_onc	[13.33, 78.44)		9520	53.19%	9454	66	0.69%
+monsnclasttrop_cc_onc	[78.44, inf)		1078	6.02%	1072	6	0.56%
+monsnclasttrop_cc_onc	Special		0	0.00%	0	0	0.00%
+monsnclasttrop_cc_onc	Missing		1852	10.35%	1793	59	3.19%
+monsnclasttrop_allsal1l_lv	(-inf, 62.89)		13644	76.24%	13525	119	0.87%
+monsnclasttrop_allsal1l_lv	[62.89, inf)		994	5.55%	992	2	0.20%
+monsnclasttrop_allsal1l_lv	Special		0	0.00%	0	0	0.00%
+monsnclasttrop_allsal1l_lv	Missing		3259	18.21%	3199	60	1.84%
+monsnclasttrop_exccgled_onc	(-inf, 3.03)		4837	27.03%	4804	33	0.68%
+monsnclasttrop_exccgled_onc	[3.03, 7.86)		4930	27.55%	4891	39	0.79%
+monsnclasttrop_exccgled_onc	[7.86, inf)		7794	43.55%	7717	77	0.99%
+monsnclasttrop_exccgled_onc	Special		0	0.00%	0	0	0.00%
+monsnclasttrop_exccgled_onc	Missing		336	1.88%	304	32	9.52%
+monsnclasttrop_pl_sal20k_onc	(-inf, 7.07)		1373	7.67%	1365	8	0.58%
+monsnclasttrop_pl_sal20k_onc	[7.07, inf)		6216	34.73%	6161	55	0.88%
+monsnclasttrop_pl_sal20k_onc	Special		0	0.00%	0	0	0.00%
+monsnclasttrop_pl_sal20k_onc	Missing		10308	57.60%	10190	118	1.14%
+monsnclasttrcl_pl_sag20k_onc	(-inf, 0.91)		1145	6.40%	1130	15	1.31%
+monsnclasttrcl_pl_sag20k_onc	[0.91, inf)		12229	68.33%	12137	92	0.75%
+monsnclasttrcl_pl_sag20k_onc	Special		0	0.00%	0	0	0.00%
+monsnclasttrcl_pl_sag20k_onc	Missing		4523	25.27%	4449	74	1.64%
+monsncfirsttrop_cd_onc	(-inf, 36.74)		2727	15.24%	2692	35	1.28%
+monsncfirsttrop_cd_onc	[36.74, 49.23)		2351	13.14%	2326	25	1.06%
+monsncfirsttrop_cd_onc	[49.23, 102.83)		5220	29.17%	5180	40	0.77%
+monsncfirsttrop_cd_onc	[102.83, inf)		2757	15.40%	2745	12	0.44%
+monsncfirsttrop_cd_onc	Special		0	0.00%	0	0	0.00%
+monsncfirsttrop_cd_onc	Missing		4842	27.05%	4773	69	1.43%
+monsnclasttrop_cd_onc	(-inf, 12.24)		3954	22.09%	3911	43	1.09%
+monsnclasttrop_cd_onc	[12.24, 16.47)		944	5.27%	935	9	0.95%
+monsnclasttrop_cd_onc	[16.47, 78.35)		7217	40.33%	7162	55	0.76%
+monsnclasttrop_cd_onc	[78.35, inf)		940	5.25%	935	5	0.53%
+monsnclasttrop_cd_onc	Special		0	0.00%	0	0	0.00%
+monsnclasttrop_cd_onc	Missing		4842	27.05%	4773	69	1.43%
+no_trades_cd_onc	(-inf, inf)		17867	99.83%	17716	151	0.85%
+no_trades_cd_onc	Special		0	0.00%	0	0	0.00%
+no_trades_cd_onc	Missing		30	0.17%	0	30	0.00%
+monsncfirsttrop_all_sag20k_onc	(-inf, 25.53)		1192	6.66%	1168	24	2.01%
+monsncfirsttrop_all_sag20k_onc	[25.53, 33.00)		914	5.11%	902	12	1.31%
+monsncfirsttrop_all_sag20k_onc	[33.00, 42.32)		1616	9.03%	1600	16	0.99%
+monsncfirsttrop_all_sag20k_onc	[42.32, 166.01)		11110	62.08%	11022	88	0.79%
+monsncfirsttrop_all_sag20k_onc	[166.01, 232.90)		2005	11.20%	1996	9	0.45%
+monsncfirsttrop_all_sag20k_onc	[232.90, inf)		911	5.09%	909	2	0.22%
+monsncfirsttrop_all_sag20k_onc	Special		0	0.00%	0	0	0.00%
+monsncfirsttrop_all_sag20k_onc	Missing		149	0.83%	119	30	20.13%
+monsnclasttrop_all_sag20k_onc	(-inf, 3.06)		5675	31.71%	5638	37	0.65%
+monsnclasttrop_all_sag20k_onc	[3.06, 9.66)		6576	36.74%	6518	58	0.88%
+monsnclasttrop_all_sag20k_onc	[9.66, inf)		5497	30.71%	5441	56	1.02%
+monsnclasttrop_all_sag20k_onc	Special		0	0.00%	0	0	0.00%
+monsnclasttrop_all_sag20k_onc	Missing		149	0.83%	119	30	20.13%
+no_trades_all_sag20k_onc	(-inf, 5.50)		4389	24.52%	4336	53	1.21%
+no_trades_all_sag20k_onc	[5.50, 8.50)		2969	16.59%	2942	27	0.91%
+no_trades_all_sag20k_onc	[8.50, 17.50)		5586	31.21%	5544	42	0.75%
+no_trades_all_sag20k_onc	[17.50, inf)		4923	27.51%	4894	29	0.59%
+no_trades_all_sag20k_onc	Special		0	0.00%	0	0	0.00%
+no_trades_all_sag20k_onc	Missing		30	0.17%	0	30	0.00%
+monsncfirsttrop_allsag1l_onc	(-inf, 22.81)		2277	12.72%	2246	31	1.36%
+monsncfirsttrop_allsag1l_onc	[22.81, 71.65)		5377	30.04%	5327	50	0.93%
+monsncfirsttrop_allsag1l_onc	[71.65, 166.04)		6268	35.02%	6217	51	0.81%
+monsncfirsttrop_allsag1l_onc	[166.04, inf)		1895	10.59%	1890	5	0.26%
+monsncfirsttrop_allsag1l_onc	Special		0	0.00%	0	0	0.00%
+monsncfirsttrop_allsag1l_onc	Missing		2080	11.62%	2036	44	2.12%
+monsnclasttrop_allsag1l_onc	(-inf, 1.00)		925	5.17%	915	10	1.08%
+monsnclasttrop_allsag1l_onc	[1.00, 21.65)		11766	65.74%	11660	106	0.90%
+monsnclasttrop_allsag1l_onc	[21.65, inf)		3126	17.47%	3105	21	0.67%
+monsnclasttrop_allsag1l_onc	Special		0	0.00%	0	0	0.00%
+monsnclasttrop_allsag1l_onc	Missing		2080	11.62%	2036	44	2.12%
+no_trades_allsag1l_onc	(-inf, 18.50)		16363	91.43%	16220	143	0.87%
+no_trades_allsag1l_onc	[18.50, inf)		1504	8.40%	1496	8	0.53%
+no_trades_allsag1l_onc	Special		0	0.00%	0	0	0.00%
+no_trades_allsag1l_onc	Missing		30	0.17%	0	30	0.00%
+monsncfirsttrop_uns_onc	(-inf, 19.93)		1033	5.77%	1019	14	1.36%
+monsncfirsttrop_uns_onc	[19.93, 70.11)		6962	38.90%	6894	68	0.98%
+monsncfirsttrop_uns_onc	[70.11, 164.21)		7367	41.16%	7308	59	0.80%
+monsncfirsttrop_uns_onc	[164.21, 209.00)		895	5.00%	892	3	0.34%
+monsncfirsttrop_uns_onc	[209.00, inf)		1058	5.91%	1056	2	0.19%
+monsncfirsttrop_uns_onc	Special		0	0.00%	0	0	0.00%
+monsncfirsttrop_uns_onc	Missing		582	3.25%	547	35	6.01%
+no_trades_uns_onc	(-inf, inf)		17867	99.83%	17716	151	0.85%
+no_trades_uns_onc	Special		0	0.00%	0	0	0.00%
+no_trades_uns_onc	Missing		30	0.17%	0	30	0.00%
+monsncfirsttrop_bl_onc	(-inf, 45.28)		895	5.00%	881	14	1.56%
+monsncfirsttrop_bl_onc	[45.28, inf)		1281	7.16%	1269	12	0.94%
+monsncfirsttrop_bl_onc	Special		0	0.00%	0	0	0.00%
+monsncfirsttrop_bl_onc	Missing		15721	87.84%	15566	155	0.99%
+monsnclasttrop_bl_onc	(-inf, 46.34)		1239	6.92%	1221	18	1.45%
+monsnclasttrop_bl_onc	[46.34, inf)		937	5.24%	929	8	0.85%
+monsnclasttrop_bl_onc	Special		0	0.00%	0	0	0.00%
+monsnclasttrop_bl_onc	Missing		15721	87.84%	15566	155	0.99%
+no_trades_bl_onc	(-inf, 0.50)		15691	87.67%	15566	125	0.80%
+no_trades_bl_onc	[0.50, inf)		2176	12.16%	2150	26	1.19%
+no_trades_bl_onc	Special		0	0.00%	0	0	0.00%
+no_trades_bl_onc	Missing		30	0.17%	0	30	0.00%
+monsncfirsttrop_pl_onc	(-inf, 27.69)		3199	17.87%	3164	35	1.09%
+monsncfirsttrop_pl_onc	[27.69, 70.68)		6924	38.69%	6861	63	0.91%
+monsncfirsttrop_pl_onc	[70.68, 178.68)		5142	28.73%	5107	35	0.68%
+monsncfirsttrop_pl_onc	[178.68, inf)		956	5.34%	953	3	0.31%
+monsncfirsttrop_pl_onc	Special		0	0.00%	0	0	0.00%
+monsncfirsttrop_pl_onc	Missing		1676	9.36%	1631	45	2.68%
+no_trades_pl_onc	(-inf, 2.50)		5908	33.01%	5845	63	1.07%
+no_trades_pl_onc	[2.50, 4.50)		3437	19.20%	3407	30	0.87%
+no_trades_pl_onc	[4.50, inf)		8522	47.62%	8464	58	0.68%
+no_trades_pl_onc	Special		0	0.00%	0	0	0.00%
+no_trades_pl_onc	Missing		30	0.17%	0	30	0.00%
+monsncfirsttrop_plbl_onc_l12m	(-inf, 5.82)		2289	12.79%	2276	13	0.57%
+monsncfirsttrop_plbl_onc_l12m	[5.82, 11.26)		6214	34.72%	6168	46	0.74%
+monsncfirsttrop_plbl_onc_l12m	[11.26, inf)		1236	6.91%	1222	14	1.13%
+monsncfirsttrop_plbl_onc_l12m	Special		0	0.00%	0	0	0.00%
+monsncfirsttrop_plbl_onc_l12m	Missing		8158	45.58%	8050	108	1.32%
+monsnclasttrop_plbl_onc_l12m	(-inf, 3.17)		2989	16.70%	2973	16	0.54%
+monsnclasttrop_plbl_onc_l12m	[3.17, 8.28)		4184	23.38%	4154	30	0.72%
+monsnclasttrop_plbl_onc_l12m	[8.28, 10.77)		1644	9.19%	1629	15	0.91%
+monsnclasttrop_plbl_onc_l12m	[10.77, inf)		922	5.15%	910	12	1.30%
+monsnclasttrop_plbl_onc_l12m	Special		0	0.00%	0	0	0.00%
+monsnclasttrop_plbl_onc_l12m	Missing		8158	45.58%	8050	108	1.32%
+no_trades_plbl_onc_l12m	(-inf, 0.50)		8128	45.42%	8050	78	0.96%
+no_trades_plbl_onc_l12m	[0.50, 2.50)		7391	41.30%	7334	57	0.77%
+no_trades_plbl_onc_l12m	[2.50, inf)		2348	13.12%	2332	16	0.68%
+no_trades_plbl_onc_l12m	Special		0	0.00%	0	0	0.00%
+no_trades_plbl_onc_l12m	Missing		30	0.17%	0	30	0.00%
+monsncfirsttrop_plbl_onc_l6m	(-inf, 5.27)		4120	23.02%	4096	24	0.58%
+monsncfirsttrop_plbl_onc_l6m	[5.27, inf)		1244	6.95%	1231	13	1.05%
+monsncfirsttrop_plbl_onc_l6m	Special		0	0.00%	0	0	0.00%
+monsncfirsttrop_plbl_onc_l6m	Missing		12533	70.03%	12389	144	1.15%
+monsnclasttrop_plbl_onc_l6m	(-inf, 3.17)		2989	16.70%	2973	16	0.54%
+monsnclasttrop_plbl_onc_l6m	[3.17, inf)		2375	13.27%	2354	21	0.88%
+monsnclasttrop_plbl_onc_l6m	Special		0	0.00%	0	0	0.00%
+monsnclasttrop_plbl_onc_l6m	Missing		12533	70.03%	12389	144	1.15%
+no_trades_plbl_onc_l6m	(-inf, 0.50)		12503	69.86%	12389	114	0.91%
+no_trades_plbl_onc_l6m	[0.50, inf)		5364	29.97%	5327	37	0.69%
+no_trades_plbl_onc_l6m	Special		0	0.00%	0	0	0.00%
+no_trades_plbl_onc_l6m	Missing		30	0.17%	0	30	0.00%
+monsncfirsttrop_hl_lap_onc_l9m	(-inf, inf)		941	5.26%	935	6	0.64%
+monsncfirsttrop_hl_lap_onc_l9m	Special		0	0.00%	0	0	0.00%
+monsncfirsttrop_hl_lap_onc_l9m	Missing		16956	94.74%	16781	175	1.03%
+monsnclasttrop_hl_lap_onc_l9m	(-inf, inf)		941	5.26%	935	6	0.64%
+monsnclasttrop_hl_lap_onc_l9m	Special		0	0.00%	0	0	0.00%
+monsnclasttrop_hl_lap_onc_l9m	Missing		16956	94.74%	16781	175	1.03%
+no_trades_hl_lap_onc_l9m	(-inf, 0.50)		16926	94.57%	16781	145	0.86%
+no_trades_hl_lap_onc_l9m	[0.50, inf)		941	5.26%	935	6	0.64%
+no_trades_hl_lap_onc_l9m	Special		0	0.00%	0	0	0.00%
+no_trades_hl_lap_onc_l9m	Missing		30	0.17%	0	30	0.00%
+monsncfirsttrop_twl_onc_l24m	(-inf, inf)		1469	8.21%	1454	15	1.02%
+monsncfirsttrop_twl_onc_l24m	Special		0	0.00%	0	0	0.00%
+monsncfirsttrop_twl_onc_l24m	Missing		16428	91.79%	16262	166	1.01%
+monsnclasttrop_twl_onc_l24m	(-inf, inf)		1469	8.21%	1454	15	1.02%
+monsnclasttrop_twl_onc_l24m	Special		0	0.00%	0	0	0.00%
+monsnclasttrop_twl_onc_l24m	Missing		16428	91.79%	16262	166	1.01%
+no_trades_twl_onc_l24m	(-inf, 0.50)		16398	91.62%	16262	136	0.83%
+no_trades_twl_onc_l24m	[0.50, inf)		1469	8.21%	1454	15	1.02%
+no_trades_twl_onc_l24m	Special		0	0.00%	0	0	0.00%
+no_trades_twl_onc_l24m	Missing		30	0.17%	0	30	0.00%
+monsncfirsttrop_hl_lap_onc_l24m	(-inf, 13.23)		1134	6.34%	1125	9	0.79%
+monsncfirsttrop_hl_lap_onc_l24m	[13.23, inf)		1050	5.87%	1038	12	1.14%
+monsncfirsttrop_hl_lap_onc_l24m	Special		0	0.00%	0	0	0.00%
+monsncfirsttrop_hl_lap_onc_l24m	Missing		15713	87.80%	15553	160	1.02%
+monsnclasttrop_hl_lap_onc_l24m	(-inf, 10.93)		1089	6.08%	1082	7	0.64%
+monsnclasttrop_hl_lap_onc_l24m	[10.93, inf)		1095	6.12%	1081	14	1.28%
+monsnclasttrop_hl_lap_onc_l24m	Special		0	0.00%	0	0	0.00%
+monsnclasttrop_hl_lap_onc_l24m	Missing		15713	87.80%	15553	160	1.02%
+no_trades_hl_lap_onc_l24m	(-inf, 0.50)		15683	87.63%	15553	130	0.83%
+no_trades_hl_lap_onc_l24m	[0.50, inf)		2184	12.20%	2163	21	0.96%
+no_trades_hl_lap_onc_l24m	Special		0	0.00%	0	0	0.00%
+no_trades_hl_lap_onc_l24m	Missing		30	0.17%	0	30	0.00%
+monsncfirsttrop_all_onc_l24m	(-inf, 14.21)		3171	17.72%	3137	34	1.07%
+monsncfirsttrop_all_onc_l24m	[14.21, inf)		13595	75.96%	13485	110	0.81%
+monsncfirsttrop_all_onc_l24m	Special		0	0.00%	0	0	0.00%
+monsncfirsttrop_all_onc_l24m	Missing		1131	6.32%	1094	37	3.27%
+monsnclasttrop_all_onc_l24m	(-inf, 3.03)		6313	35.27%	6270	43	0.68%
+monsnclasttrop_all_onc_l24m	[3.03, 9.66)		6605	36.91%	6545	60	0.91%
+monsnclasttrop_all_onc_l24m	[9.66, inf)		3848	21.50%	3807	41	1.07%
+monsnclasttrop_all_onc_l24m	Special		0	0.00%	0	0	0.00%
+monsnclasttrop_all_onc_l24m	Missing		1131	6.32%	1094	37	3.27%
+no_trades_all_onc_l24m	(-inf, 1.50)		3252	18.17%	3232	20	0.62%
+no_trades_all_onc_l24m	[1.50, 15.50)		13536	75.63%	13418	118	0.87%
+no_trades_all_onc_l24m	[15.50, inf)		1079	6.03%	1066	13	1.20%
+no_trades_all_onc_l24m	Special		0	0.00%	0	0	0.00%
+no_trades_all_onc_l24m	Missing		30	0.17%	0	30	0.00%
+monsncfirsttrop_cl_onc_l12m	(-inf, 9.66)		2889	16.14%	2864	25	0.87%
+monsncfirsttrop_cl_onc_l12m	[9.66, inf)		1007	5.63%	991	16	1.59%
+monsncfirsttrop_cl_onc_l12m	Special		0	0.00%	0	0	0.00%
+monsncfirsttrop_cl_onc_l12m	Missing		14001	78.23%	13861	140	1.00%
+monsnclasttrop_cl_onc_l12m	(-inf, 7.95)		2920	16.32%	2894	26	0.89%
+monsnclasttrop_cl_onc_l12m	[7.95, inf)		976	5.45%	961	15	1.54%
+monsnclasttrop_cl_onc_l12m	Special		0	0.00%	0	0	0.00%
+monsnclasttrop_cl_onc_l12m	Missing		14001	78.23%	13861	140	1.00%
+no_trades_cl_onc_l12m	(-inf, 0.50)		13971	78.06%	13861	110	0.79%
+no_trades_cl_onc_l12m	[0.50, 1.50)		2124	11.87%	2103	21	0.99%
+no_trades_cl_onc_l12m	[1.50, inf)		1772	9.90%	1752	20	1.13%
+no_trades_cl_onc_l12m	Special		0	0.00%	0	0	0.00%
+no_trades_cl_onc_l12m	Missing		30	0.17%	0	30	0.00%
+sum_currbal_cc_lv	(-inf, 0.50)		4162	23.26%	4115	47	1.13%
+sum_currbal_cc_lv	[0.50, 10985.00)		1943	10.86%	1923	20	1.03%
+sum_currbal_cc_lv	[10985.00, 66732.00)		5146	28.75%	5106	40	0.78%
+sum_currbal_cc_lv	[66732.00, inf)		6616	36.97%	6572	44	0.67%
+sum_currbal_cc_lv	Special		0	0.00%	0	0	0.00%
+sum_currbal_cc_lv	Missing		30	0.17%	0	30	0.00%
+sum_currbal_pl_lv	(-inf, 10405.00)		5301	29.62%	5240	61	1.15%
+sum_currbal_pl_lv	[10405.00, 233179.50)		6001	33.53%	5946	55	0.92%
+sum_currbal_pl_lv	[233179.50, inf)		6565	36.68%	6530	35	0.53%
+sum_currbal_pl_lv	Special		0	0.00%	0	0	0.00%
+sum_currbal_pl_lv	Missing		30	0.17%	0	30	0.00%
+no_tr_open_l24m_uns_onc	(-inf, 6.50)		12278	68.60%	12184	94	0.77%
+no_tr_open_l24m_uns_onc	[6.50, inf)		2943	16.44%	2912	31	1.05%
+no_tr_open_l24m_uns_onc	Special		0	0.00%	0	0	0.00%
+no_tr_open_l24m_uns_onc	Missing		2676	14.95%	2620	56	2.09%
+pct_bal_cc_lv	(-inf, 29.19)	Super Green	7400	41.35%	7354	46	0.62%
+pct_bal_cc_lv	[29.19, 83.20)	Green	6181	34.54%	6134	47	0.76%
+pct_bal_cc_lv	[83.20, inf)	Amber	1500	8.38%	1478	22	1.47%
+pct_bal_cc_lv	Special		0	0.00%	0	0	0.00%
+pct_bal_cc_lv	Missing	Red	2816	15.73%	2750	66	2.34%
+pct_bal_pl_lv	(-inf, 37.10)	Super Green	2104	11.76%	2093	11	0.52%
+pct_bal_pl_lv	[37.10, 87.06)	Green	8362	46.72%	8301	61	0.73%
+pct_bal_pl_lv	[87.06, inf)	Amber	2488	13.90%	2466	22	0.88%
+pct_bal_pl_lv	Special		0	0.00%	0	0	0.00%
+pct_bal_pl_lv	Missing	Red	4943	27.62%	4856	87	1.76%
+interpurchase_time_l12m_cl	(-inf, 0.81)	Red	2952	16.49%	2918	34	1.15%
+interpurchase_time_l12m_cl	[0.81, inf)	Green	943	5.27%	936	7	0.74%
+interpurchase_time_l12m_cl	Special		0	0.00%	0	0	0.00%
+interpurchase_time_l12m_cl	Missing	Red	14002	78.24%	13862	140	1.00%
+interpurchase_time_l12m_plbl	(-inf, 0.14)	Green	5654	31.59%	5614	40	0.71%
+interpurchase_time_l12m_plbl	[0.14, inf)	Green	4085	22.83%	4052	33	0.81%
+interpurchase_time_l12m_plbl	Special		0	0.00%	0	0	0.00%
+interpurchase_time_l12m_plbl	Missing	Red	8158	45.58%	8050	108	1.32%
+interpurchase_time_l24m_all	(-inf, 2.54)	Amber	9892	55.27%	9800	92	0.93%
+interpurchase_time_l24m_all	[2.54, 4.22)	Green	4521	25.26%	4483	38	0.84%
+interpurchase_time_l24m_all	[4.22, inf)	Super Green	2352	13.14%	2338	14	0.60%
+interpurchase_time_l24m_all	Special		0	0.00%	0	0	0.00%
+interpurchase_time_l24m_all	Missing	Red	1132	6.33%	1095	37	3.27%
+interpurchase_time_l24m_hl_lap	(-inf, inf)	Green	2184	12.20%	2163	21	0.96%
+interpurchase_time_l24m_hl_lap	Special		0	0.00%	0	0	0.00%
+interpurchase_time_l24m_hl_lap	Missing	Red	15713	87.80%	15553	160	1.02%
+interpurchase_time_l24m_twl	(-inf, inf)	No Segment	1469	8.21%	1454	15	1.02%
+interpurchase_time_l24m_twl	Special		0	0.00%	0	0	0.00%
+interpurchase_time_l24m_twl	Missing	No Segment	16428	91.79%	16262	166	1.01%
+interpurchase_time_l6m_plbl	(-inf, 0.62)	Amber	4468	24.97%	4435	33	0.74%
+interpurchase_time_l6m_plbl	[0.62, inf)	Green	896	5.01%	892	4	0.45%
+interpurchase_time_l6m_plbl	Special		0	0.00%	0	0	0.00%
+interpurchase_time_l6m_plbl	Missing	Red	12533	70.03%	12389	144	1.15%
+interpurchase_time_l9m_hl_lap	(-inf, inf)	Green	941	5.26%	935	6	0.64%
+interpurchase_time_l9m_hl_lap	Special		0	0.00%	0	0	0.00%
+interpurchase_time_l9m_hl_lap	Missing	Red	16956	94.74%	16781	175	1.03%
+uns_enq_l12m	(-inf, 11.50)		16111	90.02%	15973	138	0.86%
+uns_enq_l12m	[11.50, inf)		1202	6.72%	1193	9	0.75%
+uns_enq_l12m	Special		0	0.00%	0	0	0.00%
+uns_enq_l12m	Missing		584	3.26%	550	34	5.82%
+tr_to_enq_ratio_uns_l24m	(-inf, 13.74)	Red	2362	13.20%	2332	30	1.27%
+tr_to_enq_ratio_uns_l24m	[13.74, inf)	Green	12958	72.40%	12854	104	0.80%
+tr_to_enq_ratio_uns_l24m	Special		0	0.00%	0	0	0.00%
+tr_to_enq_ratio_uns_l24m	Missing	Red	2577	14.40%	2530	47	1.82%

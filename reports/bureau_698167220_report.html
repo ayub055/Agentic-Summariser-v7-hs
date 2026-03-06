@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bureau Report - ###1174</title>
+    <title>Bureau Report - ###7220</title>
     <script>/**
  * Skipped minification because the original files appears to be already minified.
  * Original file: /npm/chart.js@4.4.0/dist/chart.umd.js
@@ -42,27 +42,52 @@
         }
 
         .header {
-            border-bottom: 3px solid #2c3e50;
-            padding-bottom: 15px;
-            margin-bottom: 25px;
+            background: #1e293b;
+            padding: 22px 24px;
+            border-radius: 8px;
+            margin-bottom: 28px;
         }
 
         .header h1 {
-            color: #2c3e50;
-            font-size: 24px;
-            margin-bottom: 10px;
+            color: #f8fafc;
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: -0.2px;
+            margin-bottom: 14px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
         }
 
         .header-meta {
             display: flex;
             flex-wrap: wrap;
-            gap: 20px;
-            color: #666;
-            font-size: 13px;
+            gap: 8px;
         }
 
         .header-meta span {
-            display: inline-block;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-size: 12px;
+            color: #94a3b8;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .header-meta span strong {
+            color: #cbd5e1;
+            font-weight: 600;
+            margin-right: 4px;
+        }
+
+        .header-disclaimer {
+            margin-top: 12px;
+            padding-top: 10px;
+            border-top: 1px solid rgba(255,255,255,0.08);
+            font-size: 10px;
+            color: rgba(255,255,255,0.38);
+            font-style: italic;
         }
 
         .section {
@@ -120,8 +145,71 @@
             color: #e74c3c;
         }
 
+        .info-item .value.warning {
+            color: #d35400;
+        }
+
         .info-item .value.safe {
             color: #27ae60;
+        }
+
+        /* Compact grid for Behavioral & Risk Features */
+        .rf-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+            margin-bottom: 4px;
+        }
+
+        .rf-item {
+            padding: 7px 10px;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+
+        .rf-item label {
+            display: block;
+            font-size: 10.5px;
+            color: #666;
+            margin-bottom: 2px;
+            line-height: 1.3;
+        }
+
+        .rf-item .value {
+            font-size: 15px;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+
+        .rf-item .value.risk { color: #e74c3c; }
+        .rf-item .value.safe { color: #27ae60; }
+
+        /* Grid signal chips (Portfolio section) */
+        .tl-chips { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 14px; }
+        .tl-chip {
+            display: inline-flex; flex-direction: column;
+            padding: 5px 9px; border-radius: 5px;
+            font-size: 11px; min-width: 90px; max-width: 145px;
+            border-left: 3px solid #cbd5e1; cursor: default;
+        }
+        .tl-chip-label { font-size: 9px; font-weight: 600; text-transform: uppercase;
+                         letter-spacing: 0.4px; opacity: 0.65; margin-bottom: 2px; }
+        .tl-chip-value { font-size: 12px; font-weight: 700; }
+        .tl-chip.chip-green { background:#f0fdf4; border-left-color:#22c55e; color:#14532d; }
+        .tl-chip.chip-red   { background:#fff1f2; border-left-color:#f43f5e; color:#881337; }
+        .tl-chip.chip-gray  { background:#f8fafc; border-left-color:#94a3b8; color:#475569; }
+
+        .rf-subhead {
+            font-size: 11px;
+            font-weight: 700;
+            color: #475569;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin: 12px 0 5px;
+            padding: 2px 8px;
+            background: #e2e8f0;
+            border-radius: 3px;
+            display: inline-block;
         }
 
         table {
@@ -227,35 +315,143 @@
         }
 
         /* ── scorecard ───────────────────────────── */
-        .scorecard { border: 2px solid #2c3e50; border-radius: 6px; padding: 18px; margin-bottom: 28px; background: #fff; }
-        .sc-verdict { font-size: 17px; font-weight: 700; padding: 10px 16px; border-radius: 4px; margin-bottom: 16px; }
-        .sc-rag-red    { background: #fdecea; color: #c0392b; border-left: 5px solid #e74c3c; }
-        .sc-rag-amber  { background: #fef5e7; color: #d35400; border-left: 5px solid #e67e22; }
-        .sc-rag-green  { background: #eafaf1; color: #1e8449; border-left: 5px solid #27ae60; }
-        .sc-rag-neutral{ background: #f4f6f7; color: #555;    border-left: 5px solid #95a5a6; }
-        .sc-signals-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; margin-bottom: 16px; }
-        .sc-signal { padding: 10px; border-radius: 4px; text-align: center; }
-        .sc-sig-label { font-size: 11px; opacity: 0.85; }
-        .sc-sig-value { font-size: 15px; font-weight: 700; margin: 4px 0; }
-        .sc-sig-note  { font-size: 10px; opacity: 0.75; }
-        .sc-3col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 14px; }
-        .sc-col { padding: 10px 12px; border-radius: 4px; font-size: 12px; line-height: 1.7; }
-        .sc-col-head { font-weight: 700; font-size: 12px; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .sc-col-green { background: #eafaf1; }
-        .sc-col-red   { background: #fdecea; }
-        .sc-col-gray  { background: #f4f6f7; }
-        .sc-narrative { border-top: 1px solid #eee; padding-top: 12px; font-size: 13px; color: #444; line-height: 1.6; white-space: pre-line; }
+        .scorecard {
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 28px;
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+        .sc-verdict {
+            font-size: 16px;
+            font-weight: 800;
+            padding: 11px 18px;
+            border-radius: 6px;
+            margin-bottom: 18px;
+            letter-spacing: 0.3px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .sc-rag-red    { background: #fff0f0; color: #9f1239; border-left: 5px solid #fb7185; }
+        .sc-rag-amber  { background: #fefce8; color: #854d0e; border-left: 5px solid #ca8a04; }
+        .sc-rag-green  { background: #f0fdfa; color: #0f766e; border-left: 5px solid #2dd4bf; }
+        .sc-rag-neutral{ background: #eef2ff; color: #3730a3; border-left: 5px solid #818cf8; }
+        .sc-signals-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 8px;
+            margin-bottom: 18px;
+        }
+        .sc-signal {
+            position: relative;
+            padding: 10px 8px 8px;
+            border-radius: 6px;
+            text-align: center;
+            border-bottom: 3px solid transparent;
+            cursor: default;
+        }
+        .sc-rag-red.sc-signal    { border-bottom-color: #fb7185; }
+        .sc-rag-amber.sc-signal  { border-bottom-color: #ca8a04; }
+        .sc-rag-green.sc-signal  { border-bottom-color: #2dd4bf; }
+        .sc-rag-neutral.sc-signal{ border-bottom-color: #818cf8; }
+        .sc-sig-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; opacity: 0.75; }
+        .sc-sig-value { font-size: 14px; font-weight: 800; margin: 5px 0 3px; }
+        .sc-sig-note  { font-size: 10px; opacity: 0.65; }
+        /* signal chip hover tooltip */
+        .sc-tooltip {
+            display: none;
+            position: absolute;
+            bottom: calc(100% + 8px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1e293b;
+            color: #e2e8f0;
+            font-size: 11px;
+            font-weight: 400;
+            text-align: left;
+            padding: 8px 10px;
+            border-radius: 6px;
+            width: 210px;
+            white-space: pre-line;
+            z-index: 200;
+            line-height: 1.5;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.35);
+            pointer-events: none;
+        }
+        .sc-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 5px solid transparent;
+            border-top-color: #1e293b;
+        }
+        .sc-signal:hover .sc-tooltip { display: block; }
+        .sc-3col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+        .sc-col {
+            padding: 12px 14px;
+            border-radius: 6px;
+            font-size: 12px;
+            line-height: 1.75;
+            border-top: 3px solid transparent;
+        }
+        .sc-col-head {
+            font-weight: 800;
+            font-size: 11px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.7px;
+        }
+        .sc-col-green { background: #f5fbf7; border-top-color: #34d399; color: #1a3a2a; }
+        .sc-col-green .sc-col-head { color: #059669; }
+        .sc-col-red   { background: #fdf6f0; border-top-color: #f97316; color: #431407; }
+        .sc-col-red   .sc-col-head { color: #c2410c; }
+        .sc-col-item  { display: flex; align-items: flex-start; gap: 5px; padding: 1px 0; font-size: 11.5px; }
+        .sc-col-bullet{ flex-shrink: 0; margin-top: 2px; font-size: 11px; }
+        .sc-narrative {
+            border-top: 1px solid #e2e8f0;
+            padding-top: 14px;
+            font-size: 13px;
+            color: #374151;
+            line-height: 1.7;
+            white-space: pre-line;
+        }
         .chart-dpd canvas { max-width: 100% !important; max-height: none !important; width: 100% !important; height: 260px !important; }
+
+        /* KEY FINDINGS — 2-column grid */
+        .findings-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 10px; }
+        .finding-card { display: flex; align-items: flex-start; padding: 9px 11px; background: #f8f9fa; border-radius: 0 4px 4px 0; }
+        .finding-body { flex: 1; min-width: 0; }
+        .finding-meta { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; flex-wrap: wrap; }
+        .finding-text { font-weight: 600; color: #2c3e50; font-size: 12.5px; line-height: 1.4; }
+        .finding-inference { color: #555; font-size: 11.5px; margin-top: 3px; font-style: italic; line-height: 1.4; }
+        .sev-badge { font-size: 9px; font-weight: 700; padding: 1px 5px; border-radius: 3px; white-space: nowrap; }
+        .sev-high_risk     { background: #fdecea; color: #c0392b; }
+        .sev-moderate_risk { background: #fef5e7; color: #d35400; }
+        .sev-concern       { background: #fef9c3; color: #713f12; }
+        .sev-positive      { background: #eafaf1; color: #1e8449; }
+        .sev-neutral       { background: #f4f6f7; color: #666;    }
     </style>
 </head>
 <body>
     <div class="header">
         <h1>Bureau Tradeline Report</h1>
         <div class="header-meta">
-            <span><strong>Customer ID:</strong> ###1174</span>
-            <span><strong>Generated:</strong> 2026-03-03</span>
+            <span><strong>Customer ID:</strong> ###7220</span>
             <span><strong>Currency:</strong> INR</span>
-            <span><strong>Tradelines:</strong> 49</span>
+            <span><strong>Tradelines:</strong> 27</span>
+        </div>
+        <div class="header-disclaimer">
+            ⓘ Bins, thresholds &amp; verification values are calibrated on Jan '26 FPD portfolio behaviour.
         </div>
     </div>
 
@@ -268,50 +464,74 @@
         
         <div class="sc-signals-grid">
             
-            <div class="sc-signal sc-rag-red">
-                <div class="sc-sig-label">Max DPD</div>
-                <div class="sc-sig-value">156 days</div>
-                <div class="sc-sig-note">Gold Loan, 108M ago</div>
-            </div>
-            
-            <div class="sc-signal sc-rag-amber">
+            <div class="sc-signal sc-rag-green">
                 <div class="sc-sig-label">CC Util</div>
-                <div class="sc-sig-value">73%</div>
-                <div class="sc-sig-note">Elevated</div>
+                <div class="sc-sig-value">9%</div>
+                <div class="sc-sig-note">Healthy</div>
+                <div class="sc-tooltip">CC balance utilization: 9.0%.
+Thresholds: ≤30% = healthy · ≤75% = elevated · &gt;75% = over-utilized</div>
             </div>
             
-            <div class="sc-signal sc-rag-amber">
+            <div class="sc-signal sc-rag-green">
                 <div class="sc-sig-label">Enquiries</div>
-                <div class="sc-sig-value">6 in 12M</div>
-                <div class="sc-sig-note">Moderate</div>
+                <div class="sc-sig-value">0 in 12M</div>
+                <div class="sc-sig-note">Minimal</div>
+                <div class="sc-tooltip">Unsecured credit enquiries in last 12M: 0.
+Thresholds: ≤3 = minimal · ≤10 = moderate · &gt;10 = high pressure</div>
             </div>
             
             <div class="sc-signal sc-rag-green">
                 <div class="sc-sig-label">Payments</div>
                 <div class="sc-sig-value">0% missed</div>
                 <div class="sc-sig-note">18M window</div>
+                <div class="sc-tooltip">Missed payment rate over 18M: 0.0%.
+Thresholds: 0% = clean · ≤10% = some · &gt;10% = frequent</div>
+            </div>
+            
+            <div class="sc-signal sc-rag-red">
+                <div class="sc-sig-label">FOIR</div>
+                <div class="sc-sig-value">68.5%</div>
+                <div class="sc-sig-note">Over-leveraged</div>
+                <div class="sc-tooltip">Bureau obligation-to-income ratio.
+Total EMI burden (aff_emi): INR 47,937
+Affluence income (6M estimate): INR 70,000
+FOIR = aff_emi ÷ affluence_amt × 100 = 68.5%
+FOIR (unsecured only): 60.8%
+Thresholds: ≤40% = comfortable · ≤65% = stretched · &gt;65% = over-leveraged</div>
+            </div>
+            
+            <div class="sc-signal sc-rag-neutral">
+                <div class="sc-sig-label">Exposure 12M</div>
+                <div class="sc-sig-value">Stable</div>
+                <div class="sc-sig-note">vs 12M ago</div>
+                <div class="sc-tooltip">Sanctioned exposure: Mar 2026 = ₹64.1L · 12M ago = ₹66.6L.
+Change: -3.7%. Thresholds: ≤−5% = declining · ≤+30% = growing · &gt;+30% = rapid</div>
+            </div>
+            
+            <div class="sc-signal sc-rag-neutral">
+                <div class="sc-sig-label">Exposure 6M</div>
+                <div class="sc-sig-value">Stable</div>
+                <div class="sc-sig-note">6M avg trend</div>
+                <div class="sc-tooltip">Recent 6M avg: ₹64.3L · Prior 6M avg: ₹66.6L.
+Change: -3.5%. Thresholds: ≤−5% = declining · ≤+30% = growing · &gt;+30% = rapid</div>
             </div>
             
         </div>
         
         <div class="sc-3col">
             <div class="sc-col sc-col-green">
-                <div class="sc-col-head">Strengths</div>
-                <div>&#10003; Zero DPD across all products in recent 6-9 month windows</div><div>&#10003; No missed payments in last 18 months</div><div>&#10003; Trade-to-enquiry ratio (unsecured, 24M): 55.6%</div>
+                <div class="sc-col-head">&#10003; Strengths</div>
+                <div class="sc-col-item"><span class="sc-col-bullet" style="color:#34d399">●</span><span>No delinquency detected across the portfolio</span></div><div class="sc-col-item"><span class="sc-col-bullet" style="color:#34d399">●</span><span>Credit card utilization at 9% [Opened: Aug 2018 – Nov 2025 | Last Closed: Nov 2025]</span></div><div class="sc-col-item"><span class="sc-col-bullet" style="color:#34d399">●</span><span>Zero DPD across all products in recent 6-9 month windows</span></div>
             </div>
             <div class="sc-col sc-col-red">
-                <div class="sc-col-head">Concerns</div>
-                <div>&#9888; Active delinquency detected with Max DPD of 156 days [Gold Loan: Opened: May 2016 – Oct 2024 | Last Closed: Jan 2025]</div><div>&#9888; Gold Loan: Delinquent with Max DPD of 156 days [Opened: May 2016 – Oct 2024 | Last Closed: Jan 2025]</div><div>&#9888; Good closure ratio for PL loans: 33%</div>
-            </div>
-            <div class="sc-col sc-col-gray">
-                <div class="sc-col-head">Verify</div>
-                <div>&#8594; Verify all 6 live tradelines are reflected in banking obligations</div>
+                <div class="sc-col-head">&#9888; Concerns</div>
+                <div class="sc-col-item"><span class="sc-col-bullet" style="color:#f97316">●</span><span>Unsecured sanction is 100% of total (INR 72,48,130 of INR 72,48,130)</span></div>
             </div>
         </div>
         
-        <div class="sc-narrative">The customer&#39;s tradeline portfolio consists of a total of 49 live and closed accounts, with a sanctioned exposure of INR 54,30,546 and an unsecured sanction amount of INR 17,95,780. The portfolio is predominantly composed of gold loan and credit card products, with a significant number of auto loans and personal loans also present. Notably, the customer has a high credit card utilization percentage of 72.6%, indicating elevated utilization, and a large proportion of outstanding balances remain unsecured.
+        <div class="sc-narrative">The customer&#39;s tradeline portfolio consists of a total of 27 live and closed accounts, with 26 credit card accounts and 1 personal loan account. The sanctioned exposure is INR 72,48,130, with unsecured outstanding balances accounting for 100% of the total outstanding amount. Key highlights include a credit card utilization percentage of 9.0%, indicating moderate usage, and no missed payments over the past 18 months. Additionally, there are 5 closed credit card accounts, suggesting some churn in the portfolio.
 
-The behavioral insights suggest that the customer&#39;s credit behavior is characterized by [HIGH RISK] features, including an elevated trade-to-enquiry ratio and frequent loan acquisitions. The customer has also experienced [CONCERN] in terms of high CC balance utilization and a poor closure history for personal loans. However, there are some positive signals, such as no missed payments and a high conversion rate of unsecured enquiries to trades. Additionally, the customer has demonstrated good repayment discipline with 0% missed payments over the past 18 months. The composite risk signals indicate elevated leverage due to the high credit card utilization percentage and outstanding PL balance.</div>
+The customer&#39;s behavioral features indicate a relatively healthy repayment profile, with zero DPD across all products and windows, and no missed payments over the past 18 months. The credit card utilization is elevated at 9.0%, but this is still within the moderate range. The loan acquisition velocity is moderate, with an average interpurchase time of 3.45 months. However, there are some red flags, including [HIGH RISK] loan stacking indicated by 3 new personal loans in 6 months, and a high trade-to-enquiry ratio of 40.00%.</div>
         
     </div>
     
@@ -322,16 +542,16 @@ The behavioral insights suggest that the customer&#39;s credit behavior is chara
         <div class="info-grid">
             <div class="info-item">
                 <label>Total / Live Tradelines</label>
-                <div class="value">49 / 6</div>
+                <div class="value">27 / 22</div>
             </div>
             <div class="info-item">
                 <label>Total Sanction Amount</label>
-                <div class="value">INR 54.31 L</div>
+                <div class="value">INR 72.48 L</div>
             </div>
             <div class="info-item">
                 <label>Total Outstanding</label>
                 <div class="value">
-                    INR 5.79 L
+                    INR 8.23 L
                     
                         <span style="font-size: 13px; color: #666; font-weight: 400;">(11% of sanctioned)</span>
                     
@@ -340,16 +560,16 @@ The behavioral insights suggest that the customer&#39;s credit behavior is chara
             <div class="info-item">
                 <label>Unsecured Sanction Amount</label>
                 <div class="value">
-                    INR 17.96 L
+                    INR 72.48 L
                     
-                        <span style="font-size: 13px; color: #666; font-weight: 400;">(33% of total)</span>
+                        <span style="font-size: 13px; color: #666; font-weight: 400;">(100% of total)</span>
                     
                 </div>
             </div>
             <div class="info-item">
                 <label>Unsecured Outstanding</label>
                 <div class="value">
-                    INR 5.79 L
+                    INR 8.23 L
                     <span style="font-size: 13px; color: #666; font-weight: 400;">
                         
                             (100% of outstanding
@@ -362,16 +582,168 @@ The behavioral insights suggest that the customer&#39;s credit behavior is chara
             </div>
             <div class="info-item">
                 <label>Max DPD</label>
-                <div class="value risk">
+                <div class="value ">
                     
-                        156
-                        
-                            <span style="font-size: 12px; color: #666;">(108 months ago, Gold Loan)</span>
-                        
+                        N/A
                     
                 </div>
             </div>
+            
+            <div class="info-item">
+                <label>FOIR <span style="font-size:11px;color:#888;font-weight:400">(Bureau · aff_emi ÷ income)</span></label>
+                <div class="value risk">
+                    68.5%
+                    
+                    <span style="font-size:12px;color:#666;font-weight:400"> · Unsec: 60.8%</span>
+                    
+                </div>
+            </div>
+            
+            
+            <div class="info-item">
+                <label>EMI Obligation <span style="font-size:11px;color:#888;font-weight:400">(Bureau)</span></label>
+                <div class="value">
+                    INR 47,937
+                    
+                    <span style="font-size:12px;color:#666;font-weight:400"> · Unsec: INR 42,537</span>
+                    
+                </div>
+            </div>
+            
         </div>
+
+        
+        <div style="margin-top:14px;">
+            <div class="rf-subhead" style="margin-bottom:8px;">Variable Grid Signals</div>
+            <div class="tl-chips">
+                
+                <div class="tl-chip chip-red">
+                    <span class="tl-chip-label">Mo Last PL</span>
+                    <span class="tl-chip-value">20.13</span>
+                </div>
+                
+                <div class="tl-chip chip-green">
+                    <span class="tl-chip-label">Mo Last Uns</span>
+                    <span class="tl-chip-value">20.13</span>
+                </div>
+                
+                <div class="tl-chip chip-red">
+                    <span class="tl-chip-label">New PL 6M</span>
+                    <span class="tl-chip-value">N/A</span>
+                </div>
+                
+                <div class="tl-chip chip-green">
+                    <span class="tl-chip-label">Total Trades</span>
+                    <span class="tl-chip-value">27</span>
+                </div>
+                
+                <div class="tl-chip chip-green">
+                    <span class="tl-chip-label">Max DPD 6M CC</span>
+                    <span class="tl-chip-value">0</span>
+                </div>
+                
+                <div class="tl-chip chip-gray">
+                    <span class="tl-chip-label">Max DPD 6M PL</span>
+                    <span class="tl-chip-value">0</span>
+                </div>
+                
+                <div class="tl-chip chip-green">
+                    <span class="tl-chip-label">Max DPD 9M CC</span>
+                    <span class="tl-chip-value">0</span>
+                </div>
+                
+                <div class="tl-chip chip-green">
+                    <span class="tl-chip-label">Mo 0+DPD Uns</span>
+                    <span class="tl-chip-value">N/A</span>
+                </div>
+                
+                <div class="tl-chip chip-red">
+                    <span class="tl-chip-label">Mo 0+DPD PL</span>
+                    <span class="tl-chip-value">N/A</span>
+                </div>
+                
+                <div class="tl-chip chip-green">
+                    <span class="tl-chip-label">% 0+DPD 24M</span>
+                    <span class="tl-chip-value">0.00</span>
+                </div>
+                
+                <div class="tl-chip chip-green">
+                    <span class="tl-chip-label">% 0+DPD 24M PL</span>
+                    <span class="tl-chip-value">0.00</span>
+                </div>
+                
+                <div class="tl-chip chip-gray">
+                    <span class="tl-chip-label">% Missed 18M</span>
+                    <span class="tl-chip-value">0.00</span>
+                </div>
+                
+                <div class="tl-chip chip-green">
+                    <span class="tl-chip-label">% Tr 0+DPD 12M</span>
+                    <span class="tl-chip-value">N/A</span>
+                </div>
+                
+                <div class="tl-chip chip-gray">
+                    <span class="tl-chip-label">Uns Enq 12M</span>
+                    <span class="tl-chip-value">0</span>
+                </div>
+                
+                <div class="tl-chip chip-gray">
+                    <span class="tl-chip-label">Good Closed PL</span>
+                    <span class="tl-chip-value">N/A</span>
+                </div>
+                
+                <div class="tl-chip chip-green">
+                    <span class="tl-chip-label">CC Util %</span>
+                    <span class="tl-chip-value">8.97</span>
+                </div>
+                
+                <div class="tl-chip chip-green">
+                    <span class="tl-chip-label">PL Bal %</span>
+                    <span class="tl-chip-value">53.46</span>
+                </div>
+                
+                <div class="tl-chip chip-green">
+                    <span class="tl-chip-label">Tr/Enq Uns 24M</span>
+                    <span class="tl-chip-value">40.00</span>
+                </div>
+                
+                <div class="tl-chip chip-red">
+                    <span class="tl-chip-label">IP 12M CL</span>
+                    <span class="tl-chip-value">N/A</span>
+                </div>
+                
+                <div class="tl-chip chip-red">
+                    <span class="tl-chip-label">IP 12M PL/BL</span>
+                    <span class="tl-chip-value">N/A</span>
+                </div>
+                
+                <div class="tl-chip chip-green">
+                    <span class="tl-chip-label">IP 24M All</span>
+                    <span class="tl-chip-value">3.45</span>
+                </div>
+                
+                <div class="tl-chip chip-red">
+                    <span class="tl-chip-label">IP 24M HL/LAP</span>
+                    <span class="tl-chip-value">N/A</span>
+                </div>
+                
+                <div class="tl-chip chip-gray">
+                    <span class="tl-chip-label">IP 24M TWL</span>
+                    <span class="tl-chip-value">N/A</span>
+                </div>
+                
+                <div class="tl-chip chip-red">
+                    <span class="tl-chip-label">IP 6M PL/BL</span>
+                    <span class="tl-chip-value">N/A</span>
+                </div>
+                
+                <div class="tl-chip chip-red">
+                    <span class="tl-chip-label">IP 9M HL/LAP</span>
+                    <span class="tl-chip-value">N/A</span>
+                </div>
+            </div>
+        </div>
+        
     </div>
 
     <!-- Portfolio Visualizations -->
@@ -408,10 +780,13 @@ The behavioral insights suggest that the customer&#39;s credit behavior is chara
             <div class="chart-card chart-timeseries">
                 <h4>Portfolio Exposure Over Time (Stacked by Product)</h4>
                 <canvas id="chartTimeseries"></canvas>
+                
+                <p style="margin-top:10px; font-size:12.5px; color:#444; line-height:1.6; border-top:1px solid #eee; padding-top:8px;">Sanctioned exposure peaked at ₹66.6L in Feb 2025, led by CC (₹63.5L) and PL (₹3.1L). Current exposure stands at ₹64.1L (CC, PL active), down 4% from peak — trend stable.</p>
+                
             </div>
 
-            <!-- 6. DPD Event Timeline (full-width bar chart) -->
-            <div class="chart-card chart-timeseries chart-dpd">
+            <!-- 6. DPD Event Timeline (full-width bar chart) — hidden by JS if no events -->
+            <div class="chart-card chart-timeseries chart-dpd" id="dpdTimelineCard">
                 <h4>DPD Event Timeline — Max DPD by Month (Days Past Due)</h4>
                 <canvas id="chartDpdTimeline"></canvas>
             </div>
@@ -422,7 +797,7 @@ The behavioral insights suggest that the customer&#39;s credit behavior is chara
     <script>
     (function() {
         // chart_data is a pre-serialized JSON string from Python — no tojson needed
-        const CD = {"product_mix": {"labels": ["Auto Loan", "Credit Card", "Gold Loan", "Other", "Personal Loan", "Two Wheeler Loan"], "values": [1, 3, 30, 10, 4, 1]}, "secured_split": {"labels": ["Secured", "Unsecured"], "values": [32, 17]}, "onus_offus": {"labels": ["On-Us (Kotak)", "Off-Us"], "values": [0, 49]}, "unsec_outstanding": {"labels": ["Credit Card", "Other", "Personal Loan"], "values": [92907.0, 482500.0, 3322.0]}, "timeseries": {"months": ["Apr 2024", "May 2024", "Jun 2024", "Jul 2024", "Aug 2024", "Sep 2024", "Oct 2024", "Nov 2024", "Dec 2024", "Jan 2025", "Feb 2025", "Mar 2025", "Apr 2025", "May 2025", "Jun 2025", "Jul 2025", "Aug 2025", "Sep 2025", "Oct 2025", "Nov 2025", "Dec 2025", "Jan 2026", "Feb 2026", "Mar 2026"], "series": {"AL": [1267000.0, 1267000.0, 1267000.0, 1267000.0, 1267000.0, 1267000.0, 1267000.0, 1267000.0, 1267000.0, 1267000.0, 1267000.0, 1267000.0, 1267000.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "CC": [80521.0, 80521.0, 80521.0, 80521.0, 80521.0, 80521.0, 80521.0, 80521.0, 80521.0, 80521.0, 80521.0, 80521.0, 80521.0, 80521.0, 106708.0, 106708.0, 106708.0, 106708.0, 106708.0, 133776.0, 133776.0, 133776.0, 133776.0, 133776.0], "GL": [777641.0, 960741.0, 890741.0, 890741.0, 956101.0, 843001.0, 958744.0, 893384.0, 893384.0, 893384.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "OTHER": [282000.0, 282000.0, 282000.0, 282000.0, 282000.0, 282000.0, 282000.0, 282000.0, 282000.0, 282000.0, 282000.0, 661600.0, 379600.0, 379600.0, 379600.0, 379600.0, 553500.0, 684400.0, 656400.0, 482500.0, 482500.0, 482500.0, 482500.0, 482500.0], "PL": [2504.0, 2504.0, 2504.0, 2504.0, 2504.0, 2504.0, 2504.0, 2504.0, 2504.0, 2504.0, 2504.0, 2504.0, 2504.0, 2504.0, 2504.0, 2504.0, 2504.0, 2504.0, 2504.0, 2504.0, 2504.0, 2504.0, 2504.0, 2504.0]}}, "dpd_timeline": {"months": ["Apr 2024", "May 2024", "Jun 2024", "Jul 2024", "Aug 2024", "Sep 2024", "Oct 2024", "Nov 2024", "Dec 2024", "Jan 2025", "Feb 2025", "Mar 2025", "Apr 2025", "May 2025", "Jun 2025", "Jul 2025", "Aug 2025", "Sep 2025", "Oct 2025", "Nov 2025", "Dec 2025", "Jan 2026", "Feb 2026", "Mar 2026"], "events": [{"loan_type": "Auto Loan", "dpd": 83, "month_idx": 3, "month_label": "Jul 2024"}], "historical": [{"loan_type": "Gold Loan", "dpd": 156, "months_ago": 108}, {"loan_type": "Other", "dpd": 45, "months_ago": 35}, {"loan_type": "Personal Loan", "dpd": 39, "months_ago": 69}, {"loan_type": "Two Wheeler Loan", "dpd": 59, "months_ago": 62}]}};
+        const CD = {"product_mix": {"labels": ["Credit Card", "Personal Loan"], "values": [26, 1]}, "secured_split": {"labels": ["Secured", "Unsecured"], "values": [0, 27]}, "onus_offus": {"labels": ["On-Us (Kotak)", "Off-Us"], "values": [1, 26]}, "unsec_outstanding": {"labels": ["Credit Card", "Personal Loan"], "values": [655918.0, 166761.0]}, "timeseries": {"months": ["Apr 2024", "May 2024", "Jun 2024", "Jul 2024", "Aug 2024", "Sep 2024", "Oct 2024", "Nov 2024", "Dec 2024", "Jan 2025", "Feb 2025", "Mar 2025", "Apr 2025", "May 2025", "Jun 2025", "Jul 2025", "Aug 2025", "Sep 2025", "Oct 2025", "Nov 2025", "Dec 2025", "Jan 2026", "Feb 2026", "Mar 2026"], "series": {"CC": [5192000.0, 5192000.0, 5192000.0, 5619000.0, 5619000.0, 5619000.0, 5619000.0, 5619000.0, 6046000.0, 6046000.0, 6346000.0, 6346000.0, 6346000.0, 6346000.0, 6346000.0, 6346000.0, 6346000.0, 6346000.0, 6146000.0, 6147205.0, 6097205.0, 6097205.0, 6097205.0, 6097205.0], "PL": [0.0, 311925.0, 311925.0, 311925.0, 311925.0, 311925.0, 311925.0, 311925.0, 311925.0, 311925.0, 311925.0, 311925.0, 311925.0, 311925.0, 311925.0, 311925.0, 311925.0, 311925.0, 311925.0, 311925.0, 311925.0, 311925.0, 311925.0, 311925.0]}}, "dpd_timeline": {"months": ["Apr 2024", "May 2024", "Jun 2024", "Jul 2024", "Aug 2024", "Sep 2024", "Oct 2024", "Nov 2024", "Dec 2024", "Jan 2025", "Feb 2025", "Mar 2025", "Apr 2025", "May 2025", "Jun 2025", "Jul 2025", "Aug 2025", "Sep 2025", "Oct 2025", "Nov 2025", "Dec 2025", "Jan 2026", "Feb 2026", "Mar 2026"], "events": [], "historical": []}};
 
         // Fixed per-product color map — consistent across ALL charts.
         // Keys: short enum names (timeseries) AND display names (donuts).
@@ -551,10 +926,14 @@ The behavioral insights suggest that the customer&#39;s credit behavior is chara
                     },
                 },
             });
-        // DPD Timeline chart
+        // DPD Timeline chart — hide card entirely if no events
         (function() {
             const dpd = CD.dpd_timeline;
-            if (!dpd || !dpd.events || !dpd.events.length) return;
+            const card = document.getElementById("dpdTimelineCard");
+            if (!dpd || !dpd.events || !dpd.events.length) {
+                if (card) card.style.display = "none";
+                return;
+            }
             const ctx = document.getElementById("chartDpdTimeline");
             if (!ctx) return;
             const byLt = {};
@@ -595,9 +974,9 @@ The behavioral insights suggest that the customer&#39;s credit behavior is chara
     <div class="section">
         <h3>Executive Summary</h3>
         <div class="summary-box">
-            <p>The customer&#39;s tradeline portfolio consists of a total of 49 live and closed accounts, with a sanctioned exposure of INR 54,30,546 and an unsecured sanction amount of INR 17,95,780. The portfolio is predominantly composed of gold loan and credit card products, with a significant number of auto loans and personal loans also present. Notably, the customer has a high credit card utilization percentage of 72.6%, indicating elevated utilization, and a large proportion of outstanding balances remain unsecured.
+            <p>The customer&#39;s tradeline portfolio consists of a total of 27 live and closed accounts, with 26 credit card accounts and 1 personal loan account. The sanctioned exposure is INR 72,48,130, with unsecured outstanding balances accounting for 100% of the total outstanding amount. Key highlights include a credit card utilization percentage of 9.0%, indicating moderate usage, and no missed payments over the past 18 months. Additionally, there are 5 closed credit card accounts, suggesting some churn in the portfolio.
 
-The behavioral insights suggest that the customer&#39;s credit behavior is characterized by [HIGH RISK] features, including an elevated trade-to-enquiry ratio and frequent loan acquisitions. The customer has also experienced [CONCERN] in terms of high CC balance utilization and a poor closure history for personal loans. However, there are some positive signals, such as no missed payments and a high conversion rate of unsecured enquiries to trades. Additionally, the customer has demonstrated good repayment discipline with 0% missed payments over the past 18 months. The composite risk signals indicate elevated leverage due to the high credit card utilization percentage and outstanding PL balance.</p>
+The customer&#39;s behavioral features indicate a relatively healthy repayment profile, with zero DPD across all products and windows, and no missed payments over the past 18 months. The credit card utilization is elevated at 9.0%, but this is still within the moderate range. The loan acquisition velocity is moderate, with an average interpurchase time of 3.45 months. However, there are some red flags, including [HIGH RISK] loan stacking indicated by 3 new personal loans in 6 months, and a high trade-to-enquiry ratio of 40.00%.</p>
         </div>
     </div>
     
@@ -606,155 +985,71 @@ The behavioral insights suggest that the customer&#39;s credit behavior is chara
     
     <div class="section">
         <h3>Key Findings & Inferences</h3>
-        <div style="margin-top: 10px;">
+        <div class="findings-grid">
             
-            <div style="display: flex; align-items: flex-start; margin-bottom: 10px; padding: 10px; border-left: 4px solid #e74c3c; background-color: #f8f9fa; border-radius: 0 4px 4px 0;">
-                <div style="flex: 1;">
-                    <div style="margin-bottom: 4px;">
-                        <span style="font-size: 11px; color: #666;">Delinquency</span>
+            <div class="finding-card" style="border-left: 4px solid #e67e22;">
+                <div class="finding-body">
+                    <div class="finding-meta">
+                        <span class="sev-badge sev-moderate_risk">MOD RISK</span>
+                        <span style="font-size: 10.5px; color: #888;">Portfolio</span>
                     </div>
-                    <div style="font-weight: 600; color: #2c3e50; font-size: 13px;">Active delinquency detected with Max DPD of 156 days [Gold Loan: Opened: May 2016 – Oct 2024 | Last Closed: Jan 2025]</div>
-                    <div style="color: #555; font-size: 12px; margin-top: 3px; font-style: italic;">Severe delinquency indicates significant repayment stress; loan may be classified as NPA</div>
+                    <div class="finding-text">Unsecured sanction is 100% of total (INR 72,48,130 of INR 72,48,130)</div>
+                    <div class="finding-inference">Heavily skewed towards unsecured lending; higher risk in absence of collateral</div>
                 </div>
             </div>
             
-            <div style="display: flex; align-items: flex-start; margin-bottom: 10px; padding: 10px; border-left: 4px solid #e74c3c; background-color: #f8f9fa; border-radius: 0 4px 4px 0;">
-                <div style="flex: 1;">
-                    <div style="margin-bottom: 4px;">
-                        <span style="font-size: 11px; color: #666;">Delinquency</span>
+            <div class="finding-card" style="border-left: 4px solid #27ae60;">
+                <div class="finding-body">
+                    <div class="finding-meta">
+                        <span class="sev-badge sev-positive">POSITIVE</span>
+                        <span style="font-size: 10.5px; color: #888;">Delinquency</span>
                     </div>
-                    <div style="font-weight: 600; color: #2c3e50; font-size: 13px;">Gold Loan: Delinquent with Max DPD of 156 days [Opened: May 2016 – Oct 2024 | Last Closed: Jan 2025]</div>
-                    <div style="color: #555; font-size: 12px; margin-top: 3px; font-style: italic;">Severe delinquency on Gold Loan account; may indicate deep financial distress</div>
+                    <div class="finding-text">No delinquency detected across the portfolio</div>
+                    <div class="finding-inference">Clean delinquency record is a positive indicator for repayment discipline</div>
                 </div>
             </div>
             
-            <div style="display: flex; align-items: flex-start; margin-bottom: 10px; padding: 10px; border-left: 4px solid #e74c3c; background-color: #f8f9fa; border-radius: 0 4px 4px 0;">
-                <div style="flex: 1;">
-                    <div style="margin-bottom: 4px;">
-                        <span style="font-size: 11px; color: #666;">Payment Behavior</span>
+            <div class="finding-card" style="border-left: 4px solid #27ae60;">
+                <div class="finding-body">
+                    <div class="finding-meta">
+                        <span class="sev-badge sev-positive">POSITIVE</span>
+                        <span style="font-size: 10.5px; color: #888;">Utilization</span>
                     </div>
-                    <div style="font-weight: 600; color: #2c3e50; font-size: 13px;">Good closure ratio for PL loans: 33%</div>
-                    <div style="color: #555; font-size: 12px; margin-top: 3px; font-style: italic;">Poor PL closure history — majority of closed PLs had issues</div>
+                    <div class="finding-text">Credit card utilization at 9% [Opened: Aug 2018 – Nov 2025 | Last Closed: Nov 2025]</div>
+                    <div class="finding-inference">Healthy utilization indicates disciplined credit card usage</div>
                 </div>
             </div>
             
-            <div style="display: flex; align-items: flex-start; margin-bottom: 10px; padding: 10px; border-left: 4px solid #e74c3c; background-color: #f8f9fa; border-radius: 0 4px 4px 0;">
-                <div style="flex: 1;">
-                    <div style="margin-bottom: 4px;">
-                        <span style="font-size: 11px; color: #666;">Utilization</span>
+            <div class="finding-card" style="border-left: 4px solid #27ae60;">
+                <div class="finding-body">
+                    <div class="finding-meta">
+                        <span class="sev-badge sev-positive">POSITIVE</span>
+                        <span style="font-size: 10.5px; color: #888;">DPD &amp; Delinquency</span>
                     </div>
-                    <div style="font-weight: 600; color: #2c3e50; font-size: 13px;">PL balance remaining: 132.7%</div>
-                    <div style="color: #555; font-size: 12px; margin-top: 3px; font-style: italic;">Most PL sanctioned amount still outstanding; limited principal repayment progress</div>
+                    <div class="finding-text">Zero DPD across all products in recent 6-9 month windows</div>
+                    <div class="finding-inference">Clean recent payment record demonstrates consistent repayment discipline</div>
                 </div>
             </div>
             
-            <div style="display: flex; align-items: flex-start; margin-bottom: 10px; padding: 10px; border-left: 4px solid #e67e22; background-color: #f8f9fa; border-radius: 0 4px 4px 0;">
-                <div style="flex: 1;">
-                    <div style="margin-bottom: 4px;">
-                        <span style="font-size: 11px; color: #666;">Delinquency</span>
+            <div class="finding-card" style="border-left: 4px solid #27ae60;">
+                <div class="finding-body">
+                    <div class="finding-meta">
+                        <span class="sev-badge sev-positive">POSITIVE</span>
+                        <span style="font-size: 10.5px; color: #888;">Payment Behavior</span>
                     </div>
-                    <div style="font-weight: 600; color: #2c3e50; font-size: 13px;">Auto Loan: Delinquent with Max DPD of 83 days [Opened: Dec 2019 | Last Closed: Apr 2025]</div>
-                    <div style="color: #555; font-size: 12px; margin-top: 3px; font-style: italic;">Significant past-due on Auto Loan; repayment discipline is compromised</div>
+                    <div class="finding-text">No missed payments in last 18 months</div>
+                    <div class="finding-inference">Perfect payment track record over 18 months is a strong positive</div>
                 </div>
             </div>
             
-            <div style="display: flex; align-items: flex-start; margin-bottom: 10px; padding: 10px; border-left: 4px solid #e67e22; background-color: #f8f9fa; border-radius: 0 4px 4px 0;">
-                <div style="flex: 1;">
-                    <div style="margin-bottom: 4px;">
-                        <span style="font-size: 11px; color: #666;">Utilization</span>
+            <div class="finding-card" style="border-left: 4px solid #27ae60;">
+                <div class="finding-body">
+                    <div class="finding-meta">
+                        <span class="sev-badge sev-positive">POSITIVE</span>
+                        <span style="font-size: 10.5px; color: #888;">Enquiry Behavior</span>
                     </div>
-                    <div style="font-weight: 600; color: #2c3e50; font-size: 13px;">Credit card utilization at 73% [Opened: Nov 2018 – Nov 2025 | Active]</div>
-                    <div style="color: #555; font-size: 12px; margin-top: 3px; font-style: italic;">Elevated utilization; approaching high-risk threshold for revolving credit</div>
-                </div>
-            </div>
-            
-            <div style="display: flex; align-items: flex-start; margin-bottom: 10px; padding: 10px; border-left: 4px solid #e67e22; background-color: #f8f9fa; border-radius: 0 4px 4px 0;">
-                <div style="flex: 1;">
-                    <div style="margin-bottom: 4px;">
-                        <span style="font-size: 11px; color: #666;">Delinquency</span>
-                    </div>
-                    <div style="font-weight: 600; color: #2c3e50; font-size: 13px;">Other: Delinquent with Max DPD of 45 days [Opened: Oct 2021 – Oct 2025 | Last Closed: Oct 2025]</div>
-                    <div style="color: #555; font-size: 12px; margin-top: 3px; font-style: italic;">Significant past-due on Other; repayment discipline is compromised</div>
-                </div>
-            </div>
-            
-            <div style="display: flex; align-items: flex-start; margin-bottom: 10px; padding: 10px; border-left: 4px solid #e67e22; background-color: #f8f9fa; border-radius: 0 4px 4px 0;">
-                <div style="flex: 1;">
-                    <div style="margin-bottom: 4px;">
-                        <span style="font-size: 11px; color: #666;">Delinquency</span>
-                    </div>
-                    <div style="font-weight: 600; color: #2c3e50; font-size: 13px;">Personal Loan: Delinquent with Max DPD of 39 days [Opened: Nov 2019 – Sep 2022 | Last Closed: Jan 2024]</div>
-                    <div style="color: #555; font-size: 12px; margin-top: 3px; font-style: italic;">Significant past-due on Personal Loan; repayment discipline is compromised</div>
-                </div>
-            </div>
-            
-            <div style="display: flex; align-items: flex-start; margin-bottom: 10px; padding: 10px; border-left: 4px solid #e67e22; background-color: #f8f9fa; border-radius: 0 4px 4px 0;">
-                <div style="flex: 1;">
-                    <div style="margin-bottom: 4px;">
-                        <span style="font-size: 11px; color: #666;">Delinquency</span>
-                    </div>
-                    <div style="font-weight: 600; color: #2c3e50; font-size: 13px;">Two Wheeler Loan: Delinquent with Max DPD of 59 days [Opened: Sep 2018 | Last Closed: Dec 2020]</div>
-                    <div style="color: #555; font-size: 12px; margin-top: 3px; font-style: italic;">Significant past-due on Two Wheeler Loan; repayment discipline is compromised</div>
-                </div>
-            </div>
-            
-            <div style="display: flex; align-items: flex-start; margin-bottom: 10px; padding: 10px; border-left: 4px solid #e67e22; background-color: #f8f9fa; border-radius: 0 4px 4px 0;">
-                <div style="flex: 1;">
-                    <div style="margin-bottom: 4px;">
-                        <span style="font-size: 11px; color: #666;">Composite Signal</span>
-                    </div>
-                    <div style="font-weight: 600; color: #2c3e50; font-size: 13px;">CC utilization at 72.6% [Opened: Nov 2018 – Nov 2025 | Active] and PL balance remaining at 132.7% [Opened: Nov 2019 – Sep 2022 | Last Closed: Jan 2024]</div>
-                    <div style="color: #555; font-size: 12px; margin-top: 3px; font-style: italic;">Elevated leverage across both revolving and term products; limited debt servicing headroom</div>
-                </div>
-            </div>
-            
-            <div style="display: flex; align-items: flex-start; margin-bottom: 10px; padding: 10px; border-left: 4px solid #f39c12; background-color: #f8f9fa; border-radius: 0 4px 4px 0;">
-                <div style="flex: 1;">
-                    <div style="margin-bottom: 4px;">
-                        <span style="font-size: 11px; color: #666;">Composite Signal</span>
-                    </div>
-                    <div style="font-weight: 600; color: #2c3e50; font-size: 13px;">No formal missed payments but DPD detected (Portfolio Max DPD: 156 days)</div>
-                    <div style="color: #555; font-size: 12px; margin-top: 3px; font-style: italic;">Payments were made but with delays past due date; payment discipline is inconsistent despite no formal defaults</div>
-                </div>
-            </div>
-            
-            <div style="display: flex; align-items: flex-start; margin-bottom: 10px; padding: 10px; border-left: 4px solid #95a5a6; background-color: #f8f9fa; border-radius: 0 4px 4px 0;">
-                <div style="flex: 1;">
-                    <div style="margin-bottom: 4px;">
-                        <span style="font-size: 11px; color: #666;">Portfolio</span>
-                    </div>
-                    <div style="font-weight: 600; color: #2c3e50; font-size: 13px;">Portfolio spans 6 loan products (Auto Loan, Credit Card, Gold Loan, Other, Personal Loan, Two Wheeler Loan)</div>
-                    <div style="color: #555; font-size: 12px; margin-top: 3px; font-style: italic;">Diversified credit portfolio indicates established borrowing history across products</div>
-                </div>
-            </div>
-            
-            <div style="display: flex; align-items: flex-start; margin-bottom: 10px; padding: 10px; border-left: 4px solid #27ae60; background-color: #f8f9fa; border-radius: 0 4px 4px 0;">
-                <div style="flex: 1;">
-                    <div style="margin-bottom: 4px;">
-                        <span style="font-size: 11px; color: #666;">DPD &amp; Delinquency</span>
-                    </div>
-                    <div style="font-weight: 600; color: #2c3e50; font-size: 13px;">Zero DPD across all products in recent 6-9 month windows</div>
-                    <div style="color: #555; font-size: 12px; margin-top: 3px; font-style: italic;">Clean recent payment record demonstrates consistent repayment discipline</div>
-                </div>
-            </div>
-            
-            <div style="display: flex; align-items: flex-start; margin-bottom: 10px; padding: 10px; border-left: 4px solid #27ae60; background-color: #f8f9fa; border-radius: 0 4px 4px 0;">
-                <div style="flex: 1;">
-                    <div style="margin-bottom: 4px;">
-                        <span style="font-size: 11px; color: #666;">Payment Behavior</span>
-                    </div>
-                    <div style="font-weight: 600; color: #2c3e50; font-size: 13px;">No missed payments in last 18 months</div>
-                    <div style="color: #555; font-size: 12px; margin-top: 3px; font-style: italic;">Perfect payment track record over 18 months is a strong positive</div>
-                </div>
-            </div>
-            
-            <div style="display: flex; align-items: flex-start; margin-bottom: 10px; padding: 10px; border-left: 4px solid #27ae60; background-color: #f8f9fa; border-radius: 0 4px 4px 0;">
-                <div style="flex: 1;">
-                    <div style="margin-bottom: 4px;">
-                        <span style="font-size: 11px; color: #666;">Enquiry Behavior</span>
-                    </div>
-                    <div style="font-weight: 600; color: #2c3e50; font-size: 13px;">Trade-to-enquiry ratio (unsecured, 24M): 55.6%</div>
-                    <div style="color: #555; font-size: 12px; margin-top: 3px; font-style: italic;">High conversion rate indicates strong acceptance by lenders</div>
+                    <div class="finding-text">0 unsecured enquiries in last 12 months</div>
+                    <div class="finding-inference">Minimal enquiry activity indicates stable credit position</div>
                 </div>
             </div>
             
@@ -784,63 +1079,18 @@ The behavioral insights suggest that the customer&#39;s credit behavior is chara
             <tbody>
                 
                 <tr>
-                    <td>Auto Loan</td>
-                    <td class="center secured-yes">
-                        Yes
-                    </td>
-                    <td class="center">1</td>
-                    <td class="center">0</td>
-                    <td class="center">1</td>
-                    <td class="amount">12,67,000</td>
-                    <td class="amount">0</td>
-                    <td class="center">83</td>
-                    <td class="center">-</td>
-                    <td class="center">0</td>
-                </tr>
-                
-                <tr>
                     <td>Credit Card</td>
                     <td class="center secured-no">
                         No
                     </td>
-                    <td class="center">3</td>
-                    <td class="center">3</td>
-                    <td class="center">0</td>
-                    <td class="amount">1,33,776</td>
-                    <td class="amount">92,907</td>
+                    <td class="center">26</td>
+                    <td class="center">21</td>
+                    <td class="center">5</td>
+                    <td class="amount">69,36,205</td>
+                    <td class="amount">6,55,918</td>
                     <td class="center">-</td>
-                    <td class="center">73</td>
-                    <td class="center">0</td>
-                </tr>
-                
-                <tr>
-                    <td>Gold Loan</td>
-                    <td class="center secured-yes">
-                        Yes
-                    </td>
-                    <td class="center">30</td>
-                    <td class="center">0</td>
-                    <td class="center">30</td>
-                    <td class="amount">22,96,252</td>
-                    <td class="amount">0</td>
-                    <td class="center">156</td>
-                    <td class="center">-</td>
-                    <td class="center">0</td>
-                </tr>
-                
-                <tr>
-                    <td>Other</td>
-                    <td class="center secured-no">
-                        No
-                    </td>
-                    <td class="center">10</td>
-                    <td class="center">2</td>
-                    <td class="center">8</td>
-                    <td class="amount">16,38,500</td>
-                    <td class="amount">4,82,500</td>
-                    <td class="center">45</td>
-                    <td class="center">-</td>
-                    <td class="center">0</td>
+                    <td class="center">9</td>
+                    <td class="center">1</td>
                 </tr>
                 
                 <tr>
@@ -848,27 +1098,12 @@ The behavioral insights suggest that the customer&#39;s credit behavior is chara
                     <td class="center secured-no">
                         No
                     </td>
-                    <td class="center">4</td>
                     <td class="center">1</td>
-                    <td class="center">3</td>
-                    <td class="amount">23,504</td>
-                    <td class="amount">3,322</td>
-                    <td class="center">39</td>
+                    <td class="center">1</td>
+                    <td class="center">0</td>
+                    <td class="amount">3,11,925</td>
+                    <td class="amount">1,66,761</td>
                     <td class="center">-</td>
-                    <td class="center">0</td>
-                </tr>
-                
-                <tr>
-                    <td>Two Wheeler Loan</td>
-                    <td class="center secured-yes">
-                        Yes
-                    </td>
-                    <td class="center">1</td>
-                    <td class="center">0</td>
-                    <td class="center">1</td>
-                    <td class="amount">71,514</td>
-                    <td class="amount">0</td>
-                    <td class="center">59</td>
                     <td class="center">-</td>
                     <td class="center">0</td>
                 </tr>
@@ -884,153 +1119,148 @@ The behavioral insights suggest that the customer&#39;s credit behavior is chara
         <h3>Behavioral & Risk Features</h3>
 
         <!-- Loan Activity -->
-        <h4 style="color: #2c3e50; margin: 15px 0 8px 0; font-size: 14px;">Loan Activity</h4>
-        <div class="info-grid">
-            <div class="info-item">
+        <div class="rf-subhead">Loan Activity</div>
+        <div class="rf-grid">
+            <div class="rf-item">
                 <label>Months Since Last PL Trade</label>
-                <div class="value">39.25</div>
+                <div class="value risk">20.13</div>
             </div>
-            <div class="info-item">
+            <div class="rf-item">
                 <label>Months Since Last Unsecured Trade</label>
-                <div class="value">2.46</div>
+                <div class="value safe">20.13</div>
             </div>
-            <div class="info-item">
+            <div class="rf-item">
                 <label>New PL Trades (6M)</label>
-                <div class="value">N/A</div>
+                <div class="value risk">N/A</div>
             </div>
         </div>
 
         <!-- DPD & Delinquency -->
-        <h4 style="color: #2c3e50; margin: 15px 0 8px 0; font-size: 14px;">DPD & Delinquency</h4>
-        <div class="info-grid">
-            <div class="info-item">
+        <div class="rf-subhead">DPD & Delinquency</div>
+        <div class="rf-grid">
+            <div class="rf-item">
                 <label>Max DPD 6M (CC)</label>
                 <div class="value safe">
                     0
                 </div>
             </div>
-            <div class="info-item">
+            <div class="rf-item">
                 <label>Max DPD 6M (PL)</label>
-                <div class="value safe">
+                <div class="value">
                     0
                 </div>
             </div>
-            <div class="info-item">
+            <div class="rf-item">
                 <label>Max DPD 9M (CC)</label>
                 <div class="value safe">
                     0
                 </div>
             </div>
-            <div class="info-item">
-                <label>Months Since Last 0+ DPD (Unsecured)</label>
-                <div class="value">31.97</div>
+            <div class="rf-item">
+                <label>Mo. Since Last 0+ DPD (Unsec)</label>
+                <div class="value safe">N/A</div>
             </div>
-            <div class="info-item">
-                <label>Months Since Last 0+ DPD (PL)</label>
-                <div class="value">31.97</div>
+            <div class="rf-item">
+                <label>Mo. Since Last 0+ DPD (PL)</label>
+                <div class="value risk">N/A</div>
             </div>
         </div>
 
         <!-- Payment Behavior -->
-        <h4 style="color: #2c3e50; margin: 15px 0 8px 0; font-size: 14px;">Payment Behavior</h4>
-        <div class="info-grid">
-            <div class="info-item">
+        <div class="rf-subhead">Payment Behavior</div>
+        <div class="rf-grid">
+            <div class="rf-item">
                 <label>% 0+ DPD in 24M (All)</label>
-                <div class="value risk">
-                    15.18
+                <div class="value safe">
+                    0.00
                 </div>
             </div>
-            <div class="info-item">
+            <div class="rf-item">
                 <label>% 0+ DPD in 24M (PL)</label>
                 <div class="value safe">
                     0.00
                 </div>
             </div>
-            <div class="info-item">
+            <div class="rf-item">
                 <label>% Missed Payments (18M)</label>
-                <div class="value safe">
+                <div class="value">
                     0.00
                 </div>
             </div>
-            <div class="info-item">
+            <div class="rf-item">
                 <label>% Trades 0+ DPD in 12M (All)</label>
-                <div class="value">7.14</div>
+                <div class="value safe">N/A</div>
             </div>
-            <div class="info-item">
+            <div class="rf-item">
                 <label>Ratio Good Closed Loans (PL)</label>
-                <div class="value risk">
-                    33%
+                <div class="value">
+                    N/A
                 </div>
             </div>
         </div>
 
-        <!-- Utilization -->
-        <h4 style="color: #2c3e50; margin: 15px 0 8px 0; font-size: 14px;">Utilization</h4>
-        <div class="info-grid">
-            <div class="info-item">
+        <!-- Utilization & Enquiry -->
+        <div class="rf-subhead">Utilization</div>
+        <div class="rf-grid">
+            <div class="rf-item">
                 <label>CC Balance Utilization %</label>
-                <div class="value ">
-                    72.58
+                <div class="value safe">
+                    8.97
                 </div>
             </div>
-            <div class="info-item">
+            <div class="rf-item">
                 <label>PL Balance Remaining %</label>
-                <div class="value">132.67</div>
+                <div class="value safe">53.46</div>
             </div>
-        </div>
-
-        <!-- Enquiry Behavior -->
-        <h4 style="color: #2c3e50; margin: 15px 0 8px 0; font-size: 14px;">Enquiry Behavior</h4>
-        <div class="info-grid">
-            <div class="info-item">
+            <div class="rf-item">
                 <label>Unsecured Enquiries (12M)</label>
-                <div class="value ">
-                    6
+                <div class="value">
+                    0
                 </div>
             </div>
-            <div class="info-item">
+            <div class="rf-item">
                 <label>Trade-to-Enquiry Ratio (Unsec 24M)</label>
-                <div class="value">55.56</div>
+                <div class="value safe">40.00</div>
             </div>
         </div>
 
         <!-- Loan Acquisition Velocity -->
-        <h4 style="color: #2c3e50; margin: 15px 0 8px 0; font-size: 14px;">Loan Acquisition Velocity</h4>
-        <div class="info-grid">
-            <div class="info-item">
-                <label>Interpurchase Time 12M (PL/BL)</label>
+        <div class="rf-subhead">Loan Acquisition Velocity</div>
+        <div class="rf-grid">
+            <div class="rf-item">
+                <label>Interpurchase 12M (PL/BL)</label>
+                <div class="value risk">N/A</div>
+            </div>
+            <div class="rf-item">
+                <label>Interpurchase 6M (PL/BL)</label>
+                <div class="value risk">N/A</div>
+            </div>
+            <div class="rf-item">
+                <label>Interpurchase 24M (All)</label>
+                <div class="value safe">3.45</div>
+            </div>
+            <div class="rf-item">
+                <label>Interpurchase 9M (HL/LAP)</label>
+                <div class="value risk">N/A</div>
+            </div>
+            <div class="rf-item">
+                <label>Interpurchase 24M (HL/LAP)</label>
+                <div class="value risk">N/A</div>
+            </div>
+            <div class="rf-item">
+                <label>Interpurchase 24M (TWL)</label>
                 <div class="value">N/A</div>
             </div>
-            <div class="info-item">
-                <label>Interpurchase Time 6M (PL/BL)</label>
-                <div class="value">N/A</div>
-            </div>
-            <div class="info-item">
-                <label>Interpurchase Time 24M (All)</label>
-                <div class="value">1.67</div>
-            </div>
-            <div class="info-item">
-                <label>Interpurchase Time 9M (HL/LAP)</label>
-                <div class="value">N/A</div>
-            </div>
-            <div class="info-item">
-                <label>Interpurchase Time 24M (HL/LAP)</label>
-                <div class="value">N/A</div>
-            </div>
-            <div class="info-item">
-                <label>Interpurchase Time 24M (TWL)</label>
-                <div class="value">N/A</div>
-            </div>
-            <div class="info-item">
-                <label>Interpurchase Time 12M (Consumer Loan)</label>
-                <div class="value">N/A</div>
+            <div class="rf-item">
+                <label>Interpurchase 12M (Consumer)</label>
+                <div class="value risk">N/A</div>
             </div>
         </div>
     </div>
     
 
     <div class="footer">
-        <p>Generated on 2026-03-03 | Currency: INR</p>
+        <p>Generated on 2026-03-06 | Currency: INR</p>
     </div>
 </body>
 </html>

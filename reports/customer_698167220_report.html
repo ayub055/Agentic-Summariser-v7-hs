@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Customer Report - ###0028</title>
+    <title>Customer Report - ###7220</title>
     <style>
         * {
             margin: 0;
@@ -59,6 +59,15 @@
             color: #cbd5e1;
             font-weight: 600;
             margin-right: 4px;
+        }
+
+        .header-disclaimer {
+            margin-top: 12px;
+            padding-top: 10px;
+            border-top: 1px solid rgba(255,255,255,0.08);
+            font-size: 10px;
+            color: rgba(255,255,255,0.38);
+            font-style: italic;
         }
 
         .section {
@@ -327,33 +336,36 @@
     <div class="header">
         <h1>Customer Financial Report</h1>
         <div class="header-meta">
-            <span><strong>Customer ID:</strong> ###0028</span>
+            <span><strong>Customer ID:</strong> ###7220</span>
             <span><strong>Transactions:</strong> 36</span>
+        </div>
+        <div class="header-disclaimer">
+            ⓘ Bins, thresholds &amp; verification values are calibrated on Jan '26 FPD portfolio behaviour.
         </div>
     </div>
 
     <!-- Risk Scorecard -->
     
     <div class="scorecard">
-        <div class="sc-verdict sc-rag-amber">
-            ● Overall Risk: CAUTION
+        <div class="sc-verdict sc-rag-green">
+            ● Overall Risk: LOW RISK
         </div>
         
         <div class="sc-signals-grid">
             
-            <div class="sc-signal sc-rag-green">
+            <div class="sc-signal sc-rag-amber">
                 <div class="sc-sig-label">Income</div>
-                <div class="sc-sig-value">INR 34,495 /mo</div>
-                <div class="sc-sig-note">Salary</div>
-                <div class="sc-tooltip">Source: internal salary algorithm (RG SAL).
-Amount: INR 34,495/mo · Transactions detected: 3 · Employer: Salary</div>
+                <div class="sc-sig-value">INR 39,210 avg</div>
+                <div class="sc-sig-note">Irregular</div>
+                <div class="sc-tooltip">Source: banking transaction salary detection.
+Avg amount: INR 39,210 · Occurrences: 2</div>
             </div>
             
             <div class="sc-signal sc-rag-green">
                 <div class="sc-sig-label">FOIR</div>
                 <div class="sc-sig-value">0%</div>
                 <div class="sc-sig-note">EMI+Rent/Salary</div>
-                <div class="sc-tooltip">EMI: INR 0  +  Rent: INR 0  ÷  Salary: INR 34,495  =  0.0%.
+                <div class="sc-tooltip">EMI: INR 0  +  Rent: INR 0  ÷  Salary: INR 39,210  =  0.0%.
 Thresholds: ≤40% = comfortable · ≤65% = stretched · &gt;65% = over-leveraged</div>
             </div>
             
@@ -364,11 +376,11 @@ Thresholds: ≤40% = comfortable · ≤65% = stretched · &gt;65% = over-leverag
                 <div class="sc-tooltip">No betting, gaming, or flagged transaction categories detected.</div>
             </div>
             
-            <div class="sc-signal sc-rag-red">
+            <div class="sc-signal sc-rag-amber">
                 <div class="sc-sig-label">Account Type</div>
-                <div class="sc-sig-value">Conduit</div>
-                <div class="sc-sig-note">Score 20/100</div>
-                <div class="sc-tooltip">Account classification: Conduit · Confidence score: 20/100.
+                <div class="sc-sig-value">Secondary</div>
+                <div class="sc-sig-note">Score 50/100</div>
+                <div class="sc-tooltip">Account classification: Secondary · Confidence score: 50/100.
 Primary = main salary/income account · Secondary = supplementary · Conduit = pass-through</div>
             </div>
             
@@ -377,11 +389,11 @@ Primary = main salary/income account · Secondary = supplementary · Conduit = p
         <div class="sc-3col">
             <div class="sc-col sc-col-green">
                 <div class="sc-col-head">&#10003; Strengths</div>
-                <div class="sc-col-item"><span class="sc-col-bullet" style="color:#2dd4bf">●</span><span>Income: INR 34,495 /mo</span></div><div class="sc-col-item"><span class="sc-col-bullet" style="color:#2dd4bf">●</span><span>FOIR: 0%</span></div><div class="sc-col-item"><span class="sc-col-bullet" style="color:#2dd4bf">●</span><span>Transaction Red flag: None</span></div>
+                <div class="sc-col-item"><span class="sc-col-bullet" style="color:#2dd4bf">●</span><span>FOIR: 0%</span></div><div class="sc-col-item"><span class="sc-col-bullet" style="color:#2dd4bf">●</span><span>Transaction Red flag: None</span></div>
             </div>
             <div class="sc-col sc-col-red">
                 <div class="sc-col-head">&#9888; Concerns</div>
-                <div class="sc-col-item"><span class="sc-col-bullet" style="color:#fb7185">●</span><span>Account Type: Conduit (Score 20/100)</span></div>
+                <div style="color:#94a3b8;font-size:11px">None identified</div>
             </div>
             <div class="sc-col sc-col-gray">
                 <div class="sc-col-head">&#8594; Verify</div>
@@ -401,7 +413,7 @@ Primary = main salary/income account · Secondary = supplementary · Conduit = p
             
             <div class="rf-item">
                 <label>Relationship</label>
-                <div class="value">CorpSal</div>
+                <div class="value">RL</div>
             </div>
             
             
@@ -413,7 +425,7 @@ Primary = main salary/income account · Secondary = supplementary · Conduit = p
             
             <div class="rf-item">
                 <label>Banking Group</label>
-                <div class="value">Banking Thin</div>
+                <div class="value">Banking Thick</div>
             </div>
             
             
@@ -425,14 +437,14 @@ Primary = main salary/income account · Secondary = supplementary · Conduit = p
             
             <div class="rf-item">
                 <label>Affluence Amount</label>
-                <div class="value">INR 34,495</div>
-                <div style="font-size: 10px; color: #666; margin-top: 2px;">Salary_SLC</div>
+                <div class="value">INR 70,000</div>
+                <div style="font-size: 10px; color: #666; margin-top: 2px;">RG_INCOME_Final</div>
             </div>
             
             
             <div class="rf-item">
                 <label>Customer Persona</label>
-                <div class="value">Dormant</div>
+                <div class="value">Seasonal Earner</div>
             </div>
             
         </div>
@@ -443,9 +455,9 @@ Primary = main salary/income account · Secondary = supplementary · Conduit = p
     <div class="section">
         <h3>Executive Summary</h3>
         <div class="summary-box">
-            <p>The customer&#39;s banking profile indicates a stable financial situation. Their average monthly net income is ₹18,000, with a total inflow of ₹78,428 and outflow of ₹78,391. The majority of their expenses are allocated to self (48,000), followed by other categories (27,300) and food/restaurant expenses (1,970). There are no recurring obligations such as EMI, utility bills, or rent commitments detected in the customer&#39;s banking profile.
+            <p>The customer&#39;s banking profile indicates a stable financial situation. Their monthly cash flow is relatively balanced, with an average net of ₹18,000 and total inflows exceeding outflows by ₹37. The customer&#39;s key spending categories include self expenses at ₹48,000 per month, followed by other expenses at ₹27,300, and food and restaurant bills at ₹1,970. Additionally, the customer has a rent commitment, although the exact amount is not specified. Utility bills are also present in their monthly expenditure.
 
-In December 2025, the customer transferred ₹43,000 from their own account to another account (UPI/CHINTAMALLA SAN/541064911213/Payment from Ph) just one day after receiving their salary. Additionally, the customer received a salary of ₹43,925 and transferred 98% of it to their own account within three days of credit in two consecutive months.</p>
+In Jun 2025, the customer received ₹72,000 salary from Symed and transferred ₹72,000 to their own account the next day. In Jul 2025, the customer made a payment of ₹27,300 towards other expenses.</p>
         </div>
     </div>
     
@@ -471,49 +483,6 @@ In December 2025, the customer transferred ₹43,000 from their own account to a
     </div>
     
 
-    
-    <div class="section">
-        <h3>Internal Salary Analysis</h3>
-
-        
-        <h4 style="color: #2c3e50; font-size: 14px; margin-bottom: 8px;">RG SAL</h4>
-        <div class="summary-box">
-            <p>Estimated monthly salary of INR 34,495 from Salary, identified across 3 months.</p>
-        </div>
-        <table>
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Narration</th>
-                    <th class="amount">Amount (INR)</th>
-                </tr>
-            </thead>
-            <tbody>
-                
-                <tr>
-                    <td>2026-01-05</td>
-                    <td>SYMED SALARY DEC 2025</td>
-                    <td class="amount positive">43,923</td>
-                </tr>
-                
-                <tr>
-                    <td>2025-12-05</td>
-                    <td>SYMED SALARY NOV 2025</td>
-                    <td class="amount positive">43,925</td>
-                </tr>
-                
-                <tr>
-                    <td>2025-11-04</td>
-                    <td>SYMED SALARY OCT 2025</td>
-                    <td class="amount positive">34,495</td>
-                </tr>
-                
-            </tbody>
-        </table>
-        
-
-        
-    </div>
     
 
     

@@ -228,7 +228,31 @@ def _bureau_signals(bureau_report) -> list:
             "tooltip": tooltip,
         })
 
-    # 7–8. Exposure Trend (12M point-in-time + 6M avg — each shown only if data available)
+    # 7. Bureau FOIR (obligation-to-income ratio from bureau data)
+    # Definition: aff_emi (total bureau EMI obligation) ÷ affluence_amt_6 (6M income estimate) × 100
+    if tl and tl.foir is not None:
+        foir_val = tl.foir
+        rag = _rag(foir_val, green_max=40, amber_max=65)
+        note = "Over-leveraged" if foir_val > 65 else ("Stretched" if foir_val > 40 else "Comfortable")
+        aff_emi_str = f"INR {tl.aff_emi:,.0f}" if tl.aff_emi is not None else "N/A"
+        aff_inc_str = f"INR {tl.affluence_amt:,.0f}" if tl.affluence_amt is not None else "N/A"
+        unsec_str = f"\nFOIR (unsecured only): {tl.foir_unsec:.1f}%" if tl.foir_unsec is not None else ""
+        tooltip = (
+            f"Bureau obligation-to-income ratio.\n"
+            f"Total EMI burden (aff_emi): {aff_emi_str}\n"
+            f"Affluence income (6M estimate): {aff_inc_str}\n"
+            f"FOIR = aff_emi ÷ affluence_amt × 100 = {foir_val:.1f}%{unsec_str}\n"
+            f"Thresholds: ≤40% = comfortable · ≤65% = stretched · >65% = over-leveraged"
+        )
+        signals.append({
+            "label": "FOIR",
+            "value": f"{foir_val:.1f}%",
+            "rag": rag,
+            "note": note,
+            "tooltip": tooltip,
+        })
+
+    # 8–9. Exposure Trend (12M point-in-time + 6M avg — each shown only if data available)
     signals.extend(_exposure_signals(getattr(bureau_report, "monthly_exposure", None)))
 
     return signals
