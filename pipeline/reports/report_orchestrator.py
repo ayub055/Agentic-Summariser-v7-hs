@@ -113,7 +113,8 @@ def generate_customer_report_pdf(
         logger.warning(f"RG salary data unavailable for [{customer_id}]: {e}")
 
     # Generate LLM summaries (optional, fail-soft)
-    if include_summary:
+    # Skip if insufficient transaction data (< 10 transactions)
+    if include_summary and report.meta.transaction_count >= 10:
         try:
             if report.customer_persona is None:
                 report.customer_persona = generate_customer_persona(report)
