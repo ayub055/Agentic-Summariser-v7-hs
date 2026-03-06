@@ -9,7 +9,7 @@ from datetime import datetime
 
 from schemas.customer_report import ReportMeta
 from schemas.bureau_report import BureauReport
-from ..extractors.bureau_feature_extractor import extract_bureau_features, compute_monthly_exposure
+from ..extractors.bureau_feature_extractor import extract_bureau_features, compute_monthly_exposure, extract_tu_score
 from ..extractors.bureau_feature_aggregator import aggregate_bureau_features
 from ..extractors.tradeline_feature_extractor import extract_tradeline_features
 from .key_findings import extract_key_findings
@@ -68,6 +68,7 @@ def build_bureau_report(customer_id: int) -> BureauReport:
 
     # 2. Feature aggregation
     executive_inputs = aggregate_bureau_features(feature_vectors)
+    executive_inputs.tu_score = extract_tu_score(customer_id)
 
     # 2b. Tradeline feature extraction (pre-computed, fail-soft)
     tradeline_features = None

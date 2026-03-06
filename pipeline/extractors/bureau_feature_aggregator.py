@@ -30,6 +30,8 @@ class BureauExecutiveSummaryInputs:
     max_dpd_months_ago: Optional[int] = None
     max_dpd_loan_type: Optional[str] = None
 
+    tu_score: Optional[int] = None
+
 
 def aggregate_bureau_features(
     vectors: Dict[LoanType, BureauLoanFeatureVector],

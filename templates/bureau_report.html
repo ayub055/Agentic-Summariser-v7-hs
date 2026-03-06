@@ -652,10 +652,10 @@
                     <span class="tl-chip-label">IP 12M PL/BL</span>
                     <span class="tl-chip-value">{{ "%.2f"|format(tl_features.interpurchase_time_12m_plbl) if tl_features.interpurchase_time_12m_plbl is not none else "N/A" }}</span>
                 </div>
-                {# interpurchase_time_l24m_all: safe ≥2.54 #}
-                <div class="tl-chip {% if tl_features.interpurchase_time_24m_all is not none and tl_features.interpurchase_time_24m_all >= 2.54 %}chip-green{% else %}chip-red{% endif %}">
+                {# interpurchase_time_l24m_all: safe ≥2.54 | neutral if 0.0 (no recent loans) #}
+                <div class="tl-chip {% if tl_features.interpurchase_time_24m_all is not none and tl_features.interpurchase_time_24m_all > 0 and tl_features.interpurchase_time_24m_all >= 2.54 %}chip-green{% elif tl_features.interpurchase_time_24m_all is none or tl_features.interpurchase_time_24m_all == 0 %}chip-neutral{% else %}chip-red{% endif %}">
                     <span class="tl-chip-label">IP 24M All</span>
-                    <span class="tl-chip-value">{{ "%.2f"|format(tl_features.interpurchase_time_24m_all) if tl_features.interpurchase_time_24m_all is not none else "N/A" }}</span>
+                    <span class="tl-chip-value">{{ "%.2f"|format(tl_features.interpurchase_time_24m_all) if tl_features.interpurchase_time_24m_all is not none and tl_features.interpurchase_time_24m_all > 0 else "N/A" }}</span>
                 </div>
                 {# interpurchase_time_l24m_hl_lap: safe if not null #}
                 <div class="tl-chip {% if tl_features.interpurchase_time_24m_hl_lap is not none %}chip-green{% else %}chip-red{% endif %}">

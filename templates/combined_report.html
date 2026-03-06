@@ -600,12 +600,12 @@
                 <div class="sc-sig-note">{% if tl_features.trade_to_enquiry_ratio_uns_24m is none %}Missing{% elif tl_features.trade_to_enquiry_ratio_uns_24m >= 13.74 %}Green{% else %}Red{% endif %}</div>
                 <div class="sc-tooltip">tr_to_enq_ratio_uns_l24m&#10;Trade-to-enquiry ratio (unsecured, 24M)&#10;&#10;&gt;=13.74 → Green ✓&#10;&lt;13.74 → Red&#10;Missing → Red</div>
             </div>
-            {# interpurchase_time_l24m_all: Green ≥2.54 | Red otherwise #}
-            <div class="sc-signal {% if tl_features.interpurchase_time_24m_all is not none and tl_features.interpurchase_time_24m_all >= 2.54 %}sc-rag-green{% else %}sc-rag-red{% endif %}">
+            {# interpurchase_time_l24m_all: Green ≥2.54 | Red <2.54 | Neutral if 0.0 (no recent loans) #}
+            <div class="sc-signal {% if tl_features.interpurchase_time_24m_all is not none and tl_features.interpurchase_time_24m_all > 0 and tl_features.interpurchase_time_24m_all >= 2.54 %}sc-rag-green{% elif tl_features.interpurchase_time_24m_all is none or tl_features.interpurchase_time_24m_all == 0 %}sc-rag-neutral{% else %}sc-rag-red{% endif %}">
                 <div class="sc-sig-label">IP 24M All</div>
-                <div class="sc-sig-value">{{ "%.2f"|format(tl_features.interpurchase_time_24m_all) if tl_features.interpurchase_time_24m_all is not none else "N/A" }}</div>
-                <div class="sc-sig-note">{% if tl_features.interpurchase_time_24m_all is none %}Missing{% elif tl_features.interpurchase_time_24m_all < 2.54 %}Amber{% elif tl_features.interpurchase_time_24m_all < 4.22 %}Green{% else %}Super Green{% endif %}</div>
-                <div class="sc-tooltip">interpurchase_time_l24m_all&#10;Avg months between all loan opens (24M)&#10;&#10;&lt;2.54 → Amber&#10;2.54–4.22 → Green ✓&#10;&gt;4.22 → Super Green ✓&#10;Missing → Red</div>
+                <div class="sc-sig-value">{{ "%.2f"|format(tl_features.interpurchase_time_24m_all) if tl_features.interpurchase_time_24m_all is not none and tl_features.interpurchase_time_24m_all > 0 else "N/A" }}</div>
+                <div class="sc-sig-note">{% if tl_features.interpurchase_time_24m_all is none or tl_features.interpurchase_time_24m_all == 0 %}No recent loans{% elif tl_features.interpurchase_time_24m_all < 2.54 %}Amber{% elif tl_features.interpurchase_time_24m_all < 4.22 %}Green{% else %}Super Green{% endif %}</div>
+                <div class="sc-tooltip">interpurchase_time_l24m_all&#10;Avg months between all loan opens (24M)&#10;&#10;0 / missing → No recent loan openings&#10;&lt;2.54 → Amber&#10;2.54–4.22 → Green ✓&#10;&gt;4.22 → Super Green ✓</div>
             </div>
             {% endif %}
         </div>
@@ -1208,10 +1208,10 @@
                 {% if tl_features.income_source %}<div style="font-size: 10px; color: #666; margin-top: 2px;">{{ tl_features.income_source }}</div>{% endif %}
             </div>
             {% endif %}
-            {% if tl_features.node %}
+            {% if tl_features.node or (rg_salary_data and (rg_salary_data.rg_sal or rg_salary_data.rg_income)) %}
             <div class="rf-item">
                 <label>Customer Persona</label>
-                <div class="value">{{ tl_features.node|segment }}</div>
+                <div class="value">{% if rg_salary_data and (rg_salary_data.rg_sal or rg_salary_data.rg_income) %}Salaried / Regular Credits{% else %}{{ tl_features.node|segment }}{% endif %}</div>
             </div>
             {% endif %}
         </div>

@@ -525,11 +525,12 @@ def _format_tradeline_features_for_prompt(tf) -> str:
                           ("interpurchase_time_24m_all", "All Loans (24M)"),
                           ("interpurchase_time_12m_cl", "Consumer Loans (12M)")]:
         v = _val(field)
-        if v is not None:
-            tag = _annotate_value(v, [("<", T.IPT_HIGH_RISK, " [HIGH RISK — rapid loan stacking]"),
-                                       ("<", T.IPT_CONCERN, " [CONCERN — frequent acquisitions]"),
-                                       (">=", T.IPT_HEALTHY, " [HEALTHY — measured pace]")])
-            lines.append(f"    Avg Interpurchase Time {label}: {_fmt(v)} months{tag}")
+        if v is None or v == 0.0:   # 0.0 = no loans opened in window; not measurable
+            continue
+        tag = _annotate_value(v, [("<", T.IPT_HIGH_RISK, " [HIGH RISK — rapid loan stacking]"),
+                                   ("<", T.IPT_CONCERN, " [CONCERN — frequent acquisitions]"),
+                                   (">=", T.IPT_HEALTHY, " [HEALTHY — measured pace]")])
+        lines.append(f"    Avg Interpurchase Time {label}: {_fmt(v)} months{tag}")
     # Include HL/LAP and TWL only if present (less common)
     for field, label in [("interpurchase_time_9m_hl_lap", "HL/LAP (9M)"),
                           ("interpurchase_time_24m_hl_lap", "HL/LAP (24M)"),

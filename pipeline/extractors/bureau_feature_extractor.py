@@ -347,3 +347,17 @@ def extract_bureau_features(customer_id: int) -> Dict[LoanType, BureauLoanFeatur
         vectors[loan_type] = _build_feature_vector(loan_type, tradelines)
 
     return vectors
+
+
+def extract_tu_score(customer_id: int) -> Optional[int]:
+    """Extract TransUnion credit score for a customer from dpd_data."""
+    all_rows = _load_bureau_data()
+    for row in all_rows:
+        if _safe_int(row.get("crn", "")) == customer_id:
+            raw = row.get("tu_score", "").strip()
+            if raw:
+                try:
+                    return int(float(raw))
+                except (ValueError, TypeError):
+                    pass
+    return None

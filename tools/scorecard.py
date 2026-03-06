@@ -123,6 +123,25 @@ def _bureau_signals(bureau_report) -> list:
     ei = bureau_report.executive_inputs
     tl = bureau_report.tradeline_features
 
+    # 0. CIBIL Score (tu_score)
+    tu_score = getattr(ei, "tu_score", None)
+    if tu_score is not None:
+        if tu_score >= 750:
+            tu_rag, tu_note = "green", "Excellent"
+        elif tu_score >= 700:
+            tu_rag, tu_note = "amber", "Good"
+        elif tu_score >= 650:
+            tu_rag, tu_note = "amber", "Fair"
+        else:
+            tu_rag, tu_note = "red", "Poor"
+        signals.append({
+            "label": "CIBIL Score",
+            "value": str(tu_score),
+            "rag": tu_rag,
+            "note": tu_note,
+            "tooltip": "TransUnion credit score from bureau data",
+        })
+
     # 1. Max DPD
     dpd = ei.max_dpd
     if dpd is not None:
