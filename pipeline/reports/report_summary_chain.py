@@ -163,6 +163,14 @@ def _build_data_summary(report: CustomerReport, rg_salary_data: dict = None) -> 
             f"({report.rent.frequency} transactions)"
         )
 
+    # Banking FOIR (computed from available EMI + rent / salary)
+    if _auth_salary_amt and _auth_salary_amt > 0:
+        _emi_total = sum(e.amount for e in report.emis) if report.emis else 0
+        _rent_amt = report.rent.amount if report.rent else 0
+        _foir = (_emi_total + _rent_amt) / _auth_salary_amt * 100
+        _tag = " [OVER-LEVERAGED]" if _foir > 65 else (" [STRETCHED]" if _foir > 40 else " [COMFORTABLE]")
+        sections.append(f"Banking FOIR (EMI+Rent/Salary): {_foir:.1f}%{_tag}")
+
     # Bills
     if report.bills:
         total_bills = sum(b.avg_amount * b.frequency for b in report.bills)
@@ -664,6 +672,30 @@ def _build_bureau_data_summary(executive_inputs, tradeline_features=None, monthl
             lt_display = get_loan_type_display_name(loan_type_key)
             lines.append(f"{lt_display} Utilization: {util * 100:.1f}%")
 
+    # Obligation & FOIR
+    if tradeline_features is not None:
+        tl = tradeline_features
+        tl_d = asdict(tl) if not isinstance(tl, dict) else tl
+        aff_emi = tl_d.get("aff_emi")
+        unsecured_emi = tl_d.get("unsecured_emi")
+        foir = tl_d.get("foir")
+        foir_unsec = tl_d.get("foir_unsec")
+        affluence_amt = tl_d.get("affluence_amt")
+        if any(v is not None for v in [aff_emi, foir, foir_unsec]):
+            lines.append("\nObligation & FOIR:")
+            if affluence_amt is not None:
+                lines.append(f"  Affluence Income (6M est.): INR {format_inr(affluence_amt)}")
+            if aff_emi is not None:
+                lines.append(f"  Total Bureau EMI Obligation (all products): INR {format_inr(aff_emi)}")
+            if unsecured_emi is not None:
+                lines.append(f"  Unsecured EMI Obligation: INR {format_inr(unsecured_emi)}")
+            if foir is not None:
+                tag = " [OVER-LEVERAGED]" if foir > 65 else (" [STRETCHED]" if foir > 40 else " [COMFORTABLE]")
+                lines.append(f"  FOIR (total): {foir:.1f}%{tag}")
+            if foir_unsec is not None:
+                tag_u = " [OVER-LEVERAGED]" if foir_unsec > 65 else (" [STRETCHED]" if foir_unsec > 40 else " [COMFORTABLE]")
+                lines.append(f"  FOIR (unsecured only): {foir_unsec:.1f}%{tag_u}")
+
     # Product breakdown
     if product_breakdown:
         lines.append("\nProduct-wise Breakdown:")
@@ -718,6 +750,11 @@ def _build_bureau_data_summary(executive_inputs, tradeline_features=None, monthl
                     lines.append("\nSanctioned Exposure Trend:")
                     lines.extend(trend_lines)
 
+        # Human-readable exposure commentary (peak, current state, active products)
+        exposure_text = summarize_exposure_timeline(monthly_exposure)
+        if exposure_text:
+            lines.append(f"\nExposure Commentary: {exposure_text}")
+
     return "\n".join(lines)
 
 
@@ -767,6 +804,8 @@ def generate_combined_executive_summary(
     banking_summary: str,
     bureau_summary: str,
     customer_id: str,
+    exposure_summary: str = "",
+    foir_context: str = "",
     model_name: str = _SUMMARY_MODEL,
 ) -> Optional[str]:
     """Generate a unified executive summary from both banking and bureau narratives.
@@ -775,6 +814,8 @@ def generate_combined_executive_summary(
         banking_summary: The customer_review text from the banking report.
         bureau_summary: The narrative text from the bureau report.
         customer_id: Masked customer identifier.
+        exposure_summary: Optional human-readable 2-sentence exposure commentary.
+        foir_context: Optional pre-formatted FOIR string (e.g. "FOIR (total): 68.5%, FOIR (unsecured): 60.8%").
         model_name: Ollama model to use.
 
     Returns:
@@ -782,6 +823,14 @@ def generate_combined_executive_summary(
     """
     if not banking_summary and not bureau_summary:
         return None
+
+    # Build additional structured context block
+    additional_parts = []
+    if foir_context:
+        additional_parts.append(f"FOIR / Obligation: {foir_context}")
+    if exposure_summary:
+        additional_parts.append(f"Exposure Commentary: {exposure_summary}")
+    additional_context = ("\nAdditional Data:\n" + "\n".join(additional_parts)) if additional_parts else ""
 
     try:
         prompt = ChatPromptTemplate.from_template(COMBINED_EXECUTIVE_PROMPT)
@@ -792,6 +841,7 @@ def generate_combined_executive_summary(
             "customer_id": customer_id,
             "banking_summary": banking_summary or "(not available)",
             "bureau_summary": bureau_summary or "(not available)",
+            "additional_context": additional_context,
         })
         result = strip_think(raw, label="CombinedSummary")
         return result.strip() if result else None

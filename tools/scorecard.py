@@ -113,21 +113,6 @@ def _exposure_signals(monthly_exposure: dict) -> list:
         )
         chips.append({"label": "Exposure 12M", "value": direction, "rag": rag, "note": "vs 12M ago", "tooltip": tooltip})
 
-    # ── 6M avg vs prior-6M avg ───────────────────────────────────────────────
-    if n >= 7:
-        recent_avg = sum(totals[-6:]) / 6
-        prior_slice = totals[-12:-6] if n >= 12 else totals[:max(1, n - 6)]
-        prior_avg = sum(prior_slice) / len(prior_slice) if prior_slice else 0
-        if prior_avg > 0:
-            pct_6m = (recent_avg - prior_avg) / prior_avg * 100
-        else:
-            pct_6m = 100.0 if recent_avg > 0 else 0.0
-        rag, direction = _rag_exposure(pct_6m)
-        tooltip = (
-            f"Recent 6M avg: ₹{recent_avg/100000:.1f}L · Prior 6M avg: ₹{prior_avg/100000:.1f}L.\n"
-            f"Change: {pct_6m:+.1f}%. Thresholds: ≤−5% = declining · ≤+30% = growing · >+30% = rapid"
-        )
-        chips.append({"label": "Exposure 6M", "value": direction, "rag": rag, "note": "6M avg trend", "tooltip": tooltip})
 
     return chips
 

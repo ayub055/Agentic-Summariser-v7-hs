@@ -627,11 +627,6 @@
                     <span class="tl-chip-label">Uns Enq 12M</span>
                     <span class="tl-chip-value">{{ tl_features.unsecured_enquiries_12m if tl_features.unsecured_enquiries_12m is not none else "N/A" }}</span>
                 </div>
-                {# ratio_good_closed_loans_pl: not in grid → gray #}
-                <div class="tl-chip chip-gray">
-                    <span class="tl-chip-label">Good Closed PL</span>
-                    <span class="tl-chip-value">{{ "%.0f%%"|format(tl_features.ratio_good_closed_pl * 100) if tl_features.ratio_good_closed_pl is not none else "N/A" }}</span>
-                </div>
                 {# pct_bal_cc_lv: safe <83.20 #}
                 <div class="tl-chip {% if tl_features.cc_balance_utilization_pct is not none and tl_features.cc_balance_utilization_pct < 83.20 %}chip-green{% else %}chip-red{% endif %}">
                     <span class="tl-chip-label">CC Util %</span>

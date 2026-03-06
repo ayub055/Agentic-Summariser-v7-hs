@@ -168,7 +168,7 @@ IMPORTANT RULES:
 
 STRUCTURE YOUR RESPONSE IN TWO PARAGRAPHS:
 
-1. FINANCIAL OVERVIEW (4-6 lines): A factual summary of the customer's banking profile. Cover income (salary amount, frequency, source), monthly cashflow (average net, total inflow vs outflow), key spending categories, EMI and rent commitments, and any utility bills. Weave these as natural facts in a narrative flow — not as a list. NO risk commentary, NO event mentions — just the financial picture.
+1. FINANCIAL OVERVIEW (4-6 lines): A factual summary of the customer's banking profile. Cover income (salary amount, frequency, source), monthly cashflow (average net, total inflow vs outflow), key spending categories, EMI and rent commitments, and any utility bills. If "Banking FOIR" is present, include the obligation-to-income ratio as a factual observation. Weave these as natural facts in a narrative flow — not as a list. NO risk commentary, NO event mentions — just the financial picture.
 
 2. TRANSACTION EVENTS (one sentence per event): If a "DETECTED TRANSACTION EVENTS" block is present below, narrate EVERY event listed — [HIGH], [MEDIUM], and [POSITIVE] — as plain facts with the specific month and exact amount. Do NOT omit any event. Do NOT say "an event was detected" — state what the customer actually did (e.g. "In Jun 2025, the customer received ₹72,000 salary and transferred ₹72,000 to their own account the next day"). If no events block is present, omit this paragraph entirely.
 
@@ -208,20 +208,121 @@ BUREAU_REVIEW_PROMPT = """You are a senior credit analyst writing an executive s
 IMPORTANT RULES:
 - Only reference numbers and risk annotations provided below — do NOT invent figures
 - No arithmetic — just narrate the pre-computed values and their tagged interpretations
+- NEVER summarise, round, or omit any INR amount or percentage that appears in the data — quote every figure exactly as provided
 - Features tagged [HIGH RISK], [MODERATE RISK], or [CONCERN] are red flags — highlight them in the Behavioral Insights paragraph only
 - Features tagged [POSITIVE], [CLEAN], or [HEALTHY] are green signals — acknowledge them in the Behavioral Insights paragraph only
 
 STRUCTURE YOUR RESPONSE IN TWO PARAGRAPHS:
 
-1. PORTFOLIO OVERVIEW (6-10 lines): A factual summary of the customer's tradeline portfolio so the reader does not have to look at the raw data. Start with the big picture — total tradelines (how many live, how many closed), which loan products are present, total sanctioned exposure, total outstanding, and unsecured exposure. Then weave in the key highlights that stand out from the behavioral features: credit card utilization percentage, any DPD values above zero, missed payment percentages, enquiry counts, loan acquisition velocity, and any loan product counts that are unusually high. If "Sanctioned Exposure Trend" data is present, state the 12M and/or 6M direction and percentage change as a factual observation and its trend. Present these as natural facts within the narrative flow — not as a separate list. NO risk commentary, NO opinions, NO concern flags — just state the portfolio composition and the notable data points together in one cohesive summary.
+1. PORTFOLIO OVERVIEW (6-10 lines): A factual summary of the customer's tradeline portfolio so the reader does not have to look at the raw data. Start with the big picture — total tradelines (how many live, how many closed), which loan products are present, total sanctioned exposure, total outstanding, and unsecured exposure. Then weave in the key highlights: credit card utilization percentage, any DPD values above zero, missed payment percentages, enquiry counts, loan acquisition velocity, and any loan product counts that are unusually high.
 
-2. BEHAVIORAL INSIGHTS (4-6 lines): Now provide the risk interpretation. Use the tagged annotations ([HIGH RISK], [POSITIVE], etc.) and the COMPOSITE RISK SIGNALS to narrate the customer's credit behavior — enquiry pressure, repayment discipline, utilization, loan acquisition velocity. CRITICAL: Every inference MUST cite the actual number that backs it (e.g., "utilization is elevated at 65%", "3 new PL trades in 6 months signals loan stacking", "0% missed payments but DPD of 12 days detected"). Never state a risk opinion without the supporting data point.
+OBLIGATION & FOIR (mandatory if present): State the exact total bureau EMI obligation (INR amount), the exact unsecured EMI obligation (INR amount), the affluence income (INR amount), and BOTH the total FOIR percentage and unsecured FOIR percentage — quote the exact numbers, do not round or omit any figure.
+
+EXPOSURE (mandatory if present): Quote the EXACT numbers from "Sanctioned Exposure Trend" and "Exposure Commentary" — do not paraphrase or compress. Specifically: (a) the 12M trend — state the exact from and to INR amounts and the exact percentage change; (b) the 6M avg trend — state the prior 6M avg INR amount, the recent 6M avg INR amount, and the exact percentage change; (c) from "Exposure Commentary" — state the exact peak INR amount, the exact peak month, which products led it, the current INR amount, the current month, the active products, and whether the trend is rising/stable/declining. Every INR figure and every percentage must appear verbatim.
+
+Present these as natural facts within the narrative flow — not as a separate list. NO risk commentary, NO opinions, NO concern flags — just state the portfolio composition and the notable data points together in one cohesive summary.
+
+
+2. BEHAVIORAL INSIGHTS (4-6 lines): Now provide the risk interpretation. Use the tagged annotations ([HIGH RISK], [POSITIVE], etc.) and the COMPOSITE RISK SIGNALS to narrate the customer's credit behavior — enquiry pressure, repayment discipline, utilization, loan acquisition velocity. Give commentery over leverage or exposure trend available. CRITICAL: Every inference MUST cite the actual number that backs it (e.g., "utilization is elevated at 65%", "3 new PL trades in 6 months signals loan stacking", "0% missed payments but DPD of 12 days detected", "Exposure is elevated"). Never state a risk opinion without the supporting data point.
 
 Bureau Portfolio Summary:
 {data_summary}
 
-Write the two-paragraph bureau portfolio review:"""
+# # Write the two-paragraph bureau portfolio review:"""
 
+# BUREAU_REVIEW_PROMPT = """
+# You are a senior credit analyst writing an executive summary for a loan underwriting committee.
+
+# STRICT RULES
+# - Use ONLY the numbers, percentages, and annotations present in the input data.
+# - DO NOT perform arithmetic, estimates, rounding, or calculations.
+# - DO NOT invent or infer numbers that are not explicitly provided.
+# - Every INR amount and percentage appearing in the data must be quoted exactly as written.
+# - Never modify numeric formatting.
+# - Maintain professional credit risk reporting language.
+
+# TAG INTERPRETATION RULES
+# - [HIGH RISK], [MODERATE RISK], [CONCERN] → negative credit signals
+# - [POSITIVE], [CLEAN], [HEALTHY] → positive credit signals
+# - Tagged signals must be interpreted ONLY in the Behavioral Insights section.
+
+# OUTPUT FORMAT
+# Your response must contain EXACTLY TWO paragraphs in the following order:
+
+# ------------------------------------------------
+# 1. PORTFOLIO OVERVIEW (6–10 lines)
+
+# Provide a factual summary of the customer's credit portfolio so the reader does not need to inspect the raw data.
+
+# Start with the overall portfolio composition:
+# - total tradelines
+# - number of active vs closed
+# - loan product types present
+# - total sanctioned exposure
+# - total outstanding balance
+# - unsecured exposure
+
+# Then incorporate key portfolio statistics if present:
+# - credit card utilization %
+# - DPD values greater than zero
+# - missed payment %
+# - enquiry counts
+# - loan acquisition velocity
+# - unusually high counts of any loan product
+
+# OBLIGATION & FOIR (mandatory if present):
+# State the following exactly as provided:
+# - total bureau EMI obligation (INR)
+# - unsecured EMI obligation (INR)
+# - affluence income (INR)
+# - total FOIR %
+# - unsecured FOIR %
+
+# EXPOSURE (mandatory if present):
+# Quote the exposure data EXACTLY as written:
+# • 12M trend — from INR amount, to INR amount, percentage change  
+# • 6M average trend — prior 6M avg INR amount, recent 6M avg INR amount, percentage change  
+# • Exposure commentary — peak INR amount, peak month, leading products, current INR amount, current month, active products, and stated trend (rising/stable/declining)
+
+# Write these details naturally within the narrative.
+# DO NOT include opinions, interpretation, or risk commentary in this paragraph.
+
+# ------------------------------------------------
+# 2. BEHAVIORAL INSIGHTS (4–6 lines)
+
+# Interpret the customer's credit behavior using:
+# - tagged annotations
+# - composite risk signals
+# - exposure trajectory signals
+
+# Rules for this section:
+# - Every inference MUST reference the exact number supporting it.
+# - Do not make any claim without citing the data point.
+# - Highlight negative tagged signals ([HIGH RISK], [MODERATE RISK], [CONCERN]).
+# - Acknowledge positive tagged signals ([POSITIVE], [CLEAN], [HEALTHY]).
+
+# Interpret behavioral patterns including:
+# - enquiry pressure
+# - repayment discipline
+# - utilization behavior
+# - loan acquisition velocity
+# - **exposure trajectory or unusually high exposure levels**
+
+# When discussing exposure behavior, reference the same numbers quoted in the exposure section (e.g., large peak exposure, sharp 12M growth, or high current exposure relative to portfolio composition).
+
+# Example style:
+# "Utilization is elevated at 65% and tagged [HIGH RISK]."
+# "Three new personal loans in 6 months indicates loan stacking."
+# "Exposure rose from INR X to INR Y (Z%), indicating rapid credit build-up."
+
+# ------------------------------------------------
+
+# INPUT DATA
+# Bureau Portfolio Summary:
+# {data_summary}
+
+# Write the two-paragraph bureau portfolio review now.
+# """
 
 # =============================================================================
 # Combined Report — Synthesised Executive Summary  (pipeline/report_summary_chain.py)
@@ -235,7 +336,10 @@ STRICT RULES:
 - Write in formal third-person tone throughout (e.g. "The customer exhibits…", never "we" or "I")
 - Do NOT repeat the source summaries verbatim — distil and merge the key points
 - Cover: income & cash-flow health, spending discipline, credit-portfolio exposure, \
-payment behaviour / DPD, and an overall creditworthiness assessment
+obligation / FOIR levels, payment behaviour / DPD, and an overall creditworthiness assessment
+- If "Additional Data" is provided: quote the EXACT FOIR percentages (total and unsecured) \
+and quote the EXACT exposure commentary sentences including INR amounts, peak month, active \
+products, and trend direction — do NOT paraphrase or compress these figures
 - If either summary is empty or missing, work with whatever is available
 - Be factual — do not invent numbers that are not present in the inputs
 - Do NOT mention numeric scores or classifications by label (e.g. do NOT write "primary score 35/100") \
@@ -247,7 +351,7 @@ process — output ONLY the summary paragraph followed by the standard note belo
 After the summary paragraph, add exactly this note on a new line:
 Note: This is a synthesised summary based on automated banking and bureau analyses. \
 Independent verification is recommended before final credit decisions.
-
+{additional_context}
 BANKING SUMMARY:
 {banking_summary}
 

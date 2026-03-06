@@ -61,12 +61,31 @@ def generate_combined_report_pdf(
     banking_text = (customer_report.customer_review or "") if customer_report else ""
     bureau_text = (bureau_report.narrative or "") if bureau_report else ""
     try:
-        from pipeline.reports.report_summary_chain import generate_combined_executive_summary
+        from pipeline.reports.report_summary_chain import (
+            generate_combined_executive_summary,
+            summarize_exposure_timeline,
+        )
         from utils.helpers import mask_customer_id
+
+        # Build FOIR context from tradeline features
+        _tl = bureau_report.tradeline_features if bureau_report else None
+        _foir_parts = []
+        if _tl and _tl.foir is not None:
+            _foir_parts.append(f"FOIR (total): {_tl.foir:.1f}%")
+        if _tl and _tl.foir_unsec is not None:
+            _foir_parts.append(f"FOIR (unsecured): {_tl.foir_unsec:.1f}%")
+        foir_ctx = ", ".join(_foir_parts)
+
+        exposure_text = summarize_exposure_timeline(
+            bureau_report.monthly_exposure if bureau_report else None
+        )
+
         combined_summary = generate_combined_executive_summary(
             banking_summary=banking_text,
             bureau_summary=bureau_text,
             customer_id=mask_customer_id(customer_id),
+            exposure_summary=exposure_text,
+            foir_context=foir_ctx,
         )
     except Exception as e:
         logger.warning(f"Combined executive summary generation failed: {e}")

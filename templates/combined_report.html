@@ -551,26 +551,12 @@
             </div>
             {% endfor %}
             {% if tl_features %}
-            {# monsnclasttrop_pl_onc: Green [3.17,15.99) | Red otherwise #}
-            <div class="sc-signal {% if tl_features.months_since_last_trade_pl is not none and tl_features.months_since_last_trade_pl >= 3.17 and tl_features.months_since_last_trade_pl < 15.99 %}sc-rag-green{% else %}sc-rag-red{% endif %}">
-                <div class="sc-sig-label">Mo Last PL</div>
-                <div class="sc-sig-value">{{ "%.1f"|format(tl_features.months_since_last_trade_pl) if tl_features.months_since_last_trade_pl is not none else "N/A" }}</div>
-                <div class="sc-sig-note">{% if tl_features.months_since_last_trade_pl is none %}Missing{% elif tl_features.months_since_last_trade_pl < 3.17 %}Super Green{% elif tl_features.months_since_last_trade_pl < 15.99 %}Green{% elif tl_features.months_since_last_trade_pl < 25.76 %}Amber{% else %}Red{% endif %}</div>
-                <div class="sc-tooltip">monsnclasttrop_pl_onc&#10;Months since last PL trade&#10;&#10;&lt;3.17 → Super Green&#10;3.17–15.99 → Green ✓&#10;15.99–25.76 → Amber&#10;&gt;25.76 → Red&#10;Missing → Red</div>
-            </div>
             {# monsnclasttrop_uns_onc: Green <32.18 | Red otherwise #}
             <div class="sc-signal {% if tl_features.months_since_last_trade_uns is not none and tl_features.months_since_last_trade_uns < 32.18 %}sc-rag-green{% else %}sc-rag-red{% endif %}">
                 <div class="sc-sig-label">Mo Last Uns</div>
                 <div class="sc-sig-value">{{ "%.1f"|format(tl_features.months_since_last_trade_uns) if tl_features.months_since_last_trade_uns is not none else "N/A" }}</div>
                 <div class="sc-sig-note">{% if tl_features.months_since_last_trade_uns is none %}Missing{% elif tl_features.months_since_last_trade_uns < 9.66 %}Super/Green{% elif tl_features.months_since_last_trade_uns < 32.18 %}Green{% else %}Red{% endif %}</div>
                 <div class="sc-tooltip">monsnclasttrop_uns_onc&#10;Months since last unsecured trade&#10;&#10;&lt;9.66 → Super Green / Green&#10;9.66–32.18 → Green ✓&#10;&gt;32.18 → Red&#10;Missing → Red</div>
-            </div>
-            {# no_tr_open_l6m_pl_onc: Super Green if not null | Red if null #}
-            <div class="sc-signal {% if tl_features.new_trades_6m_pl is not none %}sc-rag-green{% else %}sc-rag-red{% endif %}">
-                <div class="sc-sig-label">New PL 6M</div>
-                <div class="sc-sig-value">{{ tl_features.new_trades_6m_pl if tl_features.new_trades_6m_pl is not none else "N/A" }}</div>
-                <div class="sc-sig-note">{% if tl_features.new_trades_6m_pl is not none %}Super Green{% else %}Missing{% endif %}</div>
-                <div class="sc-tooltip">no_tr_open_l6m_pl_onc&#10;New PL trades opened in last 6M&#10;&#10;Any value → Super Green ✓&#10;Missing → Red</div>
             </div>
             {# no_trades_all_onc: Green ≥18.5 | Red <18.5 | Neutral if null #}
             <div class="sc-signal {% if tl_features.total_trades is none %}sc-rag-neutral{% elif tl_features.total_trades >= 18.5 %}sc-rag-green{% else %}sc-rag-red{% endif %}">
@@ -579,40 +565,12 @@
                 <div class="sc-sig-note">{% if tl_features.total_trades is none %}No Seg{% elif tl_features.total_trades < 3.5 %}Red{% elif tl_features.total_trades < 18.5 %}Amber{% else %}Green{% endif %}</div>
                 <div class="sc-tooltip">no_trades_all_onc&#10;Total number of all trades&#10;&#10;&lt;3.5 → Red&#10;3.5–18.5 → Amber&#10;&gt;18.5 → Green ✓&#10;Missing → No segment</div>
             </div>
-            {# max_dpd_l6m_cc_onc: Green <3.5 | Red otherwise #}
-            <div class="sc-signal {% if tl_features.max_dpd_6m_cc is not none and tl_features.max_dpd_6m_cc < 3.5 %}sc-rag-green{% else %}sc-rag-red{% endif %}">
-                <div class="sc-sig-label">Max DPD 6M CC</div>
-                <div class="sc-sig-value">{{ tl_features.max_dpd_6m_cc if tl_features.max_dpd_6m_cc is not none else "N/A" }}</div>
-                <div class="sc-sig-note">{% if tl_features.max_dpd_6m_cc is none %}Missing{% elif tl_features.max_dpd_6m_cc < 3.5 %}Green{% else %}Red{% endif %}</div>
-                <div class="sc-tooltip">max_dpd_l6m_cc_onc&#10;Max days past due, last 6M (CC)&#10;&#10;&lt;3.5 days → Green ✓&#10;&gt;=3.5 days → Red&#10;Missing → Red</div>
-            </div>
-            {# max_dpd_l6m_pl_onc: no meaningful grid segment #}
-            <div class="sc-signal sc-rag-neutral">
-                <div class="sc-sig-label">Max DPD 6M PL</div>
-                <div class="sc-sig-value">{{ tl_features.max_dpd_6m_pl if tl_features.max_dpd_6m_pl is not none else "N/A" }}</div>
-                <div class="sc-sig-note">No segment</div>
-                <div class="sc-tooltip">max_dpd_l6m_pl_onc&#10;Max days past due, last 6M (PL)&#10;&#10;Grid: "Does not make sense"&#10;No meaningful segment assigned</div>
-            </div>
-            {# max_dpd_l9m_cc_onc: Green <3.5 | Red otherwise #}
-            <div class="sc-signal {% if tl_features.max_dpd_9m_cc is not none and tl_features.max_dpd_9m_cc < 3.5 %}sc-rag-green{% else %}sc-rag-red{% endif %}">
-                <div class="sc-sig-label">Max DPD 9M CC</div>
-                <div class="sc-sig-value">{{ tl_features.max_dpd_9m_cc if tl_features.max_dpd_9m_cc is not none else "N/A" }}</div>
-                <div class="sc-sig-note">{% if tl_features.max_dpd_9m_cc is none %}Missing{% elif tl_features.max_dpd_9m_cc < 3.5 %}Green{% else %}Red{% endif %}</div>
-                <div class="sc-tooltip">max_dpd_l9m_cc_onc&#10;Max days past due, last 9M (CC)&#10;&#10;&lt;3.5 days → Green ✓&#10;&gt;=3.5 days → Red&#10;Missing → Red</div>
-            </div>
             {# mon_sin_last_0p_uns_op: Green if null (clean) | Red if has value (delinquency) #}
             <div class="sc-signal {% if tl_features.months_since_last_0p_uns is none %}sc-rag-green{% else %}sc-rag-red{% endif %}">
                 <div class="sc-sig-label">Mo 0+DPD Uns</div>
                 <div class="sc-sig-value">{{ "%.1f"|format(tl_features.months_since_last_0p_uns) if tl_features.months_since_last_0p_uns is not none else "N/A" }}</div>
                 <div class="sc-sig-note">{% if tl_features.months_since_last_0p_uns is none %}Green (clean){% else %}Red (event){% endif %}</div>
                 <div class="sc-tooltip">mon_sin_last_0p_uns_op&#10;Months since last 0+ DPD (unsecured)&#10;&#10;Missing → Green ✓ (no delinquency)&#10;Any value → Red (had 0+ DPD event)</div>
-            </div>
-            {# monsinlast_0p_pl_onc: Green ≥19.44 | Red otherwise (incl. null=Amber) #}
-            <div class="sc-signal {% if tl_features.months_since_last_0p_pl is not none and tl_features.months_since_last_0p_pl >= 19.44 %}sc-rag-green{% else %}sc-rag-red{% endif %}">
-                <div class="sc-sig-label">Mo 0+DPD PL</div>
-                <div class="sc-sig-value">{{ "%.1f"|format(tl_features.months_since_last_0p_pl) if tl_features.months_since_last_0p_pl is not none else "N/A" }}</div>
-                <div class="sc-sig-note">{% if tl_features.months_since_last_0p_pl is none %}Amber{% elif tl_features.months_since_last_0p_pl < 19.44 %}Red{% elif tl_features.months_since_last_0p_pl < 55.38 %}Green{% else %}Super Green{% endif %}</div>
-                <div class="sc-tooltip">monsinlast_0p_pl_onc&#10;Months since last 0+ DPD (PL)&#10;&#10;&lt;19.44 → Red&#10;19.44–55.38 → Green ✓&#10;&gt;55.38 → Super Green ✓&#10;Missing → Amber</div>
             </div>
             {# pct_0p_l24m_all_onc: Green <1.15 | Red otherwise #}
             <div class="sc-signal {% if tl_features.pct_0plus_24m_all is not none and tl_features.pct_0plus_24m_all < 1.15 %}sc-rag-green{% else %}sc-rag-red{% endif %}">
@@ -628,47 +586,12 @@
                 <div class="sc-sig-note">{% if tl_features.pct_0plus_24m_pl is none %}Missing{% elif tl_features.pct_0plus_24m_pl < 1.71 %}Green{% else %}Amber/Red{% endif %}</div>
                 <div class="sc-tooltip">pct_0p_l24m_pl_onc&#10;% of months with 0+ DPD, last 24M (PL)&#10;&#10;&lt;1.71% → Green ✓&#10;&gt;=1.71% → Amber&#10;Missing → Red</div>
             </div>
-            {# pct_missed_pymt_last18m_all: no grid segment #}
-            <div class="sc-signal sc-rag-neutral">
-                <div class="sc-sig-label">% Missed 18M</div>
-                <div class="sc-sig-value">{{ "%.2f"|format(tl_features.pct_missed_payments_18m) if tl_features.pct_missed_payments_18m is not none else "N/A" }}</div>
-                <div class="sc-sig-note">No segment</div>
-                <div class="sc-tooltip">pct_missed_pymt_last18m_all&#10;% missed payments, last 18M&#10;&#10;No grid segment assigned&#10;(event rate rises with value)</div>
-            </div>
             {# pct_tr_0p_l12m_all_onc: Green if null | Red if not null (all bins Amber/Red) #}
             <div class="sc-signal {% if tl_features.pct_trades_0plus_12m is none %}sc-rag-green{% else %}sc-rag-red{% endif %}">
                 <div class="sc-sig-label">% Tr 0+DPD 12M</div>
                 <div class="sc-sig-value">{{ "%.2f"|format(tl_features.pct_trades_0plus_12m) if tl_features.pct_trades_0plus_12m is not none else "N/A" }}</div>
                 <div class="sc-sig-note">{% if tl_features.pct_trades_0plus_12m is none %}Green (clean){% elif tl_features.pct_trades_0plus_12m < 19.52 %}Amber{% else %}Red{% endif %}</div>
                 <div class="sc-tooltip">pct_tr_0p_l12m_all_onc&#10;% trades with 0+ DPD, last 12M (all)&#10;&#10;Missing → Green ✓ (no delinquency)&#10;&lt;19.52% → Amber&#10;&gt;=19.52% → Red</div>
-            </div>
-            {# uns_enq_l12m: no grid segment #}
-            <div class="sc-signal sc-rag-neutral">
-                <div class="sc-sig-label">Uns Enq 12M</div>
-                <div class="sc-sig-value">{{ tl_features.unsecured_enquiries_12m if tl_features.unsecured_enquiries_12m is not none else "N/A" }}</div>
-                <div class="sc-sig-note">No segment</div>
-                <div class="sc-tooltip">uns_enq_l12m&#10;Unsecured enquiries in last 12M&#10;&#10;No grid segment assigned</div>
-            </div>
-            {# ratio_good_closed_loans_pl: not in grid #}
-            <div class="sc-signal sc-rag-neutral">
-                <div class="sc-sig-label">Good Closed PL</div>
-                <div class="sc-sig-value">{{ "%.0f%%"|format(tl_features.ratio_good_closed_pl * 100) if tl_features.ratio_good_closed_pl is not none else "N/A" }}</div>
-                <div class="sc-sig-note">Not in grid</div>
-                <div class="sc-tooltip">ratio_good_closed_loans_pl&#10;Ratio of good closed PL loans&#10;&#10;Variable not present in grid.csv</div>
-            </div>
-            {# pct_bal_cc_lv: Green <83.20 | Red otherwise #}
-            <div class="sc-signal {% if tl_features.cc_balance_utilization_pct is not none and tl_features.cc_balance_utilization_pct < 83.20 %}sc-rag-green{% else %}sc-rag-red{% endif %}">
-                <div class="sc-sig-label">CC Util %</div>
-                <div class="sc-sig-value">{{ "%.1f"|format(tl_features.cc_balance_utilization_pct) if tl_features.cc_balance_utilization_pct is not none else "N/A" }}</div>
-                <div class="sc-sig-note">{% if tl_features.cc_balance_utilization_pct is none %}Missing{% elif tl_features.cc_balance_utilization_pct < 29.19 %}Super Green{% elif tl_features.cc_balance_utilization_pct < 83.20 %}Green{% else %}Amber{% endif %}</div>
-                <div class="sc-tooltip">pct_bal_cc_lv&#10;CC balance as % of sanctioned limit&#10;&#10;&lt;29.19% → Super Green ✓&#10;29.19–83.2% → Green ✓&#10;&gt;83.2% → Amber&#10;Missing → Red</div>
-            </div>
-            {# pct_bal_pl_lv: Green <87.06 | Red otherwise #}
-            <div class="sc-signal {% if tl_features.pl_balance_remaining_pct is not none and tl_features.pl_balance_remaining_pct < 87.06 %}sc-rag-green{% else %}sc-rag-red{% endif %}">
-                <div class="sc-sig-label">PL Bal %</div>
-                <div class="sc-sig-value">{{ "%.1f"|format(tl_features.pl_balance_remaining_pct) if tl_features.pl_balance_remaining_pct is not none else "N/A" }}</div>
-                <div class="sc-sig-note">{% if tl_features.pl_balance_remaining_pct is none %}Missing{% elif tl_features.pl_balance_remaining_pct < 37.10 %}Super Green{% elif tl_features.pl_balance_remaining_pct < 87.06 %}Green{% else %}Amber{% endif %}</div>
-                <div class="sc-tooltip">pct_bal_pl_lv&#10;PL outstanding balance as % of sanctioned&#10;&#10;&lt;37.1% → Super Green ✓&#10;37.1–87.06% → Green ✓&#10;&gt;87.06% → Amber&#10;Missing → Red</div>
             </div>
             {# tr_to_enq_ratio_uns_l24m: Green ≥13.74 | Red otherwise #}
             <div class="sc-signal {% if tl_features.trade_to_enquiry_ratio_uns_24m is not none and tl_features.trade_to_enquiry_ratio_uns_24m >= 13.74 %}sc-rag-green{% else %}sc-rag-red{% endif %}">
@@ -677,54 +600,12 @@
                 <div class="sc-sig-note">{% if tl_features.trade_to_enquiry_ratio_uns_24m is none %}Missing{% elif tl_features.trade_to_enquiry_ratio_uns_24m >= 13.74 %}Green{% else %}Red{% endif %}</div>
                 <div class="sc-tooltip">tr_to_enq_ratio_uns_l24m&#10;Trade-to-enquiry ratio (unsecured, 24M)&#10;&#10;&gt;=13.74 → Green ✓&#10;&lt;13.74 → Red&#10;Missing → Red</div>
             </div>
-            {# interpurchase_time_l12m_cl: Green ≥0.81 | Red otherwise #}
-            <div class="sc-signal {% if tl_features.interpurchase_time_12m_cl is not none and tl_features.interpurchase_time_12m_cl >= 0.81 %}sc-rag-green{% else %}sc-rag-red{% endif %}">
-                <div class="sc-sig-label">IP 12M CL</div>
-                <div class="sc-sig-value">{{ "%.2f"|format(tl_features.interpurchase_time_12m_cl) if tl_features.interpurchase_time_12m_cl is not none else "N/A" }}</div>
-                <div class="sc-sig-note">{% if tl_features.interpurchase_time_12m_cl is none %}Missing{% elif tl_features.interpurchase_time_12m_cl >= 0.81 %}Green{% else %}Red{% endif %}</div>
-                <div class="sc-tooltip">interpurchase_time_l12m_cl&#10;Avg months between consumer loan opens (12M)&#10;&#10;&lt;0.81 → Red&#10;&gt;=0.81 → Green ✓&#10;Missing → Red</div>
-            </div>
-            {# interpurchase_time_l12m_plbl: Green if not null | Red if null #}
-            <div class="sc-signal {% if tl_features.interpurchase_time_12m_plbl is not none %}sc-rag-green{% else %}sc-rag-red{% endif %}">
-                <div class="sc-sig-label">IP 12M PL/BL</div>
-                <div class="sc-sig-value">{{ "%.2f"|format(tl_features.interpurchase_time_12m_plbl) if tl_features.interpurchase_time_12m_plbl is not none else "N/A" }}</div>
-                <div class="sc-sig-note">{% if tl_features.interpurchase_time_12m_plbl is not none %}Green{% else %}Missing{% endif %}</div>
-                <div class="sc-tooltip">interpurchase_time_l12m_plbl&#10;Avg months between PL/BL opens (12M)&#10;&#10;Any value → Green ✓&#10;Missing → Red</div>
-            </div>
             {# interpurchase_time_l24m_all: Green ≥2.54 | Red otherwise #}
             <div class="sc-signal {% if tl_features.interpurchase_time_24m_all is not none and tl_features.interpurchase_time_24m_all >= 2.54 %}sc-rag-green{% else %}sc-rag-red{% endif %}">
                 <div class="sc-sig-label">IP 24M All</div>
                 <div class="sc-sig-value">{{ "%.2f"|format(tl_features.interpurchase_time_24m_all) if tl_features.interpurchase_time_24m_all is not none else "N/A" }}</div>
                 <div class="sc-sig-note">{% if tl_features.interpurchase_time_24m_all is none %}Missing{% elif tl_features.interpurchase_time_24m_all < 2.54 %}Amber{% elif tl_features.interpurchase_time_24m_all < 4.22 %}Green{% else %}Super Green{% endif %}</div>
                 <div class="sc-tooltip">interpurchase_time_l24m_all&#10;Avg months between all loan opens (24M)&#10;&#10;&lt;2.54 → Amber&#10;2.54–4.22 → Green ✓&#10;&gt;4.22 → Super Green ✓&#10;Missing → Red</div>
-            </div>
-            {# interpurchase_time_l24m_hl_lap: Green if not null | Red if null #}
-            <div class="sc-signal {% if tl_features.interpurchase_time_24m_hl_lap is not none %}sc-rag-green{% else %}sc-rag-red{% endif %}">
-                <div class="sc-sig-label">IP 24M HL/LAP</div>
-                <div class="sc-sig-value">{{ "%.2f"|format(tl_features.interpurchase_time_24m_hl_lap) if tl_features.interpurchase_time_24m_hl_lap is not none else "N/A" }}</div>
-                <div class="sc-sig-note">{% if tl_features.interpurchase_time_24m_hl_lap is not none %}Green{% else %}Missing{% endif %}</div>
-                <div class="sc-tooltip">interpurchase_time_l24m_hl_lap&#10;Avg months between HL/LAP opens (24M)&#10;&#10;Any value → Green ✓&#10;Missing → Red</div>
-            </div>
-            {# interpurchase_time_l24m_twl: no grid segment #}
-            <div class="sc-signal sc-rag-neutral">
-                <div class="sc-sig-label">IP 24M TWL</div>
-                <div class="sc-sig-value">{{ "%.2f"|format(tl_features.interpurchase_time_24m_twl) if tl_features.interpurchase_time_24m_twl is not none else "N/A" }}</div>
-                <div class="sc-sig-note">No segment</div>
-                <div class="sc-tooltip">interpurchase_time_l24m_twl&#10;Avg months between two-wheeler opens (24M)&#10;&#10;No grid segment assigned</div>
-            </div>
-            {# interpurchase_time_l6m_plbl: Green ≥0.62 | Red otherwise #}
-            <div class="sc-signal {% if tl_features.interpurchase_time_6m_plbl is not none and tl_features.interpurchase_time_6m_plbl >= 0.62 %}sc-rag-green{% else %}sc-rag-red{% endif %}">
-                <div class="sc-sig-label">IP 6M PL/BL</div>
-                <div class="sc-sig-value">{{ "%.2f"|format(tl_features.interpurchase_time_6m_plbl) if tl_features.interpurchase_time_6m_plbl is not none else "N/A" }}</div>
-                <div class="sc-sig-note">{% if tl_features.interpurchase_time_6m_plbl is none %}Missing{% elif tl_features.interpurchase_time_6m_plbl < 0.62 %}Amber{% else %}Green{% endif %}</div>
-                <div class="sc-tooltip">interpurchase_time_l6m_plbl&#10;Avg months between PL/BL opens (6M)&#10;&#10;&lt;0.62 → Amber&#10;&gt;=0.62 → Green ✓&#10;Missing → Red</div>
-            </div>
-            {# interpurchase_time_l9m_hl_lap: Green if not null | Red if null #}
-            <div class="sc-signal {% if tl_features.interpurchase_time_9m_hl_lap is not none %}sc-rag-green{% else %}sc-rag-red{% endif %}">
-                <div class="sc-sig-label">IP 9M HL/LAP</div>
-                <div class="sc-sig-value">{{ "%.2f"|format(tl_features.interpurchase_time_9m_hl_lap) if tl_features.interpurchase_time_9m_hl_lap is not none else "N/A" }}</div>
-                <div class="sc-sig-note">{% if tl_features.interpurchase_time_9m_hl_lap is not none %}Green{% else %}Missing{% endif %}</div>
-                <div class="sc-tooltip">interpurchase_time_l9m_hl_lap&#10;Avg months between HL/LAP opens (9M)&#10;&#10;Any value → Green ✓&#10;Missing → Red</div>
             </div>
             {% endif %}
         </div>
