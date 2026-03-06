@@ -18,7 +18,7 @@ from langchain_ollama import ChatOllama
 from schemas.customer_report import CustomerReport
 from data.loader import get_transactions_df
 from utils.helpers import mask_customer_id, format_inr
-from schemas.loan_type import get_loan_type_display_name
+from schemas.loan_type import LoanType, get_loan_type_display_name
 from config.settings import EXPLAINER_MODEL, SUMMARY_MODEL, LLM_TEMPERATURE, LLM_TEMPERATURE_CREATIVE, LLM_SEED
 from utils.llm_utils import strip_think
 from config.prompts import (
@@ -386,13 +386,23 @@ def _annotate_value(value, thresholds):
     return ""
 
 
-def _format_tradeline_features_for_prompt(tf) -> str:
+def _format_tradeline_features_for_prompt(tf, product_types: set = None) -> str:
     """Format TradelineFeatures with risk annotations for the LLM prompt.
 
     Each feature is annotated with a risk interpretation tag based on
     deterministic thresholds. Interaction signals are appended at the end.
+
+    Args:
+        tf: TradelineFeatures dataclass or dict.
+        product_types: Set of LoanType values present in the portfolio.
+                       Product-specific metrics are suppressed when the
+                       corresponding product is absent. None = no filtering.
     """
     tf_dict = asdict(tf) if not isinstance(tf, dict) else tf
+
+    # Product-existence guards — prevents narrating metrics for absent products
+    has_cc = product_types is None or LoanType.CC in product_types
+    has_pl = product_types is None or LoanType.PL in product_types
 
     def _val(key):
         return tf_dict.get(key)
@@ -407,12 +417,12 @@ def _format_tradeline_features_for_prompt(tf) -> str:
     # --- Loan Activity ---
     lines.append("  LOAN ACTIVITY:")
     v = _val("new_trades_6m_pl")
-    if v is not None:
+    if v is not None and has_pl:
         tag = _annotate_value(v, [(">=", T.NEW_PL_6M_HIGH_RISK, " [HIGH RISK — rapid PL acquisition]"),
                                    (">=", T.NEW_PL_6M_MODERATE_RISK, " [MODERATE RISK — multiple recent PLs]")])
         lines.append(f"    New PL Trades in Last 6M: {v}{tag}")
     v = _val("months_since_last_trade_pl")
-    if v is not None:
+    if v is not None and has_pl:
         tag = _annotate_value(v, [("<", T.MONTHS_SINCE_TRADE_CONCERN, " [CONCERN — very recent PL activity]")])
         lines.append(f"    Months Since Last PL Trade: {_fmt(v)}{tag}")
     v = _val("months_since_last_trade_uns")
@@ -423,9 +433,13 @@ def _format_tradeline_features_for_prompt(tf) -> str:
 
     # --- DPD & Delinquency ---
     lines.append("  DPD & DELINQUENCY:")
-    for field, label in [("max_dpd_6m_cc", "Max DPD Last 6M (CC)"),
-                          ("max_dpd_6m_pl", "Max DPD Last 6M (PL)"),
-                          ("max_dpd_9m_cc", "Max DPD Last 9M (CC)")]:
+    for field, label, required_product in [
+        ("max_dpd_6m_cc", "Max DPD Last 6M (CC)", has_cc),
+        ("max_dpd_6m_pl", "Max DPD Last 6M (PL)", has_pl),
+        ("max_dpd_9m_cc", "Max DPD Last 9M (CC)", has_cc),
+    ]:
+        if not required_product:
+            continue
         v = _val(field)
         if v is not None:
             tag = _annotate_value(v, [(">", T.DPD_HIGH_RISK, " [HIGH RISK — severe delinquency]"),
@@ -434,7 +448,7 @@ def _format_tradeline_features_for_prompt(tf) -> str:
                                        ("==", 0, " [CLEAN]")])
             lines.append(f"    {label}: {v}{tag}")
     v = _val("months_since_last_0p_pl")
-    if v is not None:
+    if v is not None and has_pl:
         tag = _annotate_value(v, [(">=", T.CLEAN_HISTORY_STRONG_MONTHS, " [POSITIVE — no PL delinquency in 2+ years]"),
                                    (">=", T.CLEAN_HISTORY_GOOD_MONTHS, " [POSITIVE — clean for 1+ year]"),
                                    ("<", T.RECENT_DELINQUENCY_MONTHS, " [CONCERN — recent PL delinquency]")])
@@ -473,7 +487,7 @@ def _format_tradeline_features_for_prompt(tf) -> str:
                                    ("==", 0, " [CLEAN]")])
         lines.append(f"    % Trades with 0+ DPD in 24M (All): {_fmt(v)}{tag}")
     v = _val("pct_0plus_24m_pl")
-    if v is not None:
+    if v is not None and has_pl:
         tag = _annotate_value(v, [(">", T.PCT_0PLUS_HIGH_RISK, " [HIGH RISK]"), (">", 0, " [CONCERN]"),
                                    ("==", 0, " [CLEAN]")])
         lines.append(f"    % Trades with 0+ DPD in 24M (PL): {_fmt(v)}{tag}")
@@ -483,7 +497,7 @@ def _format_tradeline_features_for_prompt(tf) -> str:
                                    ("==", 0, " [CLEAN]")])
         lines.append(f"    % Trades with 0+ DPD in 12M (All): {_fmt(v)}{tag}")
     v = _val("ratio_good_closed_pl")
-    if v is not None:
+    if v is not None and has_pl:
         tag = _annotate_value(v, [(">=", T.GOOD_CLOSURE_POSITIVE, " [POSITIVE — strong closure track record]"),
                                    ("<", T.GOOD_CLOSURE_HIGH_RISK, " [HIGH RISK — poor closure history]"),
                                    ("<", T.GOOD_CLOSURE_CONCERN, " [CONCERN — below average closure quality]")])
@@ -492,13 +506,13 @@ def _format_tradeline_features_for_prompt(tf) -> str:
     # --- Utilization ---
     lines.append("  UTILIZATION:")
     v = _val("cc_balance_utilization_pct")
-    if v is not None:
+    if v is not None and has_cc:
         tag = _annotate_value(v, [(">", T.CC_UTIL_HIGH_RISK, " [HIGH RISK — over-utilized]"),
                                    (">", T.CC_UTIL_MODERATE_RISK, " [MODERATE RISK — elevated utilization]"),
                                    ("<=", T.CC_UTIL_HEALTHY, " [HEALTHY]")])
         lines.append(f"    CC Balance Utilization: {_fmt(v)}%{tag}")
     v = _val("pl_balance_remaining_pct")
-    if v is not None:
+    if v is not None and has_pl:
         tag = _annotate_value(v, [(">", T.PL_BAL_REMAINING_HIGH_RISK, " [HIGH RISK — most PL balance still outstanding]"),
                                    (">", T.PL_BAL_REMAINING_MODERATE_RISK, " [MODERATE — significant PL balance remaining]"),
                                    ("<=", T.PL_BAL_REMAINING_POSITIVE, " [POSITIVE — largely repaid]")])
@@ -714,7 +728,8 @@ def _build_bureau_data_summary(executive_inputs, tradeline_features=None, monthl
     # Tradeline behavioral features
     if tradeline_features is not None:
         lines.append("\nBehavioral & Risk Features:")
-        lines.append(_format_tradeline_features_for_prompt(tradeline_features))
+        _product_types = set(product_breakdown.keys()) if product_breakdown else None
+        lines.append(_format_tradeline_features_for_prompt(tradeline_features, product_types=_product_types))
 
     # Exposure trend (12M point-in-time + 6M avg)
     if monthly_exposure:
