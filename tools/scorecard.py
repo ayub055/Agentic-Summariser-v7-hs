@@ -347,28 +347,6 @@ def _banking_signals(customer_report, rg_salary_data: dict = None, affluence_amt
         signals.append({"label": "Income", "value": "Not detected", "rag": "red", "note": "No salary found",
                         "tooltip": "No salary transactions detected in the analysis period."})
 
-    # 8. FOIR (Fixed Obligation to Income Ratio)
-    _salary_for_foir = (rg_sal.get("salary_amount") if rg_sal else None) or (
-        customer_report.salary.avg_amount if customer_report.salary else None
-    )
-    if _salary_for_foir and _salary_for_foir > 0:
-        salary = _salary_for_foir
-        emi_total = sum(e.amount for e in customer_report.emis) if customer_report.emis else 0
-        rent_amt = customer_report.rent.amount if customer_report.rent else 0
-        foir = (emi_total + rent_amt) / salary * 100
-        rag = _rag(foir, green_max=40, amber_max=65)
-        tooltip = (
-            f"EMI: INR {emi_total:,.0f}  +  Rent: INR {rent_amt:,.0f}  ÷  Salary: INR {salary:,.0f}  =  {foir:.1f}%.\n"
-            f"Thresholds: ≤40% = comfortable · ≤65% = stretched · >65% = over-leveraged"
-        )
-        signals.append({
-            "label": "FOIR",
-            "value": f"{foir:.0f}%",
-            "rag": rag,
-            "note": "EMI+Rent/Salary",
-            "tooltip": tooltip,
-        })
-
     # 9. Red Flag Spending
     betting = 0.0
     if customer_report.category_overview:
