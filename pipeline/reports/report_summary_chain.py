@@ -657,6 +657,7 @@ def _build_bureau_data_summary(executive_inputs, tradeline_features=None, monthl
     lines = [
         f"Total Tradelines: {data.get('total_tradelines', 0)}",
         f"Live Tradelines: {data.get('live_tradelines', 0)}",
+        f"Closed Tradelines: {data.get('closed_tradelines', 0)}",
         f"Total Sanction Amount: INR {format_inr(data.get('total_sanctioned', 0))}",
         f"Total Outstanding: INR {format_inr(data.get('total_outstanding', 0))}",
         f"Unsecured Sanction Amount: INR {format_inr(data.get('unsecured_sanctioned', 0))}",

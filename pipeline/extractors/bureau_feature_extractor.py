@@ -27,6 +27,9 @@ _bureau_df: Optional[List[dict]] = None
 # DPD flag columns in dpd_data.csv
 _DPD_COLUMNS = [f"dpdf{i}" for i in range(1, 37)]
 
+# Loan statuses treated as closed/non-live (case-insensitive)
+_CLOSED_STATUSES = {"closed", "written off", "written-off", "settled", "npa", "loss", "doubtful", "write-off"}
+
 # Forced event codes in dpd_string (3-char patterns indicating non-standard events)
 _KNOWN_FORCED_EVENTS = {"WRF", "SET", "SMA", "SUB", "DBT", "LSS", "WOF"}
 
@@ -184,8 +187,10 @@ def _build_feature_vector(
     avg_vintage = round(sum(valid_vintages) / len(valid_vintages), 1) if valid_vintages else 0.0
 
     # Live / Closed counts — ensure live + closed = total for consistency
-    # Anything not explicitly "Closed" is treated as live (includes Live, Written-Off, etc.)
-    closed_count = sum(1 for tl in tradelines if tl.get("loan_status", "").strip() == "Closed")
+    closed_count = sum(
+        1 for tl in tradelines
+        if tl.get("loan_status", "").strip().lower() in _CLOSED_STATUSES
+    )
     live_count = loan_count - closed_count
 
     # DPD and delinquency
