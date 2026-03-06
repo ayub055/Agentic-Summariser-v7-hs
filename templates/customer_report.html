@@ -419,10 +419,10 @@
                 {% if tl_features.income_source %}<div style="font-size: 10px; color: #666; margin-top: 2px;">{{ tl_features.income_source }}</div>{% endif %}
             </div>
             {% endif %}
-            {% if tl_features.node or (rg_salary_data and (rg_salary_data.rg_sal or rg_salary_data.rg_income)) %}
+            {% if tl_features.node %}
             <div class="rf-item">
                 <label>Customer Persona</label>
-                <div class="value">{% if rg_salary_data and (rg_salary_data.rg_sal or rg_salary_data.rg_income) %}Salaried / Regular Credits{% else %}{{ tl_features.node|segment }}{% endif %}</div>
+                <div class="value">{% if tl_features.income_source and ('rg_sal' in tl_features.income_source|lower or 'rg_income' in tl_features.income_source|lower) %}Salaried / Regular Credits{% else %}{{ tl_features.node|segment }}{% endif %}</div>
             </div>
             {% endif %}
         </div>
