@@ -835,7 +835,7 @@ def generate_combined_executive_summary(
 
     try:
         prompt = ChatPromptTemplate.from_template(COMBINED_EXECUTIVE_PROMPT)
-        llm = ChatOllama(model=model_name, temperature=LLM_TEMPERATURE, seed=LLM_SEED)
+        llm = ChatOllama(model=model_name, temperature=0, seed=LLM_SEED)
         chain = prompt | llm | StrOutputParser()
 
         raw = chain.invoke({

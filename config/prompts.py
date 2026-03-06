@@ -166,9 +166,8 @@ IMPORTANT RULES:
 - Do NOT mention numeric scores or classifications (e.g. do NOT write "primary score 35/100" or "conduit account" — instead describe what actually happened)
 - Do NOT mention or reference missing sections
 
-STRUCTURE YOUR RESPONSE IN TWO PARAGRAPHS:
 
-1. FINANCIAL OVERVIEW (4-6 lines): A factual summary of the customer's banking profile. Cover income (salary amount, frequency, source), monthly cashflow (average net, total inflow vs outflow), key spending categories, EMI and rent commitments, and any utility bills. If "Banking FOIR" is present, include the obligation-to-income ratio as a factual observation. Weave these as natural facts in a narrative flow — not as a list. NO risk commentary, NO event mentions — just the financial picture.
+1. FINANCIAL OVERVIEW (4-6 lines): A factual summary of the customer's banking profile. Cover salary amount, frequency, source, monthly cashflow which is difference between credit and debit (average net, total inflow vs outflow, do not mix with income naming), key spending categories, EMI and rent commitments, and any utility bills. If "Banking FOIR" is present, include the obligation-to-income ratio as a factual observation. Weave these as natural facts in a narrative flow — not as a list. NO risk commentary, NO event mentions — just the financial picture.
 
 2. TRANSACTION EVENTS (one sentence per event): If a "DETECTED TRANSACTION EVENTS" block is present below, narrate EVERY event listed — [HIGH], [MEDIUM], and [POSITIVE] — as plain facts with the specific month and exact amount. Do NOT omit any event. Do NOT say "an event was detected" — state what the customer actually did (e.g. "In Jun 2025, the customer received ₹72,000 salary and transferred ₹72,000 to their own account the next day"). If no events block is present, omit this paragraph entirely.
 
@@ -214,8 +213,7 @@ IMPORTANT RULES:
 
 STRUCTURE YOUR RESPONSE IN TWO PARAGRAPHS:
 
-1. PORTFOLIO OVERVIEW (6-10 lines): Factual summary of the tradeline portfolio. Cover: total tradelines (live / closed), loan products present, total sanctioned, total outstanding, unsecured exposure, CC utilization %, any DPD above zero, missed payment %, enquiry count, loan acquisition velocity. If "Obligation & FOIR" is present, include the exact EMI obligation (total and unsecured INR amounts) and both FOIR percentages (total and unsecured) — quote the numbers verbatim. If "Sanctioned Exposure Trend" or "Exposure Commentary" is present, state the exact INR from/to amounts, exact % change, peak month, and current trend direction — quote every figure verbatim, do not paraphrase. NO risk commentary — just facts.
-
+1. PORTFOLIO OVERVIEW (6-10 lines): A factual summary of the customer's tradeline portfolio so the reader does not have to look at the raw data. Start with the exact tradeline counts using the data fields as follows: "Total Tradelines" is the total count, "Live Tradelines" is the number of currently active accounts, and "Closed Tradelines" is the number of settled/closed accounts — state it as "N total (M live, P closed)" using those exact values. Do NOT use the Total figure as the live count. Then cover which loan products are present, total sanctioned exposure, total outstanding, and unsecured exposure. Weave in the key highlights that stand out from the behavioral features: credit card utilization percentage, any DPD values above zero, obligation, unsecured obligation, FOIR, missed payment percentages, enquiry counts, loan acquisition velocity, and any loan product counts that are unusually high. Present these as natural facts within the narrative flow — not as a separate list. NO risk commentary, NO opinions, NO concern flags — just state the portfolio composition and the notable data points together in one cohesive summary.
 
 2. BEHAVIORAL INSIGHTS (4-6 lines): Now provide the risk interpretation. Use the tagged annotations ([HIGH RISK], [POSITIVE], etc.) and the COMPOSITE RISK SIGNALS to narrate the customer's credit behavior — enquiry pressure, repayment discipline, utilization, loan acquisition velocity. Give commentery over leverage or exposure trend available. CRITICAL: Every inference MUST cite the actual number that backs it (e.g., "utilization is elevated at 65%", "3 new PL trades in 6 months signals loan stacking", "0% missed payments but DPD of 12 days detected", "Exposure is elevated"). Never state a risk opinion without the supporting data point.
 
@@ -223,6 +221,7 @@ Bureau Portfolio Summary:
 {data_summary}
 
 # # Write the two-paragraph bureau portfolio review:"""
+
 
 # BUREAU_REVIEW_PROMPT = """
 # You are a senior credit analyst writing an executive summary for a loan underwriting committee.
@@ -322,27 +321,73 @@ Bureau Portfolio Summary:
 # Combined Report — Synthesised Executive Summary  (pipeline/report_summary_chain.py)
 # =============================================================================
 
+# Original single-paragraph combined prompt (kept for reference)
+# COMBINED_EXECUTIVE_PROMPT = """Prepare a synthesised executive summary for customer {customer_id} \
+# by merging the banking transaction analysis and credit-bureau tradeline analysis below into \
+# ONE cohesive paragraph (6-8 lines).
+#
+# STRICT RULES:
+# - Write in formal third-person tone throughout (e.g. "The customer exhibits…", never "we" or "I")
+# - Do NOT repeat the source summaries verbatim — distil and merge the key points
+# - Cover: income & cash-flow health, spending discipline, credit-portfolio exposure, \
+# obligation / FOIR levels, payment behaviour / DPD, and an overall creditworthiness assessment
+# - If "Additional Data" is provided: quote the EXACT FOIR percentages (total and unsecured) \
+# and quote the EXACT exposure commentary sentences including INR amounts, peak month, active \
+# products, and trend direction — do NOT paraphrase or compress these figures
+# - If either summary is empty or missing, work with whatever is available
+# - Be factual — do not invent numbers that are not present in the inputs
+# - Do NOT mention numeric scores or classifications by label (e.g. do NOT write "primary score 35/100") \
+# — instead narrate the underlying fact (e.g. "received salary and immediately transferred funds to own account")
+# - End with a clear one-line creditworthiness assessment (positive, cautious, or negative)
+# - Do NOT add any meta-commentary, personal notes, disclaimers, or remarks about the writing \
+# process — output ONLY the summary paragraph followed by the standard note below
+#
+# After the summary paragraph, add exactly this note on a new line:
+# Note: This is a synthesised summary based on automated banking and bureau analyses. \
+# Independent verification is recommended before final credit decisions.
+# {additional_context}
+# BANKING SUMMARY:
+# {banking_summary}
+#
+# BUREAU SUMMARY:
+# {bureau_summary}
+#
+# Write the combined executive summary:"""
+
 COMBINED_EXECUTIVE_PROMPT = """Prepare a synthesised executive summary for customer {customer_id} \
-by merging the banking transaction analysis and credit-bureau tradeline analysis below into \
-ONE cohesive paragraph (6-8 lines).
+by merging the banking and bureau analyses below into EXACTLY TWO paragraphs.
 
 STRICT RULES:
-- Write in formal third-person tone throughout (e.g. "The customer exhibits…", never "we" or "I")
-- Do NOT repeat the source summaries verbatim — distil and merge the key points
-- Cover: income & cash-flow health, spending discipline, credit-portfolio exposure, \
-obligation / FOIR levels, payment behaviour / DPD, and an overall creditworthiness assessment
-- If "Additional Data" is provided: quote the EXACT FOIR percentages (total and unsecured) \
-and quote the EXACT exposure commentary sentences including INR amounts, peak month, active \
-products, and trend direction — do NOT paraphrase or compress these figures
-- If either summary is empty or missing, work with whatever is available
-- Be factual — do not invent numbers that are not present in the inputs
+- Formal third-person throughout ("The customer…", never "we" or "I")
+- Do NOT repeat source summaries verbatim — distil and merge
+- Do NOT invent numbers not present in the inputs
 - Do NOT mention numeric scores or classifications by label (e.g. do NOT write "primary score 35/100") \
-— instead narrate the underlying fact (e.g. "received salary and immediately transferred funds to own account")
-- End with a clear one-line creditworthiness assessment (positive, cautious, or negative)
-- Do NOT add any meta-commentary, personal notes, disclaimers, or remarks about the writing \
-process — output ONLY the summary paragraph followed by the standard note below
+— narrate the underlying fact instead (e.g. "salary credited monthly from employer X")
+- If a section is absent, skip it — do not say "data not available"
+- Do NOT add meta-commentary, disclaimers, or remarks about the writing process
 
-After the summary paragraph, add exactly this note on a new line:
+PARAGRAPH 1 — INCOME & CREDIT PROFILE (4-5 lines):
+- Income: if an affluence/relationship-profile income figure is present, state the exact INR amount \
+and the income source label (e.g. "salaried", "self-employed"); otherwise state the banking-detected \
+salary amount and employer/source. Quote the exact figure — do not round.
+- Monthly cashflow: state net monthly cashflow (average inflow minus outflow), key spending categories, \
+and any EMI or rent obligations detected in banking.
+- Credit portfolio: state "N total tradelines (M live, P closed)" using the exact Live Tradelines and \
+Closed Tradelines counts — do NOT use Total as the live count. Do no state as N= X closed or open, just state the counts. List loan product types present. \
+State total sanctioned INR, total outstanding INR, and unsecured exposure INR. \
+If CC utilization is present, include the exact percentage. 
+
+PARAGRAPH 2 — OBLIGATIONS, RISK & ASSESSMENT (3-4 lines):
+- FOIR: if bureau FOIR is present, quote exact total FOIR%, unsecured FOIR%, total EMI obligation INR, \
+and affluence income INR verbatim. If banking FOIR is present, quote it (EMI+Rent/Salary%). \
+Do NOT omit or round these figures.
+- Exposure: if "Exposure Commentary" is in Additional Data, quote the exact INR peak amount, peak month, \
+current INR amount, and stated trend direction word-for-word — do not paraphrase.
+- DPD: if Max DPD > 0, state the exact days, loan type, and how many months ago.
+- Final sentence: a clear one-sentence creditworthiness assessment (positive, cautious, or negative) \
+that summarises the overall risk picture.
+
+After both paragraphs, add on a new line:
 Note: This is a synthesised summary based on automated banking and bureau analyses. \
 Independent verification is recommended before final credit decisions.
 {additional_context}
@@ -352,4 +397,4 @@ BANKING SUMMARY:
 BUREAU SUMMARY:
 {bureau_summary}
 
-Write the combined executive summary:"""
+Write the two-paragraph combined executive summary:"""
