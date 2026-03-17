@@ -145,7 +145,14 @@ def _build_data_summary(report: CustomerReport, rg_salary_data: dict = None) -> 
     # Salary — use authoritative amount (rg_sal preferred, same as scorecard)
     if _auth_salary_amt:
         merchant_str = f" from {_auth_salary_merchant}" if _auth_salary_merchant else ""
-        freq_str = f" ({report.salary.frequency} transactions)" if report.salary else ""
+        # Use rg_sal count when rg_sal provides the amount; fall back to banking detection
+        if _rg_sal and _rg_sal.get("salary_amount"):
+            _rg_sal_count = _rg_sal.get("transaction_count")
+            freq_str = f" ({_rg_sal_count} months)" if _rg_sal_count else ""
+        elif report.salary:
+            freq_str = f" ({report.salary.frequency} transactions)"
+        else:
+            freq_str = ""
         sections.append(
             f"Salary income: {_auth_salary_amt:,.0f} INR average{merchant_str}{freq_str}"
         )

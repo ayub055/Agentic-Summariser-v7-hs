@@ -1302,7 +1302,7 @@
         </div>
         {% for src in rg_salary_data.rg_income.sources %}
         <p style="margin-top: 12px; margin-bottom: 6px; font-weight: 600; color: #2c3e50; font-size: 13px;">
-            {{ src.merchant }} &mdash; {{ src.count }} transaction{{ 's' if src.count != 1 else '' }}, Total: INR {{ "{:,.0f}".format(src.total) }}
+            {{ src.merchant }} &mdash; {{ src.count }} transaction{{ 's' if src.count != 1 else '' }}{% if src.showing_limited %} (showing latest 3){% endif %}, Total: INR {{ "{:,.0f}".format(src.total) }}
         </p>
         <table>
             <thead>

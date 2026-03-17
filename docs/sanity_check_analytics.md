@@ -948,6 +948,8 @@ All tools consistently use:
 | F2 | `narration_utils.py` | `extract_recipient_name` only handled UPI + IMPS. Missing IFT, RTGS, NEFT, MB:RECEIVED patterns. | Replaced with comprehensive `extract_remitter` logic covering 7 patterns. Added `clean_narration()` fallback. |
 | F3 | `transaction_fetcher.py` | `MIN_GROUP_SIZE=3` dropped rent/EMI merchants with 1-2 txns. Ranking was count-only (tiny frequent UPI beat large rent). Fuzzy grouping was order-dependent. | `MIN_GROUP_SIZE=1`, hybrid score `sqrt(count)*log10(1+total)`, deterministic sort before grouping. |
 | F4 | `templates/*.html` | Top merchants mixed debits and credits in one table. | Split into "Top Spending Merchants" (D) and "Top Income Sources" (C) using Jinja2 `selectattr` filter. |
+| F5 | `data/loader.py:152`, `templates/*.html` | **BUG S1**: RG Income heading showed `src.count` (e.g. 7) but table limited to `.head(3)` rows. Count/table mismatch. | Added `showing_limited` flag to source dict; templates now show "(showing latest 3)" when count > 3. |
+| F6 | `report_summary_chain.py:148` | **BUG S2**: LLM prompt mixed rg_sal amount with banking detection count. E.g. "34,495 INR (8 transactions)" where 34,495 is from 2-month rg_sal but 8 is from keyword matching. | When rg_sal provides the amount, use `rg_sal.transaction_count` for count ("N months"). Fall back to banking detection count only when rg_sal is absent. |
 
 ### HIGH Severity
 
@@ -1067,6 +1069,110 @@ Then add to YAML:
 | `tools/category_resolver.py` | 4-strategy matching engine + direction filter |
 | `pipeline/reports/customer_report_builder.py:_get_emi_block()` | Calls resolver, maps to `EMIBlock` schema |
 | `schemas/customer_report.py:EMIBlock` | Schema: `name`, `amount`, `frequency`, `sample_transaction` |
+
+---
+
+## 16c. Salary Section Sanity Check — Count & Amount Consistency
+
+There are **three separate salary data paths** that render in the report. Each has its own detection logic and counts.
+
+### Three Salary Data Paths
+
+| Section | Source | What it counts | Where rendered |
+|---------|--------|---------------|----------------|
+| **"Salary Information"** (banking) | `transaction_fetcher._detect_salary()` | ALL credits matching `category_of_txn == 'SALARY'` OR `is_salary_narration()` keywords | `customer_report.salary.frequency` in templates |
+| **"Internal Salary Analysis — RG SAL"** | `rg_sal_strings.csv` via `load_rg_salary_data()` | Rows in pre-computed CSV for the customer | `rg_salary_data.rg_sal.transactions` table + observation text |
+| **"Internal Salary Analysis — RG Income"** | `rg_income_strings.csv` via `load_rg_salary_data()` | Rows in pre-computed CSV, grouped by merchant | `rg_salary_data.rg_income.sources[].count` + transaction table |
+
+### Bugs Found
+
+#### BUG S1 — RG Income: Count says N but table shows max 3 rows
+
+**File**: `data/loader.py:152`
+**Problem**: The heading shows `src.count` (actual count from data, e.g. 7) but the transaction table only shows `.head(3)` rows.
+
+```python
+# loader.py:152 — limits to 3 rows
+merchant_txns = cust_inc[...].sort_values('tran_date', ascending=False).head(3)
+```
+```html
+<!-- template — heading says full count -->
+{{ src.merchant }} — {{ src.count }} transactions, Total: INR {{ src.total }}
+<!-- but table only shows up to 3 rows from src.transactions -->
+{% for txn in src.transactions %}
+```
+
+**Impact**: For a merchant with 7 income transactions, heading says "7 transactions" but table has 3 rows. Reader notices the discrepancy.
+
+**Fix options**:
+- (A) Remove `.head(3)` — show all transactions
+- (B) Add "(showing latest 3)" to the heading when `count > 3`
+
+#### BUG S2 — LLM Review: Mixed salary count source
+
+**File**: `pipeline/reports/report_summary_chain.py:148`
+**Problem**: When building the LLM prompt, salary *amount* comes from `rg_sal` (authoritative) but *count* comes from banking detection (`report.salary.frequency`). These can differ significantly.
+
+```python
+# report_summary_chain.py:146-150
+if _auth_salary_amt:  # could be from rg_sal
+    freq_str = f" ({report.salary.frequency} transactions)" if report.salary else ""
+    # ↑ count from banking detection (e.g. 8 keyword matches)
+    # ↑ amount from rg_sal (e.g. based on 2 months)
+```
+
+**Impact**: LLM prompt says "Salary income: 34,495 INR average from Salary (8 transactions)" — the 34,495 is the rg_sal average (based on 2 salary months) but 8 is from banking detection (which also matches bonuses via `is_salary_narration`).
+
+**Fix**: When `_rg_sal` is used for amount, also use `_rg_sal.transaction_count` for the count:
+```python
+if _rg_sal:
+    freq_str = f" ({_rg_sal.get('transaction_count', '?')} months)"
+elif report.salary:
+    freq_str = f" ({report.salary.frequency} transactions)"
+```
+
+#### BUG S3 — Banking "Salary Information": `frequency` field name is misleading
+
+**File**: `schemas/customer_report.py:46`, `customer_report_builder.py:216`
+**Problem**: `SalaryBlock.frequency` stores a raw count (e.g. 8) but the field name suggests a frequency like "monthly"/"weekly". The template label says "Transactions" which is correct, but the schema field name misleads developers.
+
+```python
+# customer_report_builder.py:216
+frequency=salary.transaction_count,  # stores count, not frequency
+```
+
+**Impact**: Low — display is correct, but schema is confusing for maintainers.
+
+#### BUG S4 — Banking salary detection over-counts via `is_salary_narration`
+
+**File**: `utils/narration_utils.py:96`, `tools/transaction_fetcher.py:96`
+**Problem**: `is_salary_narration()` matches keywords: `salary, employee, payroll, stipend, bonus, wages`. A one-time bonus or wage advance also gets counted as a "salary transaction", inflating the count and skewing `avg_amount`.
+
+For example: 6 actual salary credits of ₹35K + 1 festive bonus of ₹50K + 1 wage advance of ₹10K → `frequency = 8`, `avg_amount = 30,625` (dragged down by advance, inflated by bonus).
+
+**Impact**: Medium — the banking salary average can be wrong, and the count doesn't reflect actual salary months.
+
+#### INFO S5 — RG SAL section: Count and display are consistent
+
+**File**: `data/loader.py:102-126`
+**Status**: No bug. All transactions from CSV are shown in the table, and the observation text uses `len(transactions)` for the count. Consistent.
+
+#### INFO S6 — Two salary sections can show conflicting amounts
+
+The report can show both:
+- **"Salary Information"**: `avg_amount` from banking detection (all keyword-matched credits)
+- **"Internal Salary Analysis — RG SAL"**: `salary_amount` from pre-computed algorithm
+
+These amounts will often differ because banking detection includes bonus/advance while RG SAL uses a stricter algorithm. This is by design (RG SAL is authoritative), but a reader seeing both sections with different salary numbers could be confused.
+
+### Summary of Salary Count Consistency
+
+| Section | Count source | Display | Consistent? |
+|---------|-------------|---------|-------------|
+| Salary Information (banking) | `_detect_salary().transaction_count` | Label "Transactions: N" | Yes — but N includes bonus/advance false positives |
+| RG SAL | `len(CSV rows for customer)` | Observation "across N months" + N-row table | Yes |
+| RG Income per merchant | `groupby.count()` | Heading "N transactions" + max 3-row table | **NO — BUG S1** |
+| LLM review prompt | Mixed (amount from rg_sal, count from banking) | Text in prompt | **NO — BUG S2** |
 
 ---
 

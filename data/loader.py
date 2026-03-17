@@ -164,6 +164,7 @@ def load_rg_salary_data(customer_id: int) -> Dict[str, Any]:
                     'count': int(row['count']),
                     'total': float(row['total']),
                     'transactions': txn_list,
+                    'showing_limited': int(row['count']) > 3,
                 })
             source_count = len(sources)
 
