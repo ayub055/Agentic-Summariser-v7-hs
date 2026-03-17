@@ -161,12 +161,26 @@ def _get_monthly_cashflow(customer_id: int) -> Optional[list]:
 
 
 def _get_top_merchants(customer_id: int) -> Optional[list]:
-    """Get top merchants from high-frequency transaction groups."""
+    """Get top merchants from high-frequency transaction groups.
+
+    Returns a flat list with a 'type' field ('D'/'C') so templates can
+    filter into separate debit-merchant and credit-source tables.
+    Groups are ranked by hybrid score (frequency x amount).
+    Takes top 5 debits and top 5 credits.
+    """
     try:
         summary = fetch_transaction_summary(customer_id)
 
         if not summary.high_frequency_transactions:
             return None
+
+        debits = [t for t in summary.high_frequency_transactions if t.transaction_type == 'D']
+        credits = [t for t in summary.high_frequency_transactions if t.transaction_type == 'C']
+
+        debits.sort(key=lambda t: t.score, reverse=True)
+        credits.sort(key=lambda t: t.score, reverse=True)
+
+        top = debits[:5] + credits[:5]
 
         top_merchants = [
             {
@@ -174,9 +188,10 @@ def _get_top_merchants(customer_id: int) -> Optional[list]:
                 "count": t.count,
                 "total": t.total_amount,
                 "avg": t.average_amount,
-                "type": t.transaction_type
+                "type": t.transaction_type,
+                "score": t.score
             }
-            for t in summary.high_frequency_transactions[:5]
+            for t in top
         ]
         return top_merchants if top_merchants else None
     except Exception:

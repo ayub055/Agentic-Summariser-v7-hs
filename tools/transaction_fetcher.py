@@ -8,6 +8,7 @@ This module provides deterministic transaction analysis:
 NO LLM calls - purely deterministic logic.
 """
 
+import math
 from typing import List, Dict, Any, Optional
 from collections import defaultdict
 
@@ -20,6 +21,7 @@ from schemas.transaction_summary import (
 from utils.narration_utils import (
     normalize_narration,
     extract_recipient_name,
+    clean_narration,
     is_salary_narration
 )
 
@@ -33,7 +35,7 @@ except ImportError:
 
 # Configuration
 SIMILARITY_THRESHOLD = 70  # Minimum similarity for grouping
-MIN_GROUP_SIZE = 3  # Minimum transactions to form a group
+MIN_GROUP_SIZE = 1  # Minimum transactions to form a group (was 3 — lowered so rent/EMI with 1-2 txns appear)
 MIN_SALARY_COUNT = 2  # Minimum salary transactions to detect
 
 
@@ -115,6 +117,19 @@ def _detect_salary(transactions: List[Dict[str, Any]]) -> Optional[SalarySummary
     )
 
 
+def _compute_score(count: int, total_amount: float) -> float:
+    """Hybrid ranking score that balances frequency and amount.
+
+    Uses sqrt(count) * log10(1 + total_amount) so that:
+    - 2x ₹50K rent  → 1.41 * 4.70 = 6.63
+    - 5x ₹50 UPI    → 2.24 * 2.40 = 5.37
+    - Large infrequent payments rank above many tiny ones.
+    """
+    if count <= 0 or total_amount <= 0:
+        return 0.0
+    return math.sqrt(count) * math.log10(1 + total_amount)
+
+
 def _group_similar_transactions(
     transactions: List[Dict[str, Any]]
 ) -> List[HighFrequencyTransaction]:
@@ -122,15 +137,17 @@ def _group_similar_transactions(
     Group similar transactions using fuzzy matching.
 
     Algorithm:
-    1. Extract recipient names from narrations
-    2. Group by normalized recipient name using fuzzy matching
-    3. Filter groups with count >= MIN_GROUP_SIZE
+    1. Separate debits and credits (exclude salary credits)
+    2. Sort each set by recipient name for deterministic grouping
+    3. Extract recipient names from narrations (fallback to cleaned narration)
+    4. Fuzzy-group by recipient name
+    5. Rank by hybrid score (sqrt(count) * log10(1 + total_amount))
 
     Args:
         transactions: List of transaction dicts
 
     Returns:
-        List of HighFrequencyTransaction groups
+        List of HighFrequencyTransaction groups sorted by score descending
     """
     if not FUZZYWUZZY_AVAILABLE:
         return _group_by_exact_match(transactions)
@@ -150,9 +167,9 @@ def _group_similar_transactions(
     ]
     credit_groups = _fuzzy_group_transactions(non_salary_credits, 'C')
 
-    # Combine and sort by count
+    # Combine and sort by hybrid score (not count)
     all_groups = debit_groups + credit_groups
-    all_groups.sort(key=lambda x: x.count, reverse=True)
+    all_groups.sort(key=lambda x: x.score, reverse=True)
 
     return all_groups
 
@@ -164,27 +181,38 @@ def _fuzzy_group_transactions(
     """
     Group transactions by fuzzy matching on recipient names.
 
+    Transactions are sorted by recipient name before grouping to ensure
+    deterministic results regardless of input order.
+
     Args:
         transactions: List of transactions to group
         txn_type: "D" or "C"
 
     Returns:
-        List of transaction groups
+        List of transaction groups (filtered by MIN_GROUP_SIZE, scored)
     """
-    groups: List[Dict] = []
-
+    # Pre-extract recipients and sort for deterministic grouping
+    enriched = []
     for txn in transactions:
         narration = str(txn.get('tran_partclr', ''))
         amount = float(txn.get('tran_amt_in_ac', 0))
         recipient = extract_recipient_name(narration)
 
         if not recipient:
-            # Use normalized narration as fallback
-            recipient = normalize_narration(narration)[:50]
+            # Fallback: cleaned full narration (readable, title-cased)
+            recipient = clean_narration(narration)
 
         if not recipient:
             continue
 
+        enriched.append((recipient, narration, amount))
+
+    # Sort by recipient name for deterministic group formation
+    enriched.sort(key=lambda x: x[0].lower())
+
+    groups: List[Dict] = []
+
+    for recipient, narration, amount in enriched:
         # Find matching group
         matched_group = None
         for group in groups:
@@ -212,13 +240,15 @@ def _fuzzy_group_transactions(
         if len(group['narrations']) >= MIN_GROUP_SIZE:
             total = sum(group['amounts'])
             count = len(group['narrations'])
+            score = _compute_score(count, total)
             result.append(HighFrequencyTransaction(
                 representative_narration=group['representative'],
                 similar_narrations=list(set(group['narrations'])),
                 count=count,
                 total_amount=total,
                 average_amount=total / count if count > 0 else 0,
-                transaction_type=txn_type
+                transaction_type=txn_type,
+                score=score
             ))
 
     return result
@@ -271,6 +301,9 @@ def _group_by_exact_match(
         recipient = extract_recipient_name(narration)
 
         if not recipient:
+            recipient = clean_narration(narration)
+
+        if not recipient:
             continue
 
         key = recipient.upper()
@@ -283,16 +316,18 @@ def _group_by_exact_match(
         if len(data['narrations']) >= MIN_GROUP_SIZE:
             total = sum(data['amounts'])
             count = len(data['narrations'])
+            score = _compute_score(count, total)
             result.append(HighFrequencyTransaction(
                 representative_narration=name,
                 similar_narrations=list(set(data['narrations'])),
                 count=count,
                 total_amount=total,
                 average_amount=total / count if count > 0 else 0,
-                transaction_type=data['type']
+                transaction_type=data['type'],
+                score=score
             ))
 
-    result.sort(key=lambda x: x.count, reverse=True)
+    result.sort(key=lambda x: x.score, reverse=True)
     return result
 
 

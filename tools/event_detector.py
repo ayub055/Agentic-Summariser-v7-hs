@@ -158,24 +158,24 @@ def _short_source(narration: str) -> str:
 
 
 def _extract_name_from_narration(narration: str) -> Optional[str]:
-    """Extended recipient extraction covering UPI, IMPS, and NEFT patterns."""
-    # Delegate to existing utility first
+    """Extract recipient/remitter name from narration.
+
+    Delegates to extract_recipient_name which handles IFT, UPI, IMPS,
+    RTGS, MB:RECEIVED, and NEFT patterns. Falls back to NEFT slash
+    pattern for edge cases like "NEFT/IFSC/NAME/BANK".
+    """
     name = extract_recipient_name(narration)
-    if name and name not in ("SALARY", "CASH_DEPOSIT"):
+    if name:
         return name.title()
 
     upper = narration.upper()
 
-    # NEFT: "NEFT/IFSC/NAME/BANK" or "NEFT CR NAME BANK"
+    # Fallback: NEFT slash format "NEFT/IFSC/NAME/BANK"
     neft_m = re.search(r"NEFT/[A-Z0-9]+/([A-Z\s]+)/", upper)
     if neft_m:
         candidate = neft_m.group(1).strip()
         if 3 <= len(candidate) <= 40:
             return candidate.title()
-
-    neft_cr = re.search(r"NEFT CR\s+([A-Z\s]{3,30})\s", upper)
-    if neft_cr:
-        return neft_cr.group(1).strip().title()
 
     return None
 

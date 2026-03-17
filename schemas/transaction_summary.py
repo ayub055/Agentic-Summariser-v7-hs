@@ -21,6 +21,7 @@ class HighFrequencyTransaction(BaseModel):
     total_amount: float = Field(description="Total amount for this group")
     average_amount: float = Field(default=0.0, description="Average transaction amount")
     transaction_type: str = Field(default="DR", description="DR (debit) or CR (credit)")
+    score: float = Field(default=0.0, description="Hybrid ranking score (frequency x amount)")
 
 
 class TransactionSummary(BaseModel):

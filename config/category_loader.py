@@ -17,7 +17,7 @@ class CategoryConfig:
     key: str
     display_name: str
     description: str
-    direction: Optional[str]  # DR, CR, or None for both
+    direction: Optional[str]  # D, C, or None for both (must match dr_cr_indctor column)
     min_count: int
     category_matches: List[str]
     keywords: List[str]

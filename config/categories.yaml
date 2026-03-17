@@ -2,7 +2,7 @@
 # Each category can define:
 #   - display_name: Human-readable name
 #   - description: Category description
-#   - direction: DR (debits only), CR (credits only), or null (both)
+#   - direction: D (debits only), C (credits only), or null (both)
 #   - min_count: Minimum transactions to consider "present" (default: 1)
 #   - category_matches: Exact category_of_txn values to match
 #   - keywords: Terms to match in transaction narration
@@ -28,7 +28,7 @@ categories:
   digital_betting_gaming:
     display_name: "Digital Betting & Gaming"
     description: "Gambling, betting, or gaming transactions"
-    direction: DR
+    direction: D
     min_count: 1
     category_matches:
       - Digital_Betting_Gaming
@@ -58,7 +58,7 @@ categories:
   food:
     display_name: "Food & Dining"
     description: "Food delivery and dining expenses"
-    direction: DR
+    direction: D
     min_count: 1
     category_matches:
       - Food
@@ -85,7 +85,7 @@ categories:
   liquor_smoke:
     display_name: "Liquor & Smoke"
     description: "Alcohol and tobacco purchases"
-    direction: DR
+    direction: D
     min_count: 1
     category_matches:
       - Liquor_Smoke
@@ -111,7 +111,7 @@ categories:
   bank_fees_charges:
     display_name: "Bank Fees & Charges"
     description: "Bank service fees and charges"
-    direction: DR
+    direction: D
     min_count: 1
     category_matches:
       - Bank_Fees_Charges
@@ -132,7 +132,7 @@ categories:
   mobile_bills:
     display_name: "Mobile Bills"
     description: "Mobile phone recharges and bill payments"
-    direction: DR
+    direction: D
     min_count: 1
     category_matches:
       - Mobile_Bills
@@ -178,7 +178,7 @@ categories:
   e_commerce:
     display_name: "E-Commerce"
     description: "Online shopping transactions"
-    direction: DR
+    direction: D
     min_count: 1
     category_matches:
       - E_Commerce
@@ -201,7 +201,7 @@ categories:
   courier_logistics:
     display_name: "Courier & Logistics"
     description: "Courier and shipping services"
-    direction: DR
+    direction: D
     min_count: 1
     category_matches:
       - Courier_Logistics
@@ -225,7 +225,7 @@ categories:
   air_travel:
     display_name: "Air Travel"
     description: "Flight bookings and airline expenses"
-    direction: DR
+    direction: D
     min_count: 1
     category_matches:
       - Air_Travel
@@ -249,7 +249,7 @@ categories:
   e_entertainment:
     display_name: "E-Entertainment"
     description: "Digital entertainment and streaming services"
-    direction: DR
+    direction: D
     min_count: 1
     category_matches:
       - E_Entertainment
@@ -274,7 +274,7 @@ categories:
   mobility:
     display_name: "Mobility"
     description: "Transportation and mobility services"
-    direction: DR
+    direction: D
     min_count: 1
     category_matches:
       - Mobility
@@ -294,7 +294,7 @@ categories:
   railway:
     display_name: "Railway"
     description: "Railway and train bookings"
-    direction: DR
+    direction: D
     min_count: 1
     category_matches:
       - railway recruit
@@ -312,7 +312,7 @@ categories:
   govt_tax_challan:
     display_name: "Government Tax Challan"
     description: "Government tax payments and challans"
-    direction: DR
+    direction: D
     min_count: 1
     category_matches:
       - Govt_Tax_Challan
@@ -333,7 +333,7 @@ categories:
   hospital:
     display_name: "Hospital"
     description: "Hospital and medical facility expenses"
-    direction: DR
+    direction: D
     min_count: 1
     category_matches:
       - Hospital
@@ -356,7 +356,7 @@ categories:
   grocery:
     display_name: "Grocery"
     description: "Grocery and supermarket purchases"
-    direction: DR
+    direction: D
     min_count: 1
     category_matches:
       - Grocery
@@ -378,7 +378,7 @@ categories:
   fashion_beauty:
     display_name: "Fashion & Beauty"
     description: "Fashion, clothing, and beauty products"
-    direction: DR
+    direction: D
     min_count: 1
     category_matches:
       - Fashion_Beauty
@@ -401,7 +401,7 @@ categories:
   equipment_construction:
     display_name: "Equipment & Construction"
     description: "Construction equipment and materials"
-    direction: DR
+    direction: D
     min_count: 1
     category_matches:
       - Equipment_Construction
@@ -421,7 +421,7 @@ categories:
   pharmacy:
     display_name: "Pharmacy"
     description: "Pharmacy and medicine purchases"
-    direction: DR
+    direction: D
     min_count: 1
     category_matches:
       - Pharmacy
@@ -459,7 +459,7 @@ categories:
   kids_school:
     display_name: "Kids & School"
     description: "Children's school fees and expenses"
-    direction: DR
+    direction: D
     min_count: 1
     category_matches:
       - Kids_School
@@ -480,7 +480,7 @@ categories:
   education:
     display_name: "Education"
     description: "Education and learning expenses"
-    direction: DR
+    direction: D
     min_count: 1
     category_matches:
       - Education
@@ -505,7 +505,7 @@ categories:
   rent:
     display_name: "Rent"
     description: "Rental payments for housing"
-    direction: DR
+    direction: D
     min_count: 1
     category_matches:
       - Rent
@@ -526,7 +526,7 @@ categories:
   jewelry_premium_gifts:
     display_name: "Jewelry & Premium Gifts"
     description: "Jewelry and premium gift purchases"
-    direction: DR
+    direction: D
     min_count: 1
     category_matches:
       - Jewelry_Premium_Gifts
@@ -616,7 +616,7 @@ categories:
   salary:
     display_name: "Salary"
     description: "Regular salary or employment income"
-    direction: CR
+    direction: C
     min_count: 1
     category_matches:
       - Salary
@@ -635,7 +635,7 @@ categories:
   electronics_appliance:
     display_name: "Electronics & Appliances"
     description: "Electronics and home appliance purchases"
-    direction: DR
+    direction: D
     min_count: 1
     category_matches:
       - Electronics_Appliance
@@ -659,7 +659,7 @@ categories:
   charity_donations:
     display_name: "Charity & Donations"
     description: "Charitable donations and contributions"
-    direction: DR
+    direction: D
     min_count: 1
     category_matches:
       - Charity_Donations
@@ -680,7 +680,7 @@ categories:
   books_stationery:
     display_name: "Books & Stationery"
     description: "Books and stationery purchases"
-    direction: DR
+    direction: D
     min_count: 1
     category_matches:
       - Books_Stationery
@@ -698,7 +698,7 @@ categories:
   fuel:
     display_name: "Fuel"
     description: "Fuel and petrol expenses"
-    direction: DR
+    direction: D
     min_count: 1
     category_matches:
       - Fuel
@@ -738,7 +738,7 @@ categories:
   hotel:
     display_name: "Hotel"
     description: "Hotel and accommodation bookings"
-    direction: DR
+    direction: D
     min_count: 1
     category_matches:
       - Hotel
@@ -760,7 +760,7 @@ categories:
   insurance:
     display_name: "Insurance"
     description: "Insurance premium payments"
-    direction: DR
+    direction: D
     min_count: 1
     category_matches:
       - Insurance
@@ -783,7 +783,7 @@ categories:
   personal_home_services:
     display_name: "Personal & Home Services"
     description: "Personal and home services"
-    direction: DR
+    direction: D
     min_count: 1
     category_matches:
       - Personal_Home_Services
@@ -804,7 +804,7 @@ categories:
   pet_care:
     display_name: "Pet Care"
     description: "Pet care and veterinary expenses"
-    direction: DR
+    direction: D
     min_count: 1
     category_matches:
       - Pet_Care
@@ -824,7 +824,7 @@ categories:
   taxi_cab:
     display_name: "Taxi/Cab"
     description: "Taxi and cab services"
-    direction: DR
+    direction: D
     min_count: 1
     category_matches:
       - Taxi/Cab
@@ -864,7 +864,7 @@ categories:
   sports_fitness:
     display_name: "Sports & Fitness"
     description: "Sports and fitness expenses"
-    direction: DR
+    direction: D
     min_count: 1
     category_matches:
       - Sports_Fitness
@@ -885,7 +885,7 @@ categories:
   emi:
     display_name: "EMI"
     description: "Equated monthly installment payments"
-    direction: DR
+    direction: D
     min_count: 1
     category_matches:
       - EMI

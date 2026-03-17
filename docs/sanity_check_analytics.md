@@ -940,6 +940,15 @@ All tools consistently use:
 
 ## 16. Master Bug & Issue Tracker
 
+### FIXED
+
+| # | File | Issue | Fix |
+|---|------|-------|-----|
+| F1 | `config/categories.yaml` | **CRITICAL**: Direction filter used `DR`/`CR` but CSV column `dr_cr_indctor` uses `D`/`C`. Filter silently dropped ALL rows → every category presence check broken (EMI, rent, utilities, salary, etc. all had no direction filtering). | Changed all `direction: DR` → `D`, `direction: CR` → `C` in YAML. Updated comment in `category_loader.py`. |
+| F2 | `narration_utils.py` | `extract_recipient_name` only handled UPI + IMPS. Missing IFT, RTGS, NEFT, MB:RECEIVED patterns. | Replaced with comprehensive `extract_remitter` logic covering 7 patterns. Added `clean_narration()` fallback. |
+| F3 | `transaction_fetcher.py` | `MIN_GROUP_SIZE=3` dropped rent/EMI merchants with 1-2 txns. Ranking was count-only (tiny frequent UPI beat large rent). Fuzzy grouping was order-dependent. | `MIN_GROUP_SIZE=1`, hybrid score `sqrt(count)*log10(1+total)`, deterministic sort before grouping. |
+| F4 | `templates/*.html` | Top merchants mixed debits and credits in one table. | Split into "Top Spending Merchants" (D) and "Top Income Sources" (C) using Jinja2 `selectattr` filter. |
+
 ### HIGH Severity
 
 | # | File | Issue |
@@ -959,7 +968,6 @@ All tools consistently use:
 | M3 | `category_resolver.py:131` | `iterrows()` on full customer DataFrame — slow for large datasets |
 | M4 | `category_resolver.py:164` | `get_fallback_config()` called per-row inside loop |
 | M5 | `transaction_fetcher.py:188-194` | O(n*m) fuzzy matching complexity |
-| M6 | `narration_utils.py:67-68` | `extract_recipient_name` — "SALARY ADVANCE" matches as salary |
 | M7 | `account_quality.py` | Conduit detection doesn't exclude rent/EMI — legitimate obligations flagged |
 | M8 | `event_detector.py:510` | Round-trip name matching too aggressive — first 6 chars only |
 | M9 | `scorecard.py:351-372` | Red flag detection only checks betting — misses liquor, crypto, cash advances |
@@ -977,12 +985,88 @@ All tools consistently use:
 | L3 | `analytics.py:266-267` | Unused `cust_df_copy` variable in `get_transaction_counts` |
 | L4 | `analytics.py:405` | Hardcoded `'Salary'` category in `get_income_stability` |
 | L5 | `analytics.py:305-308` | `apply(lambda)` is slow — use `np.where` |
-| L6 | `narration_utils.py` | Missing NEFT/RTGS patterns (covered in event_detector but not in utility) |
 | L7 | `narration_utils.py:96` | `is_salary_narration` matches "bonus" as salary |
 | L8 | `data/loader.py:127-130` | Bare `except: pass` swallows errors silently |
 | L9 | `bureau.py` | Lazy imports inside functions — circular dependency smell |
 | L10 | `excel_exporter.py:35,40` | Typos in column names ("Assesement", "Breif") — template-dependent |
 | L11 | `tools/__init__.py` | Newer analytics functions not individually exported |
+
+---
+
+## 16b. EMI Detection — How to Add New Transaction Patterns
+
+The EMI detection flow is: `_get_emi_block()` → `resolve_category_presence(customer_id, "emi")` → `category_resolver.py` → `config/categories.yaml`.
+
+### Current EMI matching (4 strategies, in priority order)
+
+| Strategy | Where | What it does |
+|----------|-------|-------------|
+| **0. Direct column** | `category_resolver.py:143-146` | `category_of_txn == "emi"` (case-insensitive) |
+| **1. YAML category_matches** | `category_resolver.py:149-152` | `category_of_txn` in `["EMI"]` from YAML |
+| **2. Keyword in narration** | `category_resolver.py:155-160` | `tran_partclr` contains any keyword from YAML |
+| **3. Fuzzy fallback** | `category_resolver.py:163-169` | `fuzz.token_set_ratio(narration, "emi") >= 70` |
+
+### To add new EMI patterns
+
+**Option A — Add keywords** (easiest, no code change):
+
+Edit `config/categories.yaml` under `emi.keywords`:
+```yaml
+  emi:
+    keywords:
+      - emi
+      - loan
+      - installment
+      - repayment
+      - bajaj finance
+      - hdfc loan
+      - icici loan
+      # Add new patterns here:
+      - tata capital
+      - paysense
+      - flexi pay
+      - home credit
+      - muthoot
+```
+
+**Option B — Add category_matches** (if the CSV `category_of_txn` has a new value):
+
+```yaml
+  emi:
+    category_matches:
+      - EMI
+      - Loan_Repayment    # add new column values here
+```
+
+**Option C — Add narration regex** (requires code change):
+
+If keywords are too broad (e.g. "loan" matches "loan enquiry"), add a regex strategy in `category_resolver.py:_find_matching_transactions()` between Strategy 2 and 3:
+```python
+# Strategy 2.5: Regex match in narration
+if not matched and config and hasattr(config, 'narration_patterns'):
+    for pattern in config.narration_patterns:
+        if re.search(pattern, narration, re.IGNORECASE):
+            matched = True
+            matched_keyword = f"regex:{pattern}"
+            break
+```
+Then add to YAML:
+```yaml
+  emi:
+    narration_patterns:
+      - "EMI\\s+\\d+"
+      - "LOAN\\s*(?:REPAY|EMI)"
+```
+
+### Files involved in EMI detection
+
+| File | Role |
+|------|------|
+| `config/categories.yaml` (emi section) | Keywords, category_matches, direction filter, min_count |
+| `config/category_loader.py` | Parses YAML into `CategoryConfig` dataclass |
+| `tools/category_resolver.py` | 4-strategy matching engine + direction filter |
+| `pipeline/reports/customer_report_builder.py:_get_emi_block()` | Calls resolver, maps to `EMIBlock` schema |
+| `schemas/customer_report.py:EMIBlock` | Schema: `name`, `amount`, `frequency`, `sample_transaction` |
 
 ---
 

@@ -639,27 +639,60 @@
     {% endif %}
 
     {% if report.top_merchants %}
+    {% set debit_merchants = report.top_merchants | selectattr("type", "equalto", "D") | list %}
+    {% set credit_sources = report.top_merchants | selectattr("type", "equalto", "C") | list %}
+
+    {% if debit_merchants %}
     <div class="section">
-        <h3>Top Merchants</h3>
+        <h3>Top Spending Merchants</h3>
         <table>
             <thead>
                 <tr>
-                    <th>Merchant</th>
-                    <th class="amount">Transactions</th>
+                    <th>Merchant / Payee</th>
+                    <th class="amount">Txns</th>
                     <th class="amount">Total ({{ report.meta.currency }})</th>
+                    <th class="amount">Avg ({{ report.meta.currency }})</th>
                 </tr>
             </thead>
             <tbody>
-                {% for m in report.top_merchants %}
+                {% for m in debit_merchants %}
                 <tr>
                     <td>{{ m.name[:40] }}{% if m.name|length > 40 %}...{% endif %}</td>
                     <td class="amount">{{ m.count }}</td>
                     <td class="amount">{{ "{:,.0f}".format(m.total) }}</td>
+                    <td class="amount">{{ "{:,.0f}".format(m.avg) }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
+    {% endif %}
+
+    {% if credit_sources %}
+    <div class="section">
+        <h3>Top Income Sources</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Source</th>
+                    <th class="amount">Txns</th>
+                    <th class="amount">Total ({{ report.meta.currency }})</th>
+                    <th class="amount">Avg ({{ report.meta.currency }})</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for m in credit_sources %}
+                <tr>
+                    <td>{{ m.name[:40] }}{% if m.name|length > 40 %}...{% endif %}</td>
+                    <td class="amount">{{ m.count }}</td>
+                    <td class="amount">{{ "{:,.0f}".format(m.total) }}</td>
+                    <td class="amount">{{ "{:,.0f}".format(m.avg) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
     {% endif %}
 
     <div class="footer">

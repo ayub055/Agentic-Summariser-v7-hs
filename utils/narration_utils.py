@@ -31,53 +31,110 @@ def normalize_narration(text: str) -> str:
 
 def extract_recipient_name(narration: str) -> Optional[str]:
     """
-    Extract recipient name from UPI/IMPS narrations.
+    Extract remitter / recipient name from transaction narrations.
 
-    Patterns handled:
-    - "UPI/NAME/ID/..." → NAME
-    - "SentIMPS...NAME IMPS-..." → NAME
-    - "EMPLOYEE SALARY FOR..." → "SALARY"
+    Patterns handled (in priority order):
+    - IFT: "IFT RAJU KUMAR 12345" → "RAJU KUMAR"
+    - UPI: "UPI/RAJU KUMAR/9876@ybl/..." → "RAJU KUMAR"
+    - IMPS (Recd): "Recd:IMPS/123/RAJU KUMAR/..." → "RAJU KUMAR"
+    - IMPS (Sent): "SentIMPS123456RAJU KUMAR IMPS-..." → "RAJU KUMAR"
+    - RTGS: "RTGS 12345 RAJU KUMAR HDFC" → "RAJU KUMAR"
+    - MB:RECEIVED FROM: "MB:RECEIVED FROM RAJU KUMAR" → "RAJU KUMAR"
+    - NEFT: "NEFT 12345 RAJU KUMAR" → "RAJU KUMAR"
 
     Args:
         narration: Raw transaction narration
 
     Returns:
-        Extracted name or None if not found
+        Extracted name or None if no pattern matched
     """
     if not narration:
         return None
 
     narration = narration.strip()
 
-    # Pattern 1: UPI transactions - "UPI/NAME/ID/..."
-    upi_match = re.match(r'^UPI/([^/]+)/', narration, re.IGNORECASE)
-    if upi_match:
-        name = upi_match.group(1).strip()
-        if name and len(name) > 1:
-            return name
+    # Pattern 1: IFT — "IFT <name words> <last_token>"
+    if narration.startswith("IFT"):
+        parts = narration.split()
+        if len(parts) >= 3:
+            return ' '.join(parts[1:-1])
+        return None
 
-    # Pattern 2: IMPS transactions - "SentIMPS{id}{name} IMPS-..."
+    # Pattern 2: UPI — "UPI/NAME/ID/..."
+    if narration.upper().startswith("UPI/"):
+        parts = narration.split('/')
+        if len(parts) >= 2:
+            name = parts[1].strip()
+            if name and len(name) > 1:
+                return name
+        return None
+
+    # Pattern 3: IMPS received — "Recd:IMPS/.../NAME/..."
+    if "Recd:IMPS/" in narration:
+        parts = narration.split('/')
+        if len(parts) >= 3:
+            name = parts[2].strip()
+            if name and len(name) > 1:
+                return name
+        return None
+
+    # Pattern 4: IMPS sent — "SentIMPS{digits}{name} IMPS-..."
     imps_match = re.match(r'^SentIMPS\d+([a-zA-Z\s]+)\s*IMPS-', narration, re.IGNORECASE)
     if imps_match:
         name = imps_match.group(1).strip()
         if name and len(name) > 1:
             return name
 
-    # Pattern 3: Salary - "EMPLOYEE SALARY FOR..."
-    if 'SALARY' in narration.upper() or 'EMPLOYEE' in narration.upper():
-        return "SALARY"
+    # Pattern 5: RTGS — "RTGS <code> <name words> <bank>"
+    if narration.startswith("RTGS"):
+        parts = narration.split()
+        if len(parts) >= 3:
+            return ' '.join(parts[2:-1]) if len(parts) > 3 else parts[2]
+        return None
 
-    # Pattern 4: Cash deposit - "Cash Deposit at/..."
-    if narration.upper().startswith('CASH DEPOSIT'):
-        return "CASH_DEPOSIT"
+    # Pattern 6: MB:RECEIVED FROM — "MB:RECEIVED FROM <name>"
+    if narration.startswith("MB:RECEIVED FROM"):
+        parts = narration.split("RECEIVED FROM")
+        if len(parts) >= 2:
+            name = parts[1].strip()
+            if name:
+                return name
+        return None
 
-    # Pattern 5: Reversal - "REV-..."
-    if narration.upper().startswith('REV-'):
-        # Try to extract from the reversed transaction
-        inner = narration[4:]
-        return extract_recipient_name(inner)
+    # Pattern 7: NEFT — "NEFT <code> <name words>"
+    if narration.startswith("NEFT"):
+        parts = narration.split()
+        if len(parts) >= 3:
+            return ' '.join(parts[2:])
+        return None
 
     return None
+
+
+def clean_narration(text: str) -> Optional[str]:
+    """
+    Lightweight cleanup of narration for display as a fallback merchant name.
+
+    Unlike normalize_narration (which strips digits and lowercases for fuzzy
+    matching), this preserves readability: keeps digits, title-cases, and
+    only removes special characters.
+
+    Args:
+        text: Raw narration string
+
+    Returns:
+        Cleaned title-cased string, or None if empty after cleaning
+    """
+    if not text:
+        return None
+
+    text = re.sub(r'[^a-zA-Z0-9\s]', ' ', text)  # Remove special chars, keep letters+digits
+    text = re.sub(r'\s+', ' ', text).strip()       # Collapse whitespace
+
+    if not text:
+        return None
+
+    return text.title()
 
 
 def is_salary_narration(narration: str) -> bool:
