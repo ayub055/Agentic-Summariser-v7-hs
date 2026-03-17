@@ -264,27 +264,46 @@ def _get_latest_salary_transaction(customer_id: int) -> Optional[dict]:
 
 
 def _get_emi_block(customer_id: int) -> Optional[list]:
-    """Detect EMI payments using category presence lookup."""
+    """Detect EMI payments using category presence lookup.
+
+    Groups EMI transactions by merchant/recipient name extracted from
+    narration, so different EMI obligations appear as separate rows.
+    """
     try:
         emi_result = resolve_category_presence(customer_id, "emi")
 
         if not emi_result.get('present'):
             return None
 
-        txn_count = emi_result.get('transaction_count', 1)
-        total_amount = emi_result.get('total_amount', 0)
-        avg_amount = total_amount / max(1, txn_count)
-
-        # Get sample transaction
         supporting = emi_result.get('supporting_transactions', [])
-        sample = supporting[0] if supporting else {}
+        if not supporting:
+            return None
 
-        return [EMIBlock(
-            name="EMI Payment",
-            amount=avg_amount,
-            frequency=txn_count,
-            sample_transaction=sample
-        )]
+        # Filter to debits only — EMI payments are always outflows.
+        # The category_resolver should already filter via YAML direction: D,
+        # but enforce here as a safety net.
+        supporting = [t for t in supporting if t.get('direction') == 'D']
+        if not supporting:
+            return None
+
+        # Each supporting transaction becomes its own EMIBlock row
+        # with merchant name extracted from narration
+        from utils.narration_utils import extract_recipient_name, clean_narration
+
+        blocks = []
+        for txn in supporting:
+            narration = txn.get('narration', '')
+            name = extract_recipient_name(narration)
+            if not name:
+                name = clean_narration(narration) or 'EMI Payment'
+            blocks.append(EMIBlock(
+                name=name,
+                amount=txn.get('amount', 0),
+                frequency=1,
+                sample_transaction=txn
+            ))
+
+        return blocks if blocks else None
     except Exception:
         return None
 

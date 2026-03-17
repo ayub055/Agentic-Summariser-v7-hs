@@ -1449,55 +1449,64 @@
     {% set debit_merchants = customer_report.top_merchants | selectattr("type", "equalto", "D") | list %}
     {% set credit_sources = customer_report.top_merchants | selectattr("type", "equalto", "C") | list %}
 
-    {% if debit_merchants %}
+    {% if debit_merchants or credit_sources %}
     <div class="section">
-        <h3>Top Spending Merchants</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>Merchant / Payee</th>
-                    <th class="amount">Txns</th>
-                    <th class="amount">Total ({{ customer_report.meta.currency }})</th>
-                    <th class="amount">Avg ({{ customer_report.meta.currency }})</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for m in debit_merchants %}
-                <tr>
-                    <td>{{ m.name[:40] }}{% if m.name|length > 40 %}...{% endif %}</td>
-                    <td class="amount">{{ m.count }}</td>
-                    <td class="amount">{{ "{:,.0f}".format(m.total) }}</td>
-                    <td class="amount">{{ "{:,.0f}".format(m.avg) }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-    {% endif %}
+        <h3>Top Merchants & Credit Sources</h3>
+        <div style="display: grid; grid-template-columns: {% if debit_merchants and credit_sources %}1fr 1fr{% else %}1fr{% endif %}; gap: 20px; align-items: start;">
 
-    {% if credit_sources %}
-    <div class="section">
-        <h3>Top Income Sources</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>Source</th>
-                    <th class="amount">Txns</th>
-                    <th class="amount">Total ({{ customer_report.meta.currency }})</th>
-                    <th class="amount">Avg ({{ customer_report.meta.currency }})</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for m in credit_sources %}
-                <tr>
-                    <td>{{ m.name[:40] }}{% if m.name|length > 40 %}...{% endif %}</td>
-                    <td class="amount">{{ m.count }}</td>
-                    <td class="amount">{{ "{:,.0f}".format(m.total) }}</td>
-                    <td class="amount">{{ "{:,.0f}".format(m.avg) }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+            {% if debit_merchants %}
+            <div>
+                <h4 style="font-size: 13px; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Top Spending Merchants</h4>
+                <table style="font-size: 12px;">
+                    <thead>
+                        <tr>
+                            <th>Merchant / Payee</th>
+                            <th class="amount">Txns</th>
+                            <th class="amount">Total</th>
+                            <th class="amount">Avg</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for m in debit_merchants %}
+                        <tr>
+                            <td style="font-size: 11.5px;">{{ m.name[:30] }}{% if m.name|length > 30 %}...{% endif %}</td>
+                            <td class="amount">{{ m.count }}</td>
+                            <td class="amount">{{ "{:,.0f}".format(m.total) }}</td>
+                            <td class="amount">{{ "{:,.0f}".format(m.avg) }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% endif %}
+
+            {% if credit_sources %}
+            <div>
+                <h4 style="font-size: 13px; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Top Credit Sources</h4>
+                <table style="font-size: 12px;">
+                    <thead>
+                        <tr>
+                            <th>Source</th>
+                            <th class="amount">Txns</th>
+                            <th class="amount">Total</th>
+                            <th class="amount">Avg</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for m in credit_sources %}
+                        <tr>
+                            <td style="font-size: 11.5px;">{{ m.name[:30] }}{% if m.name|length > 30 %}...{% endif %}</td>
+                            <td class="amount">{{ m.count }}</td>
+                            <td class="amount">{{ "{:,.0f}".format(m.total) }}</td>
+                            <td class="amount">{{ "{:,.0f}".format(m.avg) }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% endif %}
+
+        </div>
     </div>
     {% endif %}
     {% endif %}

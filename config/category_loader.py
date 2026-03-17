@@ -88,37 +88,34 @@ def resolve_category_alias(user_category: str) -> Optional[str]:
     # Remove common prefixes/suffixes
     user_lower = user_lower.replace('_', ' ').replace('-', ' ')
 
+    # Pass 1: Exact matches (key, key with spaces, display name, aliases)
     for key, cat_config in categories.items():
-        # Check key directly
         if key.lower() == user_lower:
             return key
 
-        # Check key with underscores replaced
         if key.lower().replace('_', ' ') == user_lower:
             return key
 
-        # Check display name
         display_name = cat_config.get('display_name', '').lower()
         if display_name == user_lower:
             return key
 
-        # Check aliases
         aliases = cat_config.get('aliases', [])
         for alias in aliases:
             if alias.lower() == user_lower:
                 return key
-            # Partial match for compound terms
-            if user_lower in alias.lower() or alias.lower() in user_lower:
-                return key
 
-    # Fuzzy fallback: check if user input contains any key or alias
-    for key, cat_config in categories.items():
-        if key.lower() in user_lower:
-            return key
-        aliases = cat_config.get('aliases', [])
-        for alias in aliases:
-            if alias.lower() in user_lower:
+    # Pass 2: Substring fallback — only if no exact match found.
+    # Require minimum 4 chars to avoid short strings ("emi") matching
+    # inside longer unrelated words ("remittance", "premium").
+    if len(user_lower) >= 4:
+        for key, cat_config in categories.items():
+            if key.lower() in user_lower:
                 return key
+            aliases = cat_config.get('aliases', [])
+            for alias in aliases:
+                if alias.lower() in user_lower:
+                    return key
 
     return None
 

@@ -101,6 +101,16 @@ def extract_recipient_name(narration: str) -> Optional[str]:
                 return name
         return None
 
+    # Pattern 6b: MB:RECEIVED MONEY / MB:SENT MONEY — self-transfers
+    # "MB:SENT MONEY TO OWN 2411726562/EMI VEHICLE" → "EMI VEHICLE"
+    # "MB:RECEIVED MONEY FROM OWN 2411690870/EMI VEHICLE" → "EMI VEHICLE"
+    if narration.startswith("MB:SENT MONEY") or narration.startswith("MB:RECEIVED MONEY"):
+        if '/' in narration:
+            purpose = narration.split('/', 1)[1].strip()
+            if purpose and len(purpose) > 1:
+                return purpose
+        return None
+
     # Pattern 7: NEFT — "NEFT <code> <name words>"
     if narration.startswith("NEFT"):
         parts = narration.split()
