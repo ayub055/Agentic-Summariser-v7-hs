@@ -157,11 +157,11 @@ def _build_data_summary(report: CustomerReport, rg_salary_data: dict = None) -> 
             f"Salary income: {_auth_salary_amt:,.0f} INR average{merchant_str}{freq_str}"
         )
 
-    # EMIs
+    # EMIs — EMIBlock.amount is per-transaction average, not total
     if report.emis:
-        total_emi = sum(e.amount for e in report.emis)
+        avg_emi = sum(e.amount for e in report.emis)
         emi_count = sum(e.frequency for e in report.emis)
-        sections.append(f"EMI commitments: {total_emi:,.0f} INR ({emi_count} payments)")
+        sections.append(f"EMI commitments: {avg_emi:,.0f} INR average per payment ({emi_count} debit transactions)")
 
     # Rent
     if report.rent:
@@ -171,10 +171,11 @@ def _build_data_summary(report: CustomerReport, rg_salary_data: dict = None) -> 
         )
 
     # Banking FOIR (computed from available EMI + rent / salary)
+    # Note: e.amount and rent.amount are per-transaction averages, which approximates monthly obligation
     if _auth_salary_amt and _auth_salary_amt > 0:
-        _emi_total = sum(e.amount for e in report.emis) if report.emis else 0
+        _emi_avg = sum(e.amount for e in report.emis) if report.emis else 0
         _rent_amt = report.rent.amount if report.rent else 0
-        _foir = (_emi_total + _rent_amt) / _auth_salary_amt * 100
+        _foir = (_emi_avg + _rent_amt) / _auth_salary_amt * 100
         _tag = " [OVER-LEVERAGED]" if _foir > 65 else (" [STRETCHED]" if _foir > 40 else " [COMFORTABLE]")
         sections.append(f"Banking FOIR (EMI+Rent/Salary): {_foir:.1f}%{_tag}")
 
