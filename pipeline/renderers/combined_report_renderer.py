@@ -364,6 +364,7 @@ def render_combined_report(
     output_path: Optional[str] = None,
     combined_summary: Optional[str] = None,
     rg_salary_data: Optional[dict] = None,
+    theme: str = "emerald",
 ) -> str:
     """Render combined PDF + HTML from both reports.
 
@@ -399,7 +400,7 @@ def render_combined_report(
     html_path = str(output_file).replace(".pdf", ".html")
     html_content = render_combined_report_html(
         customer_report, bureau_report, combined_summary=combined_summary,
-        rg_salary_data=rg_salary_data,
+        rg_salary_data=rg_salary_data, theme=theme,
     )
     with open(html_path, "w", encoding="utf-8") as f:
         f.write(html_content)
@@ -419,12 +420,25 @@ def render_combined_report_html(
     bureau_report: Optional[BureauReport],
     combined_summary: Optional[str] = None,
     rg_salary_data: Optional[dict] = None,
+    theme: str = "emerald",
 ) -> str:
     """Render combined HTML from both reports using Jinja2 template.
+
+    Args:
+        theme: Color scheme to use. Options: "emerald" (default), "original",
+               "teal", "blue", "sunset".
 
     Returns:
         HTML string.
     """
+    THEME_TEMPLATES = {
+        "emerald":  "combined_report.html",
+        "original": "combined_report_original.html",
+        "teal":     "combined_report_teal_coral.html",
+        "blue":     "combined_report_blue_gold.html",
+        "sunset":   "combined_report_sunset.html",
+    }
+    template_name = THEME_TEMPLATES.get(theme, THEME_TEMPLATES["emerald"])
     template_dir = Path(__file__).parent.parent.parent / "templates"
     template_dir.mkdir(parents=True, exist_ok=True)
 
@@ -465,7 +479,7 @@ def render_combined_report_html(
         bureau_report.monthly_exposure if bureau_report else None
     )
 
-    template = env.get_template("combined_report.html")
+    template = env.get_template(template_name)
     return template.render(
         customer_report=customer_report,
         bureau_report=bureau_report,

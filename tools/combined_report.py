@@ -25,6 +25,7 @@ _EXCEL_OUTPUT_DIR = os.path.join(
 
 def generate_combined_report_pdf(
     customer_id: int,
+    theme: str = "original", # blue
 ) -> Tuple[Optional[CustomerReport], Optional[BureauReport], str]:
     """Generate a combined banking + bureau report as one PDF.
 
@@ -103,7 +104,7 @@ def generate_combined_report_pdf(
     from pipeline.renderers.combined_report_renderer import render_combined_report
     pdf_path = render_combined_report(
         customer_report, bureau_report, combined_summary=combined_summary,
-        rg_salary_data=rg_salary_data,
+        rg_salary_data=rg_salary_data, theme=theme,
     )
 
     # 4. Export one-row Excel file for this customer (batch-merge later)

@@ -191,6 +191,50 @@ def _month_label(dt) -> str:
     return pd.Timestamp(dt).strftime("%b %Y")
 
 
+def _compute_monthly_credit_stats(df: pd.DataFrame):
+    """Compute monthly credit totals and median from a customer's transaction df.
+
+    Returns (credits_df, monthly_totals Series, median_monthly_credit)
+    or (None, None, None) if insufficient data (< 3 months or median < 1000).
+    """
+    credits = df[df["dr_cr_indctor"] == "C"].copy()
+    if credits.empty:
+        return None, None, None
+    credits["_month"] = credits["tran_date"].dt.to_period("M")
+    monthly_totals = credits.groupby("_month")["tran_amt_in_ac"].sum()
+    if len(monthly_totals) < 3:
+        return None, None, None
+    median_credit = monthly_totals.median()
+    if median_credit < 1000:
+        return None, None, None
+    return credits, monthly_totals, median_credit
+
+
+def _classify_credit_source(narration: str) -> str:
+    """Classify a credit narration into a human-readable source label."""
+    upper = narration.upper()
+    # Loan disbursal
+    if any(kw in upper for kw in _LOAN_DIS_KEYWORDS):
+        return "possible loan disbursal"
+    if any(lender in upper for lender in _LENDER_FRAGMENTS):
+        return "credit from bank/NBFC"
+    # Salary
+    for kw in ("SALARY", " SAL ", "SAL/", "PAYROLL"):
+        if kw in upper:
+            return "salary/employer credit"
+    # Government
+    for kw in ("DBT", "GOVT", "PENSION", "PM KISAN", "MNREGA", "SCHOLARSHIP", "TAX REFUND"):
+        if kw in upper:
+            return "government credit"
+    # Individual transfer
+    if any(ch in upper for ch in ("UPI/", "IMPS/", "NEFT/", "RTGS/")):
+        name = _extract_name_from_narration(narration)
+        if name:
+            return f"transfer from {name}"
+        return "individual transfer"
+    return narration[:50]
+
+
 # ---------------------------------------------------------------------------
 # Layer 1: Keyword rule matching
 # ---------------------------------------------------------------------------
@@ -536,6 +580,145 @@ def _detect_round_trips(df: pd.DataFrame) -> list:
 
 
 # ---------------------------------------------------------------------------
+# Layer 3: Inflow anomaly detectors
+# ---------------------------------------------------------------------------
+
+def _detect_inflow_spike(df: pd.DataFrame, salary_amount: float) -> list:
+    """Detect months where total credit inflow exceeds 2× the median monthly inflow.
+
+    Identifies the specific top credit transaction(s) that caused the spike
+    and classifies each source (lender, employer, government, individual).
+    """
+    events = []
+
+    credits, monthly_totals, median_credit = _compute_monthly_credit_stats(df)
+    if credits is None:
+        return events
+
+    threshold = median_credit * 2.0
+
+    for period, month_total in monthly_totals.items():
+        if month_total <= threshold:
+            continue
+
+        spike_ratio = month_total / median_credit
+
+        # Get top contributing credits for this month
+        month_credits = credits[credits["_month"] == period].sort_values(
+            "tran_amt_in_ac", ascending=False
+        )
+        top_txns = []
+        for _, row in month_credits.head(3).iterrows():
+            amt = float(row["tran_amt_in_ac"])
+            narr = str(row.get("tran_partclr", ""))
+            source = _classify_credit_source(narr)
+            top_txns.append(f"₹{amt:,.0f} ({source})")
+
+        top_str = ", ".join(top_txns)
+        month_start = period.to_timestamp()
+
+        events.append({
+            "type":        "inflow_spike",
+            "date":        str(month_start.date()),
+            "month_label": _month_label(month_start),
+            "amount":      round(float(month_total), 2),
+            "significance": "high",
+            "description": (
+                f"{_month_label(month_start)}: Monthly inflow ₹{month_total:,.0f} "
+                f"is {spike_ratio:.1f}× the median (₹{median_credit:,.0f}) — "
+                f"top credits: {top_str}"
+            ),
+        })
+
+    return events
+
+
+def _detect_large_single_credit(df: pd.DataFrame, salary_amount: float) -> list:
+    """Detect single credits exceeding 100% of the median monthly credit total.
+
+    Skips routine salary credits. Groups qualifying credits by month and
+    emits one event per month listing the top anomalous credits.
+    """
+    events = []
+
+    credits, monthly_totals, median_credit = _compute_monthly_credit_stats(df)
+    if credits is None:
+        return events
+
+    # Filter to credits exceeding median (with 10% buffer to avoid borderline noise)
+    large = credits[credits["tran_amt_in_ac"] > median_credit * 1.10].copy()
+    if large.empty:
+        return events
+
+    # Skip routine salary credits — by narration keywords (works even without salary_amount)
+    salary_kws = ("SALARY", " SAL ", "SAL/", "PAYROLL")
+
+    def _is_routine_salary(row):
+        narr = str(row.get("tran_partclr", "")).upper()
+        if not any(kw in narr for kw in salary_kws):
+            return False
+        # If salary_amount is known, also check amount is within ±30% of it
+        if salary_amount > 0:
+            amt = float(row["tran_amt_in_ac"])
+            return salary_amount * 0.70 <= amt <= salary_amount * 1.30
+        # No salary_amount known — trust the narration keyword alone
+        return True
+
+    mask = large.apply(_is_routine_salary, axis=1)
+    large = large[~mask]
+
+    if large.empty:
+        return events
+
+    # Group by month, build one event per month
+    month_groups = large.groupby("_month")
+    month_events = []
+
+    for period, group in month_groups:
+        group_sorted = group.sort_values("tran_amt_in_ac", ascending=False)
+        top_txns = []
+        largest_amt = 0.0
+        for _, row in group_sorted.head(3).iterrows():
+            amt = float(row["tran_amt_in_ac"])
+            if amt > largest_amt:
+                largest_amt = amt
+            narr = str(row.get("tran_partclr", ""))
+            source = _classify_credit_source(narr)
+            ratio = amt / median_credit
+            top_txns.append(f"₹{amt:,.0f} ({ratio:.1f}× median, {source})")
+
+        count = len(group_sorted)
+        txn_str = ", ".join(top_txns)
+        month_start = period.to_timestamp()
+
+        desc_prefix = (
+            f"{_month_label(month_start)}: {count} credit(s) exceeding "
+            f"monthly median (₹{median_credit:,.0f})"
+            if count > 1 else
+            f"{_month_label(month_start)}: Single credit exceeding "
+            f"monthly median (₹{median_credit:,.0f})"
+        )
+
+        month_events.append({
+            "type":        "large_single_credit",
+            "date":        str(month_start.date()),
+            "month_label": _month_label(month_start),
+            "amount":      round(largest_amt, 2),
+            "significance": "high",
+            "description":  f"{desc_prefix} — {txn_str}",
+            "_sort_key":    largest_amt,  # for capping
+        })
+
+    # Cap at 5 events, keep months with largest credits
+    month_events.sort(key=lambda e: e["_sort_key"], reverse=True)
+    for ev in month_events[:5]:
+        ev.pop("_sort_key", None)
+        events.append(ev)
+
+    return events
+
+
+# ---------------------------------------------------------------------------
 # Deduplication and formatting
 # ---------------------------------------------------------------------------
 
@@ -638,6 +821,17 @@ def detect_events(customer_id: int, rg_salary_data: Optional[dict] = None) -> li
         events += _detect_round_trips(cust_df)
     except Exception as exc:
         logger.warning("event_detector: round_trips failed: %s", exc)
+
+    # ── Layer 3: Inflow anomaly detectors ─────────────────────────────────
+    try:
+        events += _detect_inflow_spike(cust_df, salary_amount)
+    except Exception as exc:
+        logger.warning("event_detector: inflow_spike failed: %s", exc)
+
+    try:
+        events += _detect_large_single_credit(cust_df, salary_amount)
+    except Exception as exc:
+        logger.warning("event_detector: large_single_credit failed: %s", exc)
 
     # Deduplicate and sort
     events = _deduplicate(events)
