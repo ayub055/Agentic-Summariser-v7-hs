@@ -64,7 +64,7 @@ class ReportPDF(FPDF):
     def section_title(self, title: str):
         self.set_font("Helvetica", "B", 12)
         self.set_fill_color(240, 240, 240)
-        self.cell(0, 8, title, fill=True, new_x="LMARGIN", new_y="NEXT")
+        self.cell(0, 8, _sanitize_text(title), fill=True, new_x="LMARGIN", new_y="NEXT")
         self.ln(2)
 
     def section_text(self, text: str):
@@ -74,9 +74,9 @@ class ReportPDF(FPDF):
 
     def key_value(self, key: str, value: str):
         self.set_font("Helvetica", "B", 10)
-        self.cell(60, 6, key + ":")
+        self.cell(60, 6, _sanitize_text(key) + ":")
         self.set_font("Helvetica", "", 10)
-        self.cell(0, 6, str(value), new_x="LMARGIN", new_y="NEXT")
+        self.cell(0, 6, _sanitize_text(str(value)), new_x="LMARGIN", new_y="NEXT")
 
     def table_header(self, headers: list, widths: list):
         self.set_font("Helvetica", "B", 9)

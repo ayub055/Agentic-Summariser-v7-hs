@@ -1291,15 +1291,6 @@
     </div>
     {% endif %}
 
-    {% if customer_report.customer_persona and customer_report.meta.transaction_count >= 10 %}
-    <div class="section">
-        <h3>Customer Profile</h3>
-        <div class="summary-box">
-            <p>{{ customer_report.customer_persona }}</p>
-        </div>
-    </div>
-    {% endif %}
-
     {% if customer_report.customer_review and customer_report.meta.transaction_count >= 10 %}
     <div class="section">
         <h3>Executive Summary</h3>

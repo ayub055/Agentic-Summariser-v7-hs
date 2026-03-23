@@ -116,12 +116,6 @@ def generate_customer_report_pdf(
     # Skip if insufficient transaction data (< 10 transactions)
     if include_summary and report.meta.transaction_count >= 10:
         try:
-            if report.customer_persona is None:
-                report.customer_persona = generate_customer_persona(report)
-        except Exception as e:
-            logger.warning(f"Failed to generate customer persona: {e}")
-
-        try:
             if report.customer_review is None:
                 report.customer_review = generate_customer_review(report, rg_salary_data=rg_salary_data)
         except Exception as e:
@@ -396,12 +390,6 @@ def get_customer_report_data(
 
     # Generate summaries if requested (fail-soft)
     if include_summary:
-        try:
-            if report.customer_persona is None:
-                report.customer_persona = generate_customer_persona(report)
-        except Exception as e:
-            logger.warning(f"Failed to generate customer persona: {e}")
-
         try:
             if report.customer_review is None:
                 report.customer_review = generate_customer_review(report, rg_salary_data=rg_salary_data)

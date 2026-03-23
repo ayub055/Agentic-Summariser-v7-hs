@@ -719,6 +719,164 @@ def _detect_large_single_credit(df: pd.DataFrame, salary_amount: float) -> list:
 
 
 # ---------------------------------------------------------------------------
+# Layer 2.5: Credit-to-spend timing dependency
+# ---------------------------------------------------------------------------
+
+def _detect_credit_spend_dependency(
+    df: pd.DataFrame,
+    salary_txns: list,
+    salary_amount: float,
+    customer_name: Optional[str],
+) -> list:
+    """Detect spending dependency on credit receipt.
+
+    For each significant credit, measure what fraction of that credit
+    is consumed by debits within a short window. Flags "funded spender"
+    patterns where the customer can only spend after receiving funds.
+
+    Self-transfers are included in the debit total but annotated separately.
+    Skips events where the only debit is a single self-transfer (covered by
+    the existing self_transfer_post_salary detector).
+    """
+    import config.thresholds as T
+
+    events = []
+
+    # Need monthly credit stats for dynamic threshold
+    _, _, median_monthly_credit = _compute_monthly_credit_stats(df)
+    if median_monthly_credit is None:
+        # Fall back to a static floor if insufficient monthly data
+        min_credit = T.CREDIT_SPEND_MIN_AMOUNT
+    else:
+        min_credit = max(T.CREDIT_SPEND_MIN_AMOUNT,
+                         median_monthly_credit * T.CREDIT_SPEND_MIN_RATIO)
+
+    window = timedelta(days=T.CREDIT_SPEND_WINDOW_DAYS)
+
+    # All credits sorted by date
+    credits = df[
+        (df["dr_cr_indctor"] == "C") &
+        (df["tran_amt_in_ac"] >= min_credit)
+    ].sort_values("tran_date").copy()
+
+    if credits.empty:
+        return events
+
+    # All debits sorted by date
+    debits = df[df["dr_cr_indctor"] == "D"].sort_values("tran_date").copy()
+    if debits.empty:
+        return events
+
+    # Build customer name prefix for self-transfer detection
+    name_prefix = customer_name.upper().split()[0] if customer_name else None
+
+    # Merge nearby credits (within 2 days) to avoid double-counting debits
+    credit_clusters = []
+    for _, row in credits.iterrows():
+        cr_date = row["tran_date"]
+        cr_amt = float(row["tran_amt_in_ac"])
+        cr_narr = str(row.get("tran_partclr", ""))
+
+        if credit_clusters and (cr_date - credit_clusters[-1]["end_date"]).days <= 2:
+            # Extend existing cluster
+            credit_clusters[-1]["total_amount"] += cr_amt
+            credit_clusters[-1]["end_date"] = cr_date
+            credit_clusters[-1]["narrations"].append(cr_narr)
+            credit_clusters[-1]["count"] += 1
+        else:
+            credit_clusters.append({
+                "start_date": cr_date,
+                "end_date": cr_date,
+                "total_amount": cr_amt,
+                "narrations": [cr_narr],
+                "count": 1,
+            })
+
+    for cluster in credit_clusters:
+        cr_start = cluster["start_date"]
+        cr_end = cluster["end_date"]
+        cr_amount = cluster["total_amount"]
+        window_end = cr_end + window
+
+        # Debits within [cr_start, cr_end + window_days]
+        window_debits = debits[
+            (debits["tran_date"] >= cr_start) &
+            (debits["tran_date"] <= window_end)
+        ]
+
+        if window_debits.empty:
+            continue
+
+        # Break down debits: self-transfer vs third-party
+        self_transfer_amt = 0.0
+        third_party_amt = 0.0
+        self_transfer_count = 0
+        third_party_count = 0
+
+        for _, drow in window_debits.iterrows():
+            amt = float(drow["tran_amt_in_ac"])
+            narr = str(drow.get("tran_partclr", ""))
+            is_self_flag = drow.get("self_transfer") in (1, "1", True)
+
+            if is_self_flag or _is_self(narr, name_prefix):
+                self_transfer_amt += amt
+                self_transfer_count += 1
+            else:
+                third_party_amt += amt
+                third_party_count += 1
+
+        total_debit = self_transfer_amt + third_party_amt
+        spend_ratio = total_debit / cr_amount if cr_amount > 0 else 0
+
+        if spend_ratio < T.CREDIT_SPEND_MEDIUM_THRESHOLD:
+            continue
+
+        # Skip if the only debit is a single self-transfer (existing detector covers this)
+        if third_party_count == 0 and self_transfer_count == 1:
+            continue
+
+        # Determine significance
+        if spend_ratio >= T.CREDIT_SPEND_HIGH_THRESHOLD:
+            significance = "high"
+        else:
+            significance = "medium"
+
+        # Classify credit source (use first narration in cluster)
+        source = _classify_credit_source(cluster["narrations"][0])
+
+        # Build debit breakdown string
+        parts = []
+        if self_transfer_count > 0:
+            parts.append(f"₹{self_transfer_amt:,.0f} self-transfer")
+        if third_party_count > 0:
+            parts.append(f"₹{third_party_amt:,.0f} third-party ({third_party_count} txn)")
+        debit_str = ", ".join(parts)
+
+        total_debit_count = self_transfer_count + third_party_count
+        cr_str = f"₹{cr_amount:,.0f}"
+        if cluster["count"] > 1:
+            cr_str += f" ({cluster['count']} credits)"
+
+        desc = (
+            f"{_month_label(cr_start)}: {cr_str} received ({source}) — "
+            f"₹{total_debit:,.0f} ({spend_ratio:.0%}) spent within "
+            f"{T.CREDIT_SPEND_WINDOW_DAYS} days "
+            f"({total_debit_count} debits: {debit_str})"
+        )
+
+        events.append({
+            "type": "credit_spend_dependency",
+            "date": str(cr_start.date()),
+            "month_label": _month_label(cr_start),
+            "amount": round(cr_amount, 2),
+            "significance": significance,
+            "description": desc,
+        })
+
+    return events
+
+
+# ---------------------------------------------------------------------------
 # Deduplication and formatting
 # ---------------------------------------------------------------------------
 
@@ -821,6 +979,12 @@ def detect_events(customer_id: int, rg_salary_data: Optional[dict] = None) -> li
         events += _detect_round_trips(cust_df)
     except Exception as exc:
         logger.warning("event_detector: round_trips failed: %s", exc)
+
+    # ── Layer 2.5: Credit-to-spend timing dependency ─────────────────────
+    try:
+        events += _detect_credit_spend_dependency(cust_df, salary_txns, salary_amount, customer_name)
+    except Exception as exc:
+        logger.warning("event_detector: credit_spend_dependency failed: %s", exc)
 
     # ── Layer 3: Inflow anomaly detectors ─────────────────────────────────
     try:

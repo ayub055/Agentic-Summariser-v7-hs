@@ -86,3 +86,12 @@ CLEAN_HISTORY_STRONG_MONTHS: int = 24   # ≥ 24 M without delinquency → [POSI
 CLEAN_HISTORY_GOOD_MONTHS: int = 12     # ≥ 12 M without delinquency → [POSITIVE]
 RECENT_DELINQUENCY_MONTHS: int = 6      # < 6 M → [CONCERN] recent delinquency
 PCT_0PLUS_HIGH_RISK: float = 10.0       # > 10 % of trades have 0+ DPD → [HIGH RISK]
+
+# ---------------------------------------------------------------------------
+# Credit-to-Spend Timing  (event_detector — credit_spend_dependency)
+# ---------------------------------------------------------------------------
+CREDIT_SPEND_MIN_AMOUNT: int = 10000        # Minimum credit amount to analyze
+CREDIT_SPEND_MIN_RATIO: float = 0.20        # Min credit as fraction of median monthly credit
+CREDIT_SPEND_WINDOW_DAYS: int = 3           # Calendar days to look forward for debits
+CREDIT_SPEND_HIGH_THRESHOLD: float = 0.80   # ≥ 80 % spent within window → high significance
+CREDIT_SPEND_MEDIUM_THRESHOLD: float = 0.60 # ≥ 60 % spent within window → medium significance

@@ -184,7 +184,7 @@ def _build_data_summary(report: CustomerReport, rg_salary_data: dict = None) -> 
         total_bills = sum(b.avg_amount * b.frequency for b in report.bills)
         sections.append(f"Utility bills: {total_bills:,.0f} INR total")
 
-    # Top merchants
+    # Top merchants (kept in financial overview for basic context)
     if report.top_merchants:
         top_merchant = report.top_merchants[0]
         sections.append(
@@ -193,27 +193,30 @@ def _build_data_summary(report: CustomerReport, rg_salary_data: dict = None) -> 
             f"{top_merchant.get('total', 0):,.0f} INR)"
         )
 
-    # Merchant-level signals
+    # Merchant behavioral summary — compact block for dedicated paragraph
     if report.merchant_features:
         mf = report.merchant_features
-        regular = mf.get("regular_merchants", [])
-        anomalies = mf.get("anomaly_merchants", [])
-        concentration = mf.get("concentration", {})
+        m_parts = []
 
+        regular = mf.get("regular_merchants", [])
         if regular:
-            reg_names = ", ".join(r["merchant"] for r in regular[:3])
-            sections.append(f"Regular merchants (2+ months): {len(regular)} — {reg_names}")
+            names = ", ".join(r["merchant"] for r in regular[:3])
+            m_parts.append(f"Regular merchants: {len(regular)} ({names})")
+
+        anomalies = mf.get("anomaly_merchants", [])
         if anomalies:
-            for a in anomalies[:3]:
-                sections.append(
-                    f"Anomaly merchant: {a['merchant']} ({a['anomaly_reason']}), "
-                    f"INR {a['amount']:,.0f}"
-                )
-        if concentration.get("top_1_pct", 0) > 50:
-            sections.append(
-                f"Merchant concentration: Top-1 merchant accounts for "
-                f"{concentration['top_1_pct']:.0f}% of debit spend"
+            a = anomalies[0]
+            m_parts.append(f"Anomaly: {a['merchant']} INR {a['amount']:,.0f}")
+
+        concentration = mf.get("concentration", {})
+        if concentration.get("total_merchants", 0) > 0:
+            m_parts.append(
+                f"Concentration: top-1 = {concentration['top_1_pct']:.0f}%, "
+                f"{concentration['total_merchants']} merchants total"
             )
+
+        if m_parts:
+            sections.append("MERCHANT PROFILE: " + ". ".join(m_parts))
 
     # Account quality observations — presented as plain facts, no score label
     if report.account_quality:
