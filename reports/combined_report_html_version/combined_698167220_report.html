@@ -33,7 +33,7 @@
 
         body {
             font-family: 'Segoe UI', Arial, sans-serif;
-            background: #fef2f2; /* Emerald-tinted background */
+            background: #f8fafc; /* Cool light slate background */
             color: #1e293b;
             max-width: 900px;
             margin: 0 auto;
@@ -47,16 +47,16 @@
             padding: 16px 20px;
             border-radius: 12px;
             margin-bottom: 24px;
-            border: 1px solid #fda4af;
-            border-left: 5px solid #e11d48; /* Emerald accent */
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.08);
+            border: 1px solid #e2e8f0;
+            border-left: 5px solid #6366f1; /* Indigo accent from Arch file */
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.05);
             display: flex;
             flex-direction: column;
             gap: 10px;
         }
 
         .header h1 {
-            color: #4a1d2e; /* Deep emerald text */
+            color: #1e1b4b; /* Deep indigo text */
             font-size: 18px;
             font-weight: 700;
             margin-bottom: 0;
@@ -72,19 +72,19 @@
         }
 
         .header-meta span {
-            background: #ffe4e6;
-            border: 1px solid #fda4af;
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
             border-radius: 6px;
             padding: 3px 10px;
             font-size: 11px;
-            color: #9f1239;
+            color: #475569;
             display: inline-flex;
             align-items: center;
             font-weight: 500;
         }
 
         .header-meta span strong {
-            color: #e11d48; /* Emerald labels */
+            color: #6366f1; /* Indigo labels */
             text-transform: uppercase;
             font-size: 9px;
             letter-spacing: 0.5px;
@@ -117,7 +117,7 @@
             content: "";
             flex: 1;
             height: 2px;
-            background: linear-gradient(to right, #fda4af, transparent);
+            background: linear-gradient(to right, #e2e8f0, transparent);
         }
 
         /* CARD-STYLE SECTIONS (.comp variant) */
@@ -125,8 +125,8 @@
             background: #ffffff;
             border-radius: 8px;
             padding: 20px;
-            border: 1px solid #fda4af;
-            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.06);
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 2px 8px rgba(99, 102, 241, 0.04);
             margin-bottom: 20px;
         }
 
@@ -140,7 +140,7 @@
         }
 
         th {
-            background: #4a1d2e; /* Deep Emerald Header */
+            background: #1e1b4b; /* Deep Indigo Header */
             color: #ffffff;
             padding: 12px;
             text-transform: uppercase;
@@ -148,16 +148,16 @@
             letter-spacing: 0.5px;
         }
         .section h3 {
-            color: #9f1239;
+            color: #2c3e50;
             font-size: 16px;
-            border-bottom: 1px solid #fda4af;
+            border-bottom: 1px solid #eee;
             padding-bottom: 8px;
             margin-bottom: 12px;
         }
 
         .summary-box {
-            background-color: #ffe4e6;
-            border-left: 4px solid #e11d48;
+            background-color: #f8f9fa;
+            border-left: 4px solid #3498db;
             padding: 15px;
             margin-bottom: 20px;
         }
@@ -169,11 +169,11 @@
         }
 
         .absence-note {
-            background-color: #fffbeb;
-            border-left: 4px solid #f59e0b;
+            background-color: #fdf2f2;
+            border-left: 4px solid #e74c3c;
             padding: 15px;
             margin-bottom: 20px;
-            color: #d97706;
+            color: #b44;
             font-style: italic;
         }
 
@@ -191,13 +191,13 @@
         }
 
         th {
-            background-color: #ffe4e6;
+            background-color: #f8f9fa;
             font-weight: 600;
-            color: #4a1d2e;
+            color: #2c3e50;
         }
 
         tr:hover {
-            background-color: #ffe4e6;
+            background-color: #f8f9fa;
         }
 
         .amount {
@@ -210,11 +210,11 @@
         }
 
         .positive {
-            color: #16a34a;
+            color: #27ae60;
         }
 
         .negative {
-            color: #dc2626;
+            color: #e74c3c;
         }
 
         .info-grid {
@@ -231,33 +231,33 @@
 
         .info-item {
             padding: 12px;
-            background-color: #ffe4e6;
+            background-color: #f8f9fa;
             border-radius: 4px;
         }
 
         .info-item label {
             display: block;
             font-size: 12px;
-            color: #9f1239;
+            color: #666;
             margin-bottom: 4px;
         }
 
         .info-item .value {
             font-size: 18px;
             font-weight: 600;
-            color: #4a1d2e;
+            color: #2c3e50;
         }
 
         .info-item .value.warning {
-            color: #f59e0b;
+            color: #d35400;
         }
 
         .info-item .value.risk {
-            color: #dc2626;
+            color: #e74c3c;
         }
 
         .info-item .value.safe {
-            color: #16a34a;
+            color: #27ae60;
         }
 
         /* Compact grid for Behavioral & Risk Features */
@@ -270,14 +270,14 @@
 
         .rf-item {
             padding: 7px 10px;
-            background: #ffe4e6;
+            background: #f8f9fa;
             border-radius: 4px;
         }
 
         .rf-item label {
             display: block;
             font-size: 10.5px;
-            color: #9f1239;
+            color: #666;
             margin-bottom: 2px;
             line-height: 1.3;
         }
@@ -285,11 +285,11 @@
         .rf-item .value {
             font-size: 15px;
             font-weight: 700;
-            color: #4a1d2e;
+            color: #2c3e50;
         }
 
-        .rf-item .value.risk { color: #dc2626; }
-        .rf-item .value.safe { color: #16a34a; }
+        .rf-item .value.risk { color: #e74c3c; }
+        .rf-item .value.safe { color: #27ae60; }
 
         /* Grid signal chips (Portfolio section) */
         .tl-chips { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 14px; }
@@ -297,42 +297,42 @@
             display: inline-flex; flex-direction: column;
             padding: 5px 9px; border-radius: 5px;
             font-size: 11px; min-width: 90px; max-width: 145px;
-            border-left: 3px solid #fda4af; cursor: default;
+            border-left: 3px solid #cbd5e1; cursor: default;
         }
         .tl-chip-label { font-size: 9px; font-weight: 600; text-transform: uppercase;
                          letter-spacing: 0.4px; opacity: 0.65; margin-bottom: 2px; }
         .tl-chip-value { font-size: 12px; font-weight: 700; }
-        .tl-chip.chip-green { background:#fef2f2; border-left-color:#22c55e; color:#14532d; }
+        .tl-chip.chip-green { background:#f0fdf4; border-left-color:#22c55e; color:#14532d; }
         .tl-chip.chip-red   { background:#fff1f2; border-left-color:#f43f5e; color:#881337; }
-        .tl-chip.chip-gray  { background:#fffbeb; border-left-color:#f59e0b; color:#92400e; }
+        .tl-chip.chip-gray  { background:#f8fafc; border-left-color:#94a3b8; color:#475569; }
 
         .rf-subhead {
             font-size: 11px;
             font-weight: 700;
-            color: #4a1d2e;
+            color: #475569;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             margin: 12px 0 5px;
             padding: 2px 8px;
-            background: #fda4af;
+            background: #e2e8f0;
             border-radius: 3px;
             display: inline-block;
         }
 
         .secured-yes {
-            color: #16a34a;
+            color: #27ae60;
             font-weight: 600;
         }
 
         .secured-no {
-            color: #f59e0b;
+            color: #e67e22;
             font-weight: 600;
         }
 
         .section-divider {
             margin: 40px 0;
             padding: 12px 20px;
-            background-color: #9f1239;
+            background-color: #2c3e50;
             color: #fff;
             font-size: 18px;
             font-weight: 600;
@@ -342,9 +342,9 @@
         .footer {
             margin-top: 30px;
             padding-top: 15px;
-            border-top: 1px solid #fda4af;
+            border-top: 1px solid #eee;
             text-align: center;
-            color: #6b7280;
+            color: #999;
             font-size: 11px;
         }
 
@@ -357,7 +357,7 @@
         }
 
         .chart-card {
-            background: #ffe4e6;
+            background: #f8f9fa;
             border-radius: 8px;
             padding: 16px 12px 10px;
             display: flex;
@@ -367,7 +367,7 @@
 
         .chart-card h4 {
             font-size: 13px;
-            color: #9f1239;
+            color: #2c3e50;
             margin-bottom: 10px;
             text-align: center;
             font-weight: 700;
@@ -394,16 +394,16 @@
 
         /* KEY FINDINGS — 2-column grid */
         .findings-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 10px; }
-        .finding-card { display: flex; align-items: flex-start; padding: 9px 11px; background: #ffe4e6; border-radius: 0 4px 4px 0; }
+        .finding-card { display: flex; align-items: flex-start; padding: 9px 11px; background: #f8f9fa; border-radius: 0 4px 4px 0; }
         .finding-body { flex: 1; min-width: 0; }
         .finding-meta { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; flex-wrap: wrap; }
-        .finding-text { font-weight: 600; color: #4a1d2e; font-size: 12.5px; line-height: 1.4; }
+        .finding-text { font-weight: 600; color: #2c3e50; font-size: 12.5px; line-height: 1.4; }
         .finding-inference { color: #555; font-size: 11.5px; margin-top: 3px; font-style: italic; line-height: 1.4; }
         .sev-badge { font-size: 9px; font-weight: 700; padding: 1px 5px; border-radius: 3px; white-space: nowrap; }
         .sev-high_risk     { background: #fdecea; color: #c0392b; }
-        .sev-moderate_risk { background: #fffbeb; color: #d97706; }
+        .sev-moderate_risk { background: #fef5e7; color: #d35400; }
         .sev-concern       { background: #fef9c3; color: #713f12; }
-        .sev-positive      { background: #ffe4e6; color: #16a34a; }
+        .sev-positive      { background: #eafaf1; color: #1e8449; }
         .sev-neutral       { background: #f4f6f7; color: #666;    }
 
         @media print {
@@ -420,7 +420,7 @@
 
         /* ── scorecard ───────────────────────────── */
         .scorecard {
-            border: 1px solid #fda4af;
+            border: 1px solid #e2e8f0;
             border-radius: 8px;
             padding: 20px;
             margin-bottom: 28px;
@@ -441,8 +441,8 @@
         }
         .sc-rag-red    { background: #fff3f0; color: #c2410c; border-left: 5px solid #f97316; }
         .sc-rag-amber  { background: #fffbeb; color: #92400e; border-left: 5px solid #f59e0b; }
-        .sc-rag-green  { background: #ffe4e6; color: #9f1239; border-left: 5px solid #e11d48; }
-        .sc-rag-neutral{ background: #fffbeb; color: #92400e; border-left: 5px solid #f59e0b; }
+        .sc-rag-green  { background: #f0f9ff; color: #0369a1; border-left: 5px solid #0ea5e9; }
+        .sc-rag-neutral{ background: #fafaf9; color: #57534e; border-left: 5px solid #a8a29e; }
         .sc-signals-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
@@ -459,8 +459,8 @@
         }
         .sc-rag-red.sc-signal    { border-bottom-color: #fb7185; }
         .sc-rag-amber.sc-signal  { border-bottom-color: #ca8a04; }
-        .sc-rag-green.sc-signal  { border-bottom-color: #e11d48; }
-        .sc-rag-neutral.sc-signal{ border-bottom-color: #f59e0b; }
+        .sc-rag-green.sc-signal  { border-bottom-color: #2dd4bf; }
+        .sc-rag-neutral.sc-signal{ border-bottom-color: #818cf8; }
         .sc-sig-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; opacity: 0.75; }
         .sc-sig-value { font-size: 14px; font-weight: 800; margin: 5px 0 3px; }
         .sc-sig-note  { font-size: 10px; opacity: 0.65; }
@@ -515,14 +515,14 @@
             text-transform: uppercase;
             letter-spacing: 0.7px;
         }
-        .sc-col-green { background: #ffe4e6; border-top-color: #e11d48; color: #4a1d2e; }
-        .sc-col-green .sc-col-head { color: #16a34a; }
-        .sc-col-red   { background: #fdf6f0; border-top-color: #dc2626; color: #431407; }
+        .sc-col-green { background: #f5fbf7; border-top-color: #34d399; color: #1a3a2a; }
+        .sc-col-green .sc-col-head { color: #059669; }
+        .sc-col-red   { background: #fdf6f0; border-top-color: #f97316; color: #431407; }
         .sc-col-red   .sc-col-head { color: #c2410c; }
         .sc-col-item  { display: flex; align-items: flex-start; gap: 5px; padding: 1px 0; font-size: 11.5px; }
         .sc-col-bullet{ flex-shrink: 0; margin-top: 2px; font-size: 11px; }
         .sc-narrative {
-            border-top: 1px solid #fda4af;
+            border-top: 1px solid #e2e8f0;
             padding-top: 14px;
             font-size: 13px;
             color: #374151;
@@ -700,17 +700,19 @@ Primary = main salary/income account · Secondary = supplementary · Conduit = p
         <div class="sc-3col">
             <div class="sc-col sc-col-green">
                 <div class="sc-col-head">&#10003; Strengths</div>
-                <div class="sc-col-item"><span class="sc-col-bullet" style="color:#e11d48">●</span><span>No delinquency detected across the portfolio</span></div><div class="sc-col-item"><span class="sc-col-bullet" style="color:#e11d48">●</span><span>Credit card utilization at 9% [Opened: Aug 2018 – Nov 2025 | Last Closed: Nov 2025]</span></div><div class="sc-col-item"><span class="sc-col-bullet" style="color:#e11d48">●</span><span>Zero DPD across all products in recent 6-9 month windows</span></div>
+                <div class="sc-col-item"><span class="sc-col-bullet" style="color:#34d399">●</span><span>No delinquency detected across the portfolio</span></div><div class="sc-col-item"><span class="sc-col-bullet" style="color:#34d399">●</span><span>Credit card utilization at 9% [Opened: Aug 2018 – Nov 2025 | Last Closed: Nov 2025]</span></div><div class="sc-col-item"><span class="sc-col-bullet" style="color:#34d399">●</span><span>Zero DPD across all products in recent 6-9 month windows</span></div>
             </div>
             <div class="sc-col sc-col-red">
                 <div class="sc-col-head">&#9888; Concerns</div>
-                <div class="sc-col-item"><span class="sc-col-bullet" style="color:#f59e0b">●</span><span>Unsecured sanction is 100% of total (INR 72,48,130 of INR 72,48,130)</span></div>
+                <div class="sc-col-item"><span class="sc-col-bullet" style="color:#f97316">●</span><span>Unsecured sanction is 100% of total (INR 72,48,130 of INR 72,48,130)</span></div>
             </div>
         </div>
         
-        <div class="sc-narrative">The customer&#39;s income and credit profile indicate an average monthly cash flow of ₹50,922, with an average net inflow of ₹313,622 and outflow of ₹8,090. Their salary income is ₹51,020 on average from six transactions, while their EMI commitments amount to ₹7,500 per payment, with two debit transactions occurring each month. The customer&#39;s key spending categories include other expenses at ₹8,045 and mobility costs at ₹45.
+        <div class="sc-narrative">The customer&#39;s income is ₹51,020 per month, sourced from six transactions, resulting in an average net cash flow of ₹50,922. Their key spending categories include other expenses at ₹8,045 and mobility costs at ₹45. The customer has EMI commitments averaging ₹7,500 per payment, with two debit transactions per month.
 
-The customer&#39;s tradeline portfolio consists of N=27 total tradelines, M=22 live tradelines, and P=5 closed tradelines. The portfolio features a mix of credit card (26 accounts) and personal loan (1 account) products, with sanctioned exposure totaling INR 72,48,130 and outstanding balances of INR 8,22,679 for the entire portfolio, and INR 3,11,925 for the personal loan product. The customer&#39;s credit utilization percentage is 9.0% for credit cards, indicating a relatively healthy balance. The customer has a low-risk profile, with no missed payments, minimal enquiry pressure, and stable loan acquisition velocity.</div>
+The customer&#39;s tradeline portfolio consists of N=27 total tradelines (M live=22, P closed=5). The portfolio features a mix of loan products, with Credit Card being the dominant product type, accounting for 26 live accounts. Total sanctioned exposure stands at INR 72,48,130, while total outstanding is INR 8,22,679. Unsecured sanction amount and outstanding are identical to total outstanding, indicating no separation between secured and unsecured loans. The credit card utilization percentage is 9.0%, which is elevated. The customer&#39;s creditworthiness assessment is cautious.
+
+Note: This is a synthesised summary based on automated banking and bureau analyses. Independent verification is recommended before final credit decisions.</div>
         
 
     </div>
@@ -798,8 +800,41 @@ The customer&#39;s tradeline portfolio consists of N=27 total tradelines, M=22 l
                 </div>
             </div>
             
+
+            
+            
+            <div class="info-item">
+                <label>Largest Single Loan</label>
+                <div class="value">
+                    INR 5.00 L
+                    
+                    <span style="font-size:12px;color:#666;font-weight:400">(Credit Card)</span>
+                    
+                </div>
+            </div>
+            
+
+            
+            
+
+            
+            
+            <div style="grid-column: 1/-1; margin-top:8px; padding:12px; background:#f0fdf4; border-radius:8px; border:1px solid #a7f3d0;">
+                <div style="font-weight:600; font-size:13px; color:#065f46; margin-bottom:8px;">Kotak Relationship (On-Us)</div>
+                <div class="info-grid" style="margin:0;">
+                    <div class="info-item"><label>On-Us Tradelines</label><div class="value">1 (1 live)</div></div>
+                    <div class="info-item"><label>Products</label><div class="value">Credit Card</div></div>
+                    <div class="info-item"><label>Sanctioned</label><div class="value">INR 1.40 L</div></div>
+                    <div class="info-item"><label>Outstanding</label><div class="value">INR 21,705</div></div>
+                    
+                </div>
+            </div>
+            
         </div>
     </div>
+
+    
+    
 
     <!-- Portfolio Visualizations -->
     
@@ -829,7 +864,7 @@ The customer&#39;s tradeline portfolio consists of N=27 total tradelines, M=22 l
                 <h4>Portfolio Exposure Over Time (Stacked by Product)</h4>
                 <canvas id="cmbChartTimeseries"></canvas>
                 
-                <p style="margin-top:10px; font-size:12.5px; color:#374151; line-height:1.6; border-top:1px solid #fda4af; padding-top:8px;">Sanctioned exposure peaked at ₹66.6L in Feb 2025, led by CC (₹63.5L) and PL (₹3.1L). Current exposure stands at ₹64.1L (CC, PL active), down 4% from peak — trend stable.</p>
+                <p style="margin-top:10px; font-size:12.5px; color:#444; line-height:1.6; border-top:1px solid #eee; padding-top:8px;">Sanctioned exposure peaked at ₹66.6L in Feb 2025, led by CC (₹63.5L) and PL (₹3.1L). Current exposure stands at ₹64.1L (CC, PL active), down 4% from peak — trend stable.</p>
                 
             </div>
 
@@ -874,8 +909,8 @@ The customer&#39;s tradeline portfolio consists of N=27 total tradelines, M=22 l
         ];
         const productColor = (name, idx) => PRODUCT_COLORS[name] || FALLBACK_PALETTE[idx % FALLBACK_PALETTE.length];
 
-        const SECURED_COLORS = ["#16a34a","#f59e0b"];
-        const ONUS_COLORS    = ["#f59e0b","#e11d48"];
+        const SECURED_COLORS = ["#27ae60","#e67e22"];
+        const ONUS_COLORS    = ["#8e44ad","#1abc9c"];
 
         const COMMON_OPTS = {
             responsive: false,
@@ -1021,9 +1056,9 @@ The customer&#39;s tradeline portfolio consists of N=27 total tradelines, M=22 l
         <div class="summary-box">
             <p>Here is the executive summary:
 
-The customer&#39;s tradeline portfolio consists of N=27 total tradelines, M=22 live tradelines, and P=5 closed tradelines. The portfolio features a mix of credit card (26 accounts) and personal loan (1 account) products, with sanctioned exposure totaling INR 72,48,130 and outstanding balances of INR 8,22,679 for the entire portfolio, and INR 3,11,925 for the personal loan product. The customer&#39;s credit utilization percentage is 9.0% for credit cards, indicating a relatively healthy balance. Notably, there are no DPD values above zero, suggesting a clean payment history.
+The customer&#39;s tradeline portfolio consists of N=27 total tradelines (M live=22, P closed=5). The portfolio features a mix of loan products, with Credit Card being the dominant product type, accounting for 26 live accounts. Total sanctioned exposure stands at INR 72,48,130, while total outstanding is INR 8,22,679. Unsecured sanction amount and outstanding are identical to total outstanding, indicating no separation between secured and unsecured loans. The credit card utilization percentage is 9.0%, which is elevated. There are no defaulted loan types present in the data.
 
-The customer&#39;s behavioral features indicate a low-risk profile. The % Missed Payments Last 18M is 0.00%, indicating no missed payments, and the Trade-to-Enquiry Ratio (Unsec 24M) is 40.00%, which is within healthy limits. The CC Balance Utilization is 8.97%, and the PL Balance Remaining is 53.46%, with the latter being moderate but not concerning. The customer has a low enquiry activity, with Unsecured Enquiries Last 12M at 0, indicating minimal enquiry pressure. The Avg Interpurchase Time All Loans (24M) is 3.45 months, suggesting a relatively stable loan acquisition velocity. Overall, the customer&#39;s credit behavior suggests a low-risk profile.</p>
+The customer&#39;s behavioral features indicate a relatively clean repayment profile, with zero DPD across all products and windows, no missed payments. The trade-to-enquiry ratio is 40.00% for unsecured trades, indicating moderate enquiry activity. Loan acquisition velocity is also notable, with an average interpurchase time of 3.45 months. However, the sanctioned exposure trend shows a decrease in sanctioned exposure over the past 12 and 6 months, from ₹66.6L to ₹64.1L and ₹66.6L to ₹64.3L respectively, indicating some stability in the trend.</p>
         </div>
     </div>
     
@@ -1034,7 +1069,7 @@ The customer&#39;s behavioral features indicate a low-risk profile. The % Missed
         <h3>Key Findings & Inferences</h3>
         <div class="findings-grid">
             
-            <div class="finding-card" style="border-left: 4px solid #f59e0b;">
+            <div class="finding-card" style="border-left: 4px solid #e67e22;">
                 <div class="finding-body">
                     <div class="finding-meta">
                         <span class="sev-badge sev-moderate_risk">MOD RISK</span>
@@ -1045,7 +1080,7 @@ The customer&#39;s behavioral features indicate a low-risk profile. The % Missed
                 </div>
             </div>
             
-            <div class="finding-card" style="border-left: 4px solid #16a34a;">
+            <div class="finding-card" style="border-left: 4px solid #27ae60;">
                 <div class="finding-body">
                     <div class="finding-meta">
                         <span class="sev-badge sev-positive">POSITIVE</span>
@@ -1056,7 +1091,7 @@ The customer&#39;s behavioral features indicate a low-risk profile. The % Missed
                 </div>
             </div>
             
-            <div class="finding-card" style="border-left: 4px solid #16a34a;">
+            <div class="finding-card" style="border-left: 4px solid #27ae60;">
                 <div class="finding-body">
                     <div class="finding-meta">
                         <span class="sev-badge sev-positive">POSITIVE</span>
@@ -1067,7 +1102,7 @@ The customer&#39;s behavioral features indicate a low-risk profile. The % Missed
                 </div>
             </div>
             
-            <div class="finding-card" style="border-left: 4px solid #16a34a;">
+            <div class="finding-card" style="border-left: 4px solid #27ae60;">
                 <div class="finding-body">
                     <div class="finding-meta">
                         <span class="sev-badge sev-positive">POSITIVE</span>
@@ -1078,7 +1113,7 @@ The customer&#39;s behavioral features indicate a low-risk profile. The % Missed
                 </div>
             </div>
             
-            <div class="finding-card" style="border-left: 4px solid #16a34a;">
+            <div class="finding-card" style="border-left: 4px solid #27ae60;">
                 <div class="finding-body">
                     <div class="finding-meta">
                         <span class="sev-badge sev-positive">POSITIVE</span>
@@ -1089,7 +1124,7 @@ The customer&#39;s behavioral features indicate a low-risk profile. The % Missed
                 </div>
             </div>
             
-            <div class="finding-card" style="border-left: 4px solid #16a34a;">
+            <div class="finding-card" style="border-left: 4px solid #27ae60;">
                 <div class="finding-body">
                     <div class="finding-meta">
                         <span class="sev-badge sev-positive">POSITIVE</span>
@@ -1384,9 +1419,9 @@ Note: Based on the provided data, it is not possible to determine Ashish&#39;s p
     <div class="section">
         <h3>Executive Summary</h3>
         <div class="summary-box">
-            <p>The customer&#39;s banking profile indicates a monthly cash flow of ₹50,922, with an average net inflow of ₹313,622 and outflow of ₹8,090. Their salary income is ₹51,020 on average from six transactions, while their EMI commitments amount to ₹7,500 per payment, with two debit transactions occurring each month. The customer&#39;s key spending categories include other expenses at ₹8,045 and mobility costs at ₹45.
+            <p>The customer&#39;s banking profile presents a stable financial picture. Their average monthly salary is ₹51,020, sourced from six transactions, resulting in an average net cash flow of ₹50,922. This translates to a total inflow of ₹313,622 and an outflow of ₹8,090 per month. The customer&#39;s key spending categories include other expenses at ₹8,045 and mobility costs at ₹45. Additionally, the customer has EMI commitments averaging ₹7,500 per payment, with two debit transactions per month.
 
-The customer received a salary of ₹72,000 in Jun 2025 and transferred ₹72,000 to their own account the next day. In Jul 2025, the customer made four transactions with BHOSALE RAJU TA, totaling ₹800. In Aug 2025, the customer received ₹51,020 from their salary income and paid ₹7,500 in EMI.</p>
+The customer&#39;s banking profile also reveals some notable merchant activity. The most frequent merchant is BHOSALE RAJU TA, with four transactions totaling ₹800. Furthermore, the account appears to be their primary account, as EMI payments are visible and average two debit transactions per month. Notably, the customer has a Banking FOIR obligation-to-income ratio of 14.7%, which falls within the comfortable range.</p>
         </div>
     </div>
     
@@ -1559,7 +1594,7 @@ The customer received a salary of ₹72,000 in Jun 2025 and transferred ₹72,00
 
             
             <div>
-                <h4 style="font-size: 13px; font-weight: 700; color: #9f1239; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Top Spending Merchants</h4>
+                <h4 style="font-size: 13px; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Top Spending Merchants</h4>
                 <table style="font-size: 12px;">
                     <thead>
                         <tr>
@@ -1613,7 +1648,7 @@ The customer received a salary of ₹72,000 in Jun 2025 and transferred ₹72,00
 
             
             <div>
-                <h4 style="font-size: 13px; font-weight: 700; color: #9f1239; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Top Credit Sources</h4>
+                <h4 style="font-size: 13px; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Top Credit Sources</h4>
                 <table style="font-size: 12px;">
                     <thead>
                         <tr>
@@ -1658,17 +1693,19 @@ The customer received a salary of ₹72,000 in Jun 2025 and transferred ₹72,00
     
     <div class="section-divider">Combined Executive Summary</div>
     <div class="section">
-        <div class="summary-box" style="border-left: 4px solid #9f1239;">
-            <p>The customer&#39;s income and credit profile indicate an average monthly cash flow of ₹50,922, with an average net inflow of ₹313,622 and outflow of ₹8,090. Their salary income is ₹51,020 on average from six transactions, while their EMI commitments amount to ₹7,500 per payment, with two debit transactions occurring each month. The customer&#39;s key spending categories include other expenses at ₹8,045 and mobility costs at ₹45.
+        <div class="summary-box" style="border-left: 4px solid #2c3e50;">
+            <p>The customer&#39;s income is ₹51,020 per month, sourced from six transactions, resulting in an average net cash flow of ₹50,922. Their key spending categories include other expenses at ₹8,045 and mobility costs at ₹45. The customer has EMI commitments averaging ₹7,500 per payment, with two debit transactions per month.
 
-The customer&#39;s tradeline portfolio consists of N=27 total tradelines, M=22 live tradelines, and P=5 closed tradelines. The portfolio features a mix of credit card (26 accounts) and personal loan (1 account) products, with sanctioned exposure totaling INR 72,48,130 and outstanding balances of INR 8,22,679 for the entire portfolio, and INR 3,11,925 for the personal loan product. The customer&#39;s credit utilization percentage is 9.0% for credit cards, indicating a relatively healthy balance. The customer has a low-risk profile, with no missed payments, minimal enquiry pressure, and stable loan acquisition velocity.</p>
+The customer&#39;s tradeline portfolio consists of N=27 total tradelines (M live=22, P closed=5). The portfolio features a mix of loan products, with Credit Card being the dominant product type, accounting for 26 live accounts. Total sanctioned exposure stands at INR 72,48,130, while total outstanding is INR 8,22,679. Unsecured sanction amount and outstanding are identical to total outstanding, indicating no separation between secured and unsecured loans. The credit card utilization percentage is 9.0%, which is elevated. The customer&#39;s creditworthiness assessment is cautious.
+
+Note: This is a synthesised summary based on automated banking and bureau analyses. Independent verification is recommended before final credit decisions.</p>
         </div>
     </div>
     
 
     <div class="footer">
         
-        <p>Generated on 2026-03-18 | Currency: INR</p>
+        <p>Generated on 2026-03-23 | Currency: INR</p>
         
     </div>
 </body>

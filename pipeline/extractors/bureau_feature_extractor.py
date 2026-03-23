@@ -207,8 +207,29 @@ def _build_feature_vector(
     forced_event_flags = _extract_forced_event_flags(tradelines)
 
     # On-us / Off-us
-    on_us_count = sum(1 for tl in tradelines if tl.get("sector", "").strip() in ON_US_SECTORS)
+    on_us_tradelines = [tl for tl in tradelines if tl.get("sector", "").strip() in ON_US_SECTORS]
+    on_us_count = len(on_us_tradelines)
     off_us_count = loan_count - on_us_count
+
+    # On-us amount breakdowns
+    on_us_sanctioned = sum(_safe_float(tl.get("sanction_amount", "")) for tl in on_us_tradelines)
+    on_us_outstanding = sum(_safe_float(tl.get("out_standing_balance", "")) for tl in on_us_tradelines)
+    on_us_live_count = sum(
+        1 for tl in on_us_tradelines
+        if tl.get("loan_status", "").strip().lower() not in _CLOSED_STATUSES
+    )
+
+    # Largest individual tradeline sanction
+    max_single_sanction = max(
+        (_safe_float(tl.get("sanction_amount", "")) for tl in tradelines),
+        default=0.0,
+    )
+
+    # Joint ownership count
+    joint_count = sum(
+        1 for tl in tradelines
+        if "joint" in tl.get("ownership_type", "").strip().lower()
+    )
 
     # Months since last payment
     months_since_last_payment = _compute_months_since_last_payment(tradelines)
@@ -245,6 +266,11 @@ def _build_feature_vector(
         forced_event_flags=forced_event_flags,
         on_us_count=on_us_count,
         off_us_count=off_us_count,
+        on_us_sanctioned=on_us_sanctioned,
+        on_us_outstanding=on_us_outstanding,
+        on_us_live_count=on_us_live_count,
+        max_single_sanction=max_single_sanction,
+        joint_count=joint_count,
     )
 
 

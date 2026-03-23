@@ -40,3 +40,14 @@ class BureauLoanFeatureVector:
     forced_event_flags: List[str] = field(default_factory=list)
     on_us_count: int = 0
     off_us_count: int = 0
+
+    # Kotak (on-us) amount breakdowns
+    on_us_sanctioned: float = 0.0
+    on_us_outstanding: float = 0.0
+    on_us_live_count: int = 0
+
+    # Largest individual tradeline sanction in this loan type
+    max_single_sanction: float = 0.0
+
+    # Tradelines with joint ownership
+    joint_count: int = 0

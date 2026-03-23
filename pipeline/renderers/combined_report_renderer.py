@@ -109,7 +109,57 @@ def _build_combined_pdf(
             if details:
                 dpd_str += f" ({', '.join(details)})"
         pdf.key_value("Max DPD", dpd_str)
+
+        # Largest Single Loan
+        if ei.max_single_sanction_amount > 0:
+            max_loan_str = f"INR {format_inr(ei.max_single_sanction_amount)}"
+            if ei.max_single_sanction_loan_type:
+                max_loan_str += f" ({ei.max_single_sanction_loan_type})"
+            pdf.key_value("Largest Single Loan", max_loan_str)
+
+        # Joint Loans
+        if ei.total_joint_count > 0:
+            joint_str = f"{ei.total_joint_count} tradeline(s) — {', '.join(ei.joint_product_types)}"
+            pdf.key_value("Joint Loans", joint_str)
+
+        # Kotak (On-Us) sub-section
+        if ei.on_us_total_tradelines > 0:
+            pdf.ln(3)
+            pdf.set_font("Helvetica", "B", 9)
+            pdf.cell(0, 6, "Kotak Relationship (On-Us)", new_x="LMARGIN", new_y="NEXT")
+            pdf.set_font("Helvetica", "", 9)
+            pdf.key_value("On-Us Tradelines", f"{ei.on_us_total_tradelines} ({ei.on_us_live_tradelines} live)")
+            pdf.key_value("Products", ", ".join(ei.on_us_product_types))
+            pdf.key_value("Sanctioned", f"INR {format_inr(ei.on_us_total_sanctioned)}")
+            pdf.key_value("Outstanding", f"INR {format_inr(ei.on_us_total_outstanding)}")
+            if ei.on_us_max_dpd is not None and ei.on_us_max_dpd > 0:
+                pdf.key_value("On-Us Max DPD", str(ei.on_us_max_dpd))
+
         pdf.ln(5)
+
+        # Defaulted / Delinquent Loan Types table
+        if ei.defaulted_loan_summaries:
+            pdf.section_title("Defaulted / Delinquent Loan Types")
+            d_headers = ["Loan Type", "Sanctioned", "Outstanding", "Max DPD", "Kotak"]
+            d_widths = [40, 40, 40, 25, 20]
+            pdf.set_font("Helvetica", "B", 7)
+            pdf.set_fill_color(220, 220, 220)
+            for header, width in zip(d_headers, d_widths):
+                pdf.cell(width, 7, header, border=1, fill=True, align="C")
+            pdf.ln()
+            pdf.set_font("Helvetica", "", 7)
+            for d in ei.defaulted_loan_summaries:
+                vals = [
+                    d["type"],
+                    format_inr(d["sanction"]),
+                    format_inr(d["outstanding"]),
+                    str(d["dpd"]) if d["dpd"] is not None else "-",
+                    "Yes" if d["on_us"] else "No",
+                ]
+                for val, width in zip(vals, d_widths):
+                    pdf.cell(width, 6, val, border=1, align="C")
+                pdf.ln()
+            pdf.ln(3)
 
         # Bureau Narrative
         if bureau_report.narrative:

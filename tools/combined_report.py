@@ -76,6 +76,27 @@ def generate_combined_report_pdf(
             _foir_parts.append(f"FOIR (total): {_tl.foir:.1f}%")
         if _tl and _tl.foir_unsec is not None:
             _foir_parts.append(f"FOIR (unsecured): {_tl.foir_unsec:.1f}%")
+        # Kotak (on-us) context for combined summary
+        if bureau_report and bureau_report.executive_inputs:
+            _ei = bureau_report.executive_inputs
+            if getattr(_ei, 'on_us_total_tradelines', 0) > 0:
+                _foir_parts.append(
+                    f"Kotak (On-Us): {_ei.on_us_total_tradelines} tradelines "
+                    f"({', '.join(getattr(_ei, 'on_us_product_types', []))}), "
+                    f"Sanctioned INR {_ei.on_us_total_sanctioned:,.0f}, "
+                    f"Outstanding INR {_ei.on_us_total_outstanding:,.0f}"
+                )
+            if getattr(_ei, 'total_joint_count', 0) > 0:
+                _foir_parts.append(
+                    f"Joint Loans: {_ei.total_joint_count} tradeline(s) — "
+                    f"{', '.join(getattr(_ei, 'joint_product_types', []))}"
+                )
+            if getattr(_ei, 'max_single_sanction_amount', 0) > 0:
+                _max_loan = f"Largest Single Loan: INR {_ei.max_single_sanction_amount:,.0f}"
+                if getattr(_ei, 'max_single_sanction_loan_type', None):
+                    _max_loan += f" ({_ei.max_single_sanction_loan_type})"
+                _foir_parts.append(_max_loan)
+
         foir_ctx = ", ".join(_foir_parts)
 
         exposure_text = summarize_exposure_timeline(

@@ -716,8 +716,72 @@
                 </div>
             </div>
             {% endif %}
+
+            {# Largest Single Loan #}
+            {% if bureau_report.executive_inputs.max_single_sanction_amount > 0 %}
+            <div class="info-item">
+                <label>Largest Single Loan</label>
+                <div class="value">
+                    INR {{ bureau_report.executive_inputs.max_single_sanction_amount|inr_units }}
+                    {% if bureau_report.executive_inputs.max_single_sanction_loan_type %}
+                    <span style="font-size:12px;color:#666;font-weight:400">({{ bureau_report.executive_inputs.max_single_sanction_loan_type }})</span>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            {# Joint Loans #}
+            {% if bureau_report.executive_inputs.total_joint_count > 0 %}
+            <div class="info-item">
+                <label>Joint Loans</label>
+                <div class="value">{{ bureau_report.executive_inputs.total_joint_count }} tradeline(s)
+                    <span style="font-size:12px;color:#666;font-weight:400">({{ bureau_report.executive_inputs.joint_product_types|join(", ") }})</span>
+                </div>
+            </div>
+            {% endif %}
+
+            {# Kotak On-Us Sub-block #}
+            {% if bureau_report.executive_inputs.on_us_total_tradelines > 0 %}
+            <div style="grid-column: 1/-1; margin-top:8px; padding:12px; background:#f0fdf4; border-radius:8px; border:1px solid #a7f3d0;">
+                <div style="font-weight:600; font-size:13px; color:#065f46; margin-bottom:8px;">Kotak Relationship (On-Us)</div>
+                <div class="info-grid" style="margin:0;">
+                    <div class="info-item"><label>On-Us Tradelines</label><div class="value">{{ bureau_report.executive_inputs.on_us_total_tradelines }} ({{ bureau_report.executive_inputs.on_us_live_tradelines }} live)</div></div>
+                    <div class="info-item"><label>Products</label><div class="value">{{ bureau_report.executive_inputs.on_us_product_types|join(", ") }}</div></div>
+                    <div class="info-item"><label>Sanctioned</label><div class="value">INR {{ bureau_report.executive_inputs.on_us_total_sanctioned|inr_units }}</div></div>
+                    <div class="info-item"><label>Outstanding</label><div class="value">INR {{ bureau_report.executive_inputs.on_us_total_outstanding|inr_units }}</div></div>
+                    {% if bureau_report.executive_inputs.on_us_max_dpd is not none and bureau_report.executive_inputs.on_us_max_dpd > 0 %}
+                    <div class="info-item"><label>On-Us Max DPD</label><div class="value risk">{{ bureau_report.executive_inputs.on_us_max_dpd }}</div></div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
         </div>
     </div>
+
+    {# Defaulted / Delinquent Loan Types #}
+    {% if bureau_report.executive_inputs.defaulted_loan_summaries %}
+    <div class="section">
+        <h3>Defaulted / Delinquent Loan Types</h3>
+        <table>
+            <thead><tr>
+                <th>Loan Type</th><th class="amount">Sanctioned</th>
+                <th class="amount">Outstanding</th><th class="center">Max DPD</th>
+                <th class="center">Kotak (On-Us)</th>
+            </tr></thead>
+            <tbody>
+            {% for d in bureau_report.executive_inputs.defaulted_loan_summaries %}
+            <tr>
+                <td>{{ d.type }}</td>
+                <td class="amount">{{ d.sanction|inr }}</td>
+                <td class="amount">{{ d.outstanding|inr }}</td>
+                <td class="center" style="color:#ef4444;font-weight:600">{{ d.dpd }}</td>
+                <td class="center">{{ "Yes" if d.on_us else "No" }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
 
     <!-- Portfolio Visualizations -->
     {% if chart_data %}

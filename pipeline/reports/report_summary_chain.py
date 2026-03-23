@@ -193,6 +193,28 @@ def _build_data_summary(report: CustomerReport, rg_salary_data: dict = None) -> 
             f"{top_merchant.get('total', 0):,.0f} INR)"
         )
 
+    # Merchant-level signals
+    if report.merchant_features:
+        mf = report.merchant_features
+        regular = mf.get("regular_merchants", [])
+        anomalies = mf.get("anomaly_merchants", [])
+        concentration = mf.get("concentration", {})
+
+        if regular:
+            reg_names = ", ".join(r["merchant"] for r in regular[:3])
+            sections.append(f"Regular merchants (2+ months): {len(regular)} — {reg_names}")
+        if anomalies:
+            for a in anomalies[:3]:
+                sections.append(
+                    f"Anomaly merchant: {a['merchant']} ({a['anomaly_reason']}), "
+                    f"INR {a['amount']:,.0f}"
+                )
+        if concentration.get("top_1_pct", 0) > 50:
+            sections.append(
+                f"Merchant concentration: Top-1 merchant accounts for "
+                f"{concentration['top_1_pct']:.0f}% of debit spend"
+            )
+
     # Account quality observations — presented as plain facts, no score label
     if report.account_quality:
         obs = report.account_quality.get("observations", [])
@@ -732,6 +754,29 @@ def _build_bureau_data_summary(executive_inputs, tradeline_features=None, monthl
                 f"Sanctioned: INR {format_inr(vec_data.get('total_sanctioned_amount', 0))}, "
                 f"Outstanding: INR {format_inr(vec_data.get('total_outstanding_amount', 0))}"
             )
+
+    # Kotak (On-Us) context
+    if hasattr(executive_inputs, 'on_us_total_tradelines') and executive_inputs.on_us_total_tradelines > 0:
+        ei = executive_inputs
+        lines.append("\nKotak (On-Us) Exposure:")
+        lines.append(f"  Tradelines: {ei.on_us_total_tradelines} ({ei.on_us_live_tradelines} live)")
+        lines.append(f"  Products: {', '.join(ei.on_us_product_types)}")
+        lines.append(f"  Sanctioned: INR {format_inr(ei.on_us_total_sanctioned)}")
+        lines.append(f"  Outstanding: INR {format_inr(ei.on_us_total_outstanding)}")
+        if ei.on_us_max_dpd is not None and ei.on_us_max_dpd > 0:
+            lines.append(f"  Max DPD: {ei.on_us_max_dpd} [CONCERN — delinquency on Kotak product]")
+
+    # Joint loans
+    if hasattr(executive_inputs, 'total_joint_count') and executive_inputs.total_joint_count > 0:
+        lines.append(f"\nJoint Loans: {executive_inputs.total_joint_count} tradeline(s) — {', '.join(executive_inputs.joint_product_types)}")
+
+    # Defaulted loan summaries
+    if hasattr(executive_inputs, 'defaulted_loan_summaries') and executive_inputs.defaulted_loan_summaries:
+        lines.append("\nDefaulted/Delinquent Loan Types:")
+        for d in executive_inputs.defaulted_loan_summaries:
+            tag = " [ON-US / KOTAK]" if d.get("on_us") else ""
+            lines.append(f"  - {d['type']}: Sanctioned INR {format_inr(d['sanction'])}, "
+                         f"Outstanding INR {format_inr(d['outstanding'])}, Max DPD {d['dpd']}{tag}")
 
     # Tradeline behavioral features
     if tradeline_features is not None:

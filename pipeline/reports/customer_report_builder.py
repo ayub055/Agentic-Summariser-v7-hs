@@ -97,6 +97,9 @@ def build_customer_report(customer_id: int, months: int = 6) -> CustomerReport:
     # 9. Get bills block (via category presence for utilities)
     bills = _get_bills_block(customer_id)
 
+    # 10. Get merchant-level behavioral features
+    merchant_features = _get_merchant_features(customer_id)
+
     base_report = CustomerReport(
         meta=meta,
         category_overview=category_overview,
@@ -105,7 +108,8 @@ def build_customer_report(customer_id: int, months: int = 6) -> CustomerReport:
         salary=salary_block,
         emis=emis,
         rent=rent_block,
-        bills=bills
+        bills=bills,
+        merchant_features=merchant_features,
     )
 
     # Compute account quality after base report is built (needs emis/bills/rent)
@@ -129,6 +133,15 @@ def build_customer_report(customer_id: int, months: int = 6) -> CustomerReport:
         updates["events"] = events
 
     return base_report.model_copy(update=updates) if updates else base_report
+
+
+def _get_merchant_features(customer_id: int) -> Optional[dict]:
+    """Get merchant-level behavioral features."""
+    try:
+        from features.merchant_features import compute_all_merchant_features
+        return compute_all_merchant_features(customer_id) or None
+    except Exception:
+        return None
 
 
 def _get_category_overview(customer_id: int) -> Optional[dict]:

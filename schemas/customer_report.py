@@ -177,6 +177,12 @@ class CustomerReport(BaseModel):
         description="Semantic events detected from raw narrations — fed to LLM for intelligent summary"
     )
 
+    # Merchant-level behavioral features
+    merchant_features: Optional[Dict[str, Any]] = Field(
+        default=None,
+        description="Merchant-level behavioral features for credit assessment"
+    )
+
     # Section planning metadata (tracks what planner decided)
     sections_meta: Optional[List[ReportSectionMeta]] = Field(
         default=None,
@@ -212,6 +218,8 @@ class CustomerReport(BaseModel):
             sections.append("account_quality")
         if self.events:
             sections.append("events")
+        if self.merchant_features:
+            sections.append("merchant_features")
         if self.customer_review:
             sections.append("customer_review")
         if self.customer_persona:
