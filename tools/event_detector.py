@@ -23,6 +23,13 @@ import pandas as pd
 
 from data.loader import get_transactions_df, load_rg_salary_data
 from utils.narration_utils import extract_recipient_name
+from config.keywords import (
+    LENDER_FRAGMENTS,
+    LOAN_DISBURSEMENT_KEYWORDS,
+    SELF_TRANSFER_KEYWORDS,
+    SALARY_CREDIT_FRAGMENTS,
+    EVENT_KEYWORD_RULES,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -34,107 +41,11 @@ logger = logging.getLogger(__name__)
 # Priority order: high → medium → positive
 _SIG_ORDER = {"high": 0, "medium": 1, "positive": 2}
 
-# Known NBFC / bank lender name fragments for loan disbursal detection
-_LENDER_FRAGMENTS = [
-    "HDFC BANK", "ICICI BANK", "AXIS BANK", "KOTAK BANK", "KOTAK MAHINDRA",
-    "SBI ", "STATE BANK", "BAJAJ FINANCE", "BAJAJ FINSERV", "TATA CAPITAL",
-    "FULLERTON", "ADITYA BIRLA", "PIRAMAL", "MUTHOOT", "MANAPPURAM",
-    "L&T FINANCE", "PAYSENSE", "CASHE", "MONEYVIEW", "STASHFIN", "NAVI ",
-    "PREFR", "KREDITBEE", "LENDINGKART", "INDIFI", "CLIX CAPITAL",
-    "YES BANK", "IDFC BANK", "INDUSIND BANK",
-]
-
-_LOAN_DIS_KEYWORDS = [
-    "LOAN DIS", "LOAN DISB", "LOAN DISBURS",
-    "LOAN CREDIT", "LOAN A/C CR", "SANCTIONED AMT",
-]
-
-_SELF_KEYWORDS = [
-    "SELF", "OWN A/C", "OWN ACCOUNT", "OWNACCOUNT",
-    "SELF TRF", "SELF TRANSFER",
-]
-
-
-# ---------------------------------------------------------------------------
-# Keyword-based rule definitions
-# ---------------------------------------------------------------------------
-# Fields:
-#   type        — event type key
-#   direction   — "C" (credit), "D" (debit), "any"
-#   keywords    — list of narration substrings (any match, case-insensitive)
-#   significance — "high" / "medium" / "positive"
-#   label       — human-readable short name
-#   min_months  — (optional) skip if appears in fewer distinct calendar months
-
-KEYWORD_RULES = [
-    # ── Stress signals ────────────────────────────────────────────────────
-    {
-        "type": "pf_withdrawal",
-        "direction": "C",
-        "keywords": [
-            "EPFO", "PF SETTL", "PF FINAL", "PF WITHDRAWAL",
-            "PROVIDENT FUND", "PPF CLOSURE", "PF CREDIT",
-        ],
-        "significance": "high",
-        "label": "PF/Provident Fund withdrawal",
-    },
-    {
-        "type": "fd_closure",
-        "direction": "C",
-        "keywords": [
-            "FD CLOSURE", "FIXED DEPOSIT CLO", "FD MATURITY",
-            "PREMATURE CLOSURE", "FD PREMATURE",
-        ],
-        "significance": "medium",
-        "label": "FD premature/maturity closure",
-    },
-    {
-        "type": "salary_advance_bnpl",
-        "direction": "C",
-        "keywords": [
-            "EARLY SALARY", "LAZYPAY", "SIMPL", "SLICE ",
-            "KREDITBEE", "MONEYVIEW", "FIBE ", "NIRO",
-            "STASHFIN", "MPOKKET", "FREO", "SALARY ADVANCE",
-        ],
-        "significance": "high",
-        "label": "Salary advance / BNPL credit",
-    },
-    # ── Positive signals ──────────────────────────────────────────────────
-    {
-        "type": "sip_investment",
-        "direction": "D",
-        "keywords": [
-            "SIP", "MUTUAL FUND", " MF ", "MF/",
-            "BSE STAR MF", "NSE MFUND", "CAMS ", "KARVY ",
-        ],
-        "significance": "positive",
-        "min_months": 2,
-        "label": "SIP / Mutual Fund investment",
-    },
-    {
-        "type": "insurance_premium",
-        "direction": "D",
-        "keywords": [
-            "LIC ", "HDFC LIFE", "ICICI PRU", "MAX LIFE",
-            "SBI LIFE", "TERM INSURANCE", "INSURANCE PREM",
-            "LIFE INS", "BAJAJ ALLIANZ", "KOTAK LIFE",
-        ],
-        "significance": "positive",
-        "min_months": 2,
-        "label": "Life / term insurance premium",
-    },
-    # ── Other notable income events ───────────────────────────────────────
-    {
-        "type": "govt_benefit",
-        "direction": "C",
-        "keywords": [
-            "PM KISAN", "MNREGA", "DBT ", "GOVT BENEFIT",
-            "SCHOLARSHIP", "PENSION CREDIT", "JANDHAN",
-        ],
-        "significance": "medium",
-        "label": "Government benefit / pension credit",
-    },
-]
+# Local aliases for imported keyword lists (keeps internal references short)
+_LENDER_FRAGMENTS = LENDER_FRAGMENTS
+_LOAN_DIS_KEYWORDS = LOAN_DISBURSEMENT_KEYWORDS
+_SELF_KEYWORDS = SELF_TRANSFER_KEYWORDS
+KEYWORD_RULES = EVENT_KEYWORD_RULES
 
 
 # ---------------------------------------------------------------------------
@@ -453,6 +364,138 @@ def _detect_loan_redistribution(df: pd.DataFrame, salary_amount: float) -> list:
     return events
 
 
+def _detect_post_disbursement_usage(df: pd.DataFrame, salary_amount: float) -> list:
+    """Analyse spending after each detected loan disbursement credit.
+
+    For every credit that looks like a loan disbursal (keyword or lender match),
+    gather all debits in a configurable window and:
+      1. Group debits by recipient name.
+      2. Check whether the total debits to concentrated recipients ≈ disbursed amount
+         (suggests the loan was taken on behalf of / diverted to someone else).
+      3. Build a descriptive event with top recipients and amounts.
+
+    Complements _detect_loan_redistribution (which requires ≥2 outflows ≥30%).
+    This detector focuses on *who* received the money and whether the sum is
+    approximately equal to the loan amount.
+    """
+    import config.thresholds as T
+
+    events = []
+
+    min_amount = max(T.POST_DISB_MIN_AMOUNT, salary_amount * 2.0) if salary_amount > 0 else T.POST_DISB_MIN_AMOUNT
+    window = timedelta(days=T.POST_DISB_WINDOW_DAYS)
+
+    credits = df[df["dr_cr_indctor"] == "C"].copy()
+    debits  = df[df["dr_cr_indctor"] == "D"].copy()
+
+    if credits.empty or debits.empty:
+        return events
+
+    for _, row in credits[credits["tran_amt_in_ac"] >= min_amount].iterrows():
+        narr   = _narr_upper(row)
+        amount = float(row["tran_amt_in_ac"])
+
+        # Must look like a loan disbursement
+        is_loan_dis  = any(kw in narr for kw in _LOAN_DIS_KEYWORDS)
+        is_from_bank = any(lender in narr for lender in _LENDER_FRAGMENTS)
+        if not (is_loan_dis or is_from_bank):
+            continue
+
+        txn_date   = row["tran_date"]
+        window_end = txn_date + window
+
+        # Gather post-disbursement debits
+        post_debits = debits[
+            (debits["tran_date"] >= txn_date) &
+            (debits["tran_date"] <= window_end) &
+            (debits["tran_amt_in_ac"] >= T.POST_DISB_MIN_DEBIT)
+        ]
+
+        if post_debits.empty:
+            continue
+
+        # Group debits by recipient
+        recipient_totals: dict = {}  # name -> total amount
+        recipient_txns: dict = {}    # name -> count
+        for _, drow in post_debits.iterrows():
+            d_narr = str(drow.get("tran_partclr", ""))
+            d_amt  = float(drow["tran_amt_in_ac"])
+            name   = _extract_name_from_narration(d_narr) or "Unknown"
+            recipient_totals[name] = recipient_totals.get(name, 0.0) + d_amt
+            recipient_txns[name]   = recipient_txns.get(name, 0) + 1
+
+        total_debited = sum(recipient_totals.values())
+        if total_debited == 0:
+            continue
+
+        # Sort recipients by total amount descending
+        sorted_recipients = sorted(
+            recipient_totals.items(), key=lambda x: x[1], reverse=True
+        )
+
+        # Check concentration: do top recipients account for ≥ threshold of disbursement?
+        top_sum = 0.0
+        top_recipients = []
+        for name, amt in sorted_recipients:
+            if name == "Unknown":
+                continue
+            top_sum += amt
+            top_recipients.append((name, amt, recipient_txns.get(name, 1)))
+            if len(top_recipients) >= 5:
+                break
+
+        concentration_pct = top_sum / amount if amount > 0 else 0
+
+        # Check if total debited ≈ disbursed amount
+        ratio = total_debited / amount if amount > 0 else 0
+        amounts_match = abs(ratio - 1.0) <= T.POST_DISB_MATCH_TOLERANCE
+
+        # Must have meaningful outflow — either concentrated or matching total
+        if concentration_pct < T.POST_DISB_CONCENTRATION_PCT and not amounts_match:
+            continue
+
+        # Build description
+        source = _short_source(narr)
+        recip_parts = []
+        for name, amt, count in top_recipients[:4]:
+            recip_parts.append(f"{name}: ₹{amt:,.0f} ({count} txn)")
+        recip_str = "; ".join(recip_parts) if recip_parts else "unidentified recipients"
+
+        # Determine significance
+        if amounts_match and concentration_pct >= T.POST_DISB_CONCENTRATION_PCT:
+            significance = "high"
+        elif amounts_match or concentration_pct >= T.POST_DISB_CONCENTRATION_PCT:
+            significance = "high"
+        else:
+            significance = "medium"
+
+        desc = (
+            f"{_month_label(txn_date)}: Loan disbursement ₹{amount:,.0f} from {source} — "
+            f"₹{total_debited:,.0f} ({ratio:.0%}) debited within {T.POST_DISB_WINDOW_DAYS} days. "
+        )
+        if amounts_match:
+            desc += f"Debits ≈ disbursed amount. "
+        if top_recipients:
+            desc += f"Top recipients: {recip_str}"
+
+        events.append({
+            "type":        "post_disbursement_usage",
+            "date":        str(txn_date.date()),
+            "month_label": _month_label(txn_date),
+            "amount":      amount,
+            "significance": significance,
+            "description": desc,
+            # Extra fields for checklist / downstream consumption
+            "_disbursed_amount": amount,
+            "_total_debited":    round(total_debited, 2),
+            "_concentration_pct": round(concentration_pct * 100, 1),
+            "_amounts_match":    amounts_match,
+            "_top_recipients":   [(n, round(a, 2)) for n, a, _ in top_recipients[:5]],
+        })
+
+    return events
+
+
 def _detect_self_transfer_post_salary(
     df: pd.DataFrame,
     salary_txns: list,
@@ -651,7 +694,7 @@ def _detect_large_single_credit(df: pd.DataFrame, salary_amount: float) -> list:
         return events
 
     # Skip routine salary credits — by narration keywords (works even without salary_amount)
-    salary_kws = ("SALARY", " SAL ", "SAL/", "PAYROLL")
+    salary_kws = SALARY_CREDIT_FRAGMENTS
 
     def _is_routine_salary(row):
         narr = str(row.get("tran_partclr", "")).upper()
@@ -842,7 +885,7 @@ def _detect_credit_spend_dependency(
             significance = "medium"
 
         # Classify credit source (use first narration in cluster)
-        source = _classify_credit_source(cluster["narrations"][0])
+        source = _classify_credit_source(cluster["narrations"][0] if cluster["narrations"] else "")
 
         # Build debit breakdown string
         parts = []
@@ -974,6 +1017,11 @@ def detect_events(customer_id: int, rg_salary_data: Optional[dict] = None) -> li
         events += _detect_loan_redistribution(cust_df, salary_amount)
     except Exception as exc:
         logger.warning("event_detector: loan_redistribution failed: %s", exc)
+
+    try:
+        events += _detect_post_disbursement_usage(cust_df, salary_amount)
+    except Exception as exc:
+        logger.warning("event_detector: post_disbursement_usage failed: %s", exc)
 
     try:
         events += _detect_round_trips(cust_df)

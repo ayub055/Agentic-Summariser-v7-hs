@@ -160,10 +160,10 @@ def is_salary_narration(narration: str) -> bool:
     if not narration:
         return False
 
-    keywords = ['salary', 'employee', 'payroll', 'stipend', 'bonus', 'wages']
+    from config.keywords import SALARY_KEYWORDS
     narration_lower = narration.lower()
 
-    return any(keyword in narration_lower for keyword in keywords)
+    return any(keyword in narration_lower for keyword in SALARY_KEYWORDS)
 
 
 def get_transaction_category_from_narration(narration: str) -> str:

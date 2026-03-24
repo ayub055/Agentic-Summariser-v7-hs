@@ -95,3 +95,18 @@ CREDIT_SPEND_MIN_RATIO: float = 0.20        # Min credit as fraction of median m
 CREDIT_SPEND_WINDOW_DAYS: int = 3           # Calendar days to look forward for debits
 CREDIT_SPEND_HIGH_THRESHOLD: float = 0.80   # ≥ 80 % spent within window → high significance
 CREDIT_SPEND_MEDIUM_THRESHOLD: float = 0.60 # ≥ 60 % spent within window → medium significance
+
+# ---------------------------------------------------------------------------
+# Post-Disbursement Usage  (event_detector — post_disbursement_usage)
+# ---------------------------------------------------------------------------
+POST_DISB_WINDOW_DAYS: int = 7             # Days after disbursement to analyze debits
+POST_DISB_MIN_AMOUNT: int = 50000          # Min disbursement amount to trigger analysis
+POST_DISB_MATCH_TOLERANCE: float = 0.15    # Debits within ±15 % of disbursement → "≈ equal"
+POST_DISB_CONCENTRATION_PCT: float = 0.50  # ≥ 50 % of disbursement going to top recipients → flag
+POST_DISB_MIN_DEBIT: int = 5000            # Ignore debits below this amount
+
+# ---------------------------------------------------------------------------
+# Merchant Features — Banking Report
+# ---------------------------------------------------------------------------
+MERCHANT_FAVOURITE_TOP_N: int = 2          # Number of favourite merchants to highlight
+MERCHANT_SIGNIFICANT_PCT: float = 0.25     # ≥ 25 % of total flow = significant counterparty

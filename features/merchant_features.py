@@ -10,6 +10,7 @@ and fuzzy matching pattern from tools/transaction_fetcher.py.
 
 import statistics
 from collections import defaultdict
+from datetime import datetime, date
 from typing import Any, Dict, List, Optional
 
 from utils.narration_utils import (
@@ -109,6 +110,17 @@ def _group_by_merchant(
 def _get_month(txn: Dict[str, Any]) -> str:
     """Extract YYYY-MM from tran_date."""
     return str(txn.get("tran_date", ""))[:7]
+
+
+def _parse_date(txn: Dict[str, Any]) -> Optional[date]:
+    """Parse tran_date string (YYYY-MM-DD) to date. Returns None on failure."""
+    raw = txn.get("tran_date")
+    if not raw:
+        return None
+    try:
+        return datetime.strptime(str(raw)[:10], "%Y-%m-%d").date()
+    except (ValueError, TypeError):
+        return None
 
 
 # ---------------------------------------------------------------------------
@@ -286,6 +298,8 @@ def get_merchant_concentration(
         return {"top_1_pct": 0, "top_3_pct": 0, "hhi": 0, "total_merchants": len(groups)}
 
     sorted_totals = sorted(totals.values(), reverse=True)
+    if not sorted_totals:
+        return {"top_1_pct": 0, "top_3_pct": 0, "hhi": 0, "total_merchants": len(groups)}
     top_1_pct = (sorted_totals[0] / grand_total) * 100
     top_3_pct = (sum(sorted_totals[:3]) / grand_total) * 100
 
@@ -331,7 +345,7 @@ def get_merchant_amount_trend(
         first_avg = sum(first_amounts) / len(first_amounts) if first_amounts else 0
         second_avg = sum(second_amounts) / len(second_amounts) if second_amounts else 0
 
-        if first_avg == 0:
+        if abs(first_avg) < 1e-9:
             trend = "stable"
         elif second_avg / first_avg > 1.2:
             trend = "increasing"
@@ -367,7 +381,7 @@ def get_round_amount_merchants(
         amounts = [float(t.get("tran_amt_in_ac", 0)) for t in txns]
         if not amounts:
             continue
-        round_count = sum(1 for a in amounts if a > 0 and a % 100 == 0)
+        round_count = sum(1 for a in amounts if a > 0 and abs(round(a) % 100) < 0.01)
         round_pct = (round_count / len(amounts)) * 100
         if round_pct > 80:
             result.append({
@@ -419,6 +433,231 @@ def get_new_merchant_ratio(
     }
 
 
+def get_favourite_merchants_ipt(
+    transactions: List[Dict[str, Any]],
+    top_n: Optional[int] = None,
+    exclude_self_transfers: bool = True,
+) -> Dict[str, List[Dict[str, Any]]]:
+    """Top-N merchants by engagement, enriched with Inter-Purchase Time.
+
+    Computes separately for debit and credit directions.  IPT is the
+    average number of days between consecutive transactions with the
+    same merchant — a lower IPT indicates a stronger, more regular
+    relationship.
+
+    Returns:
+        Dict with "debit" and "credit" keys, each a list of dicts with
+        merchant, count, total_amount, avg_ipt_days, min_ipt_days, max_ipt_days.
+    """
+    import config.thresholds as T
+
+    if top_n is None:
+        top_n = T.MERCHANT_FAVOURITE_TOP_N
+
+    groups = _group_by_merchant(transactions, direction=None,
+                                exclude_self_transfers=exclude_self_transfers)
+
+    result: Dict[str, List[Dict[str, Any]]] = {"debit": [], "credit": []}
+
+    # Split each merchant's txns by direction
+    for merchant, txns in groups.items():
+        by_dir: Dict[str, List[Dict[str, Any]]] = {"D": [], "C": []}
+        for t in txns:
+            d = t.get("dr_cr_indctor", "")
+            if d in by_dir:
+                by_dir[d].append(t)
+
+        for dir_code, dir_key in [("D", "debit"), ("C", "credit")]:
+            dir_txns = by_dir[dir_code]
+            if not dir_txns:
+                continue
+
+            count = len(dir_txns)
+            total_amount = sum(float(t.get("tran_amt_in_ac", 0)) for t in dir_txns)
+
+            # Compute IPT from sorted dates
+            dates = sorted(d for t in dir_txns if (d := _parse_date(t)) is not None)
+            avg_ipt = None
+            min_ipt = None
+            max_ipt = None
+            if len(dates) >= 2:
+                gaps = [(dates[i + 1] - dates[i]).days for i in range(len(dates) - 1)]
+                gaps = [g for g in gaps if g > 0]  # skip same-day duplicates
+                if gaps:
+                    avg_ipt = round(sum(gaps) / len(gaps), 1)
+                    min_ipt = min(gaps)
+                    max_ipt = max(gaps)
+
+            score = count * total_amount
+            result[dir_key].append({
+                "merchant": merchant,
+                "count": count,
+                "total_amount": round(total_amount, 2),
+                "avg_ipt_days": avg_ipt,
+                "min_ipt_days": min_ipt,
+                "max_ipt_days": max_ipt,
+                "_score": score,
+            })
+
+    # Sort by score and take top_n for each direction
+    for key in ("debit", "credit"):
+        result[key].sort(key=lambda x: x["_score"], reverse=True)
+        result[key] = result[key][:top_n]
+        for entry in result[key]:
+            del entry["_score"]
+
+    return result
+
+
+def get_significant_merchants(
+    transactions: List[Dict[str, Any]],
+    threshold: Optional[float] = None,
+    exclude_self_transfers: bool = True,
+) -> List[Dict[str, Any]]:
+    """Merchants whose debit or credit volume >= threshold % of total flow.
+
+    Identifies counterparties that dominate the customer's transaction
+    profile — useful for understanding financial dependencies.
+
+    Returns:
+        List of dicts with merchant, debit_amount, credit_amount,
+        debit_pct, credit_pct.  Sorted by max(debit_pct, credit_pct) desc.
+    """
+    import config.thresholds as T
+
+    if threshold is None:
+        threshold = T.MERCHANT_SIGNIFICANT_PCT
+
+    groups = _group_by_merchant(transactions, direction=None,
+                                exclude_self_transfers=exclude_self_transfers)
+    if not groups:
+        return []
+
+    # Compute totals across all merchants
+    total_debits = 0.0
+    total_credits = 0.0
+    merchant_data: List[Dict[str, Any]] = []
+
+    for merchant, txns in groups.items():
+        d_amt = sum(float(t.get("tran_amt_in_ac", 0))
+                    for t in txns if t.get("dr_cr_indctor") == "D")
+        c_amt = sum(float(t.get("tran_amt_in_ac", 0))
+                    for t in txns if t.get("dr_cr_indctor") == "C")
+        total_debits += d_amt
+        total_credits += c_amt
+        merchant_data.append({
+            "merchant": merchant,
+            "debit_amount": round(d_amt, 2),
+            "credit_amount": round(c_amt, 2),
+        })
+
+    result = []
+    for md in merchant_data:
+        d_pct = md["debit_amount"] / total_debits if total_debits > 0 else 0
+        c_pct = md["credit_amount"] / total_credits if total_credits > 0 else 0
+        if d_pct >= threshold or c_pct >= threshold:
+            md["debit_pct"] = round(d_pct, 4)
+            md["credit_pct"] = round(c_pct, 4)
+            result.append(md)
+
+    result.sort(key=lambda x: max(x["debit_pct"], x["credit_pct"]), reverse=True)
+    return result
+
+
+def get_bidirectional_merchants(
+    transactions: List[Dict[str, Any]],
+    exclude_self_transfers: bool = True,
+) -> List[Dict[str, Any]]:
+    """Merchants with both credit and debit transactions on different dates.
+
+    Reveals business relationships or circular flows where money moves
+    in both directions with the same counterparty.
+
+    Filters out same-day-same-amount pairs (strong self-transfer /
+    routing signal) and narrations containing "OWN" (own-account
+    transfers that may not be flagged via the self_transfer column).
+
+    Enriches each result with date ranges and a flow_pattern:
+      - "received_then_paid" — earliest credit precedes earliest debit
+        (dependency: customer receives funds then pays the merchant)
+      - "paid_then_received" — earliest debit precedes earliest credit
+        (reimbursement or refund pattern)
+
+    Returns:
+        List of dicts sorted by abs(net_flow) descending.
+    """
+    groups = _group_by_merchant(transactions, direction=None,
+                                exclude_self_transfers=exclude_self_transfers)
+    result = []
+
+    for merchant, txns in groups.items():
+        # Skip own-account transfers that the self_transfer flag missed
+        if any(kw in str(t.get("tran_partclr", "")).upper()
+               for t in txns for kw in ("FROM OWN", "TO OWN")):
+            continue
+
+        credits = [t for t in txns if t.get("dr_cr_indctor") == "C"]
+        debits = [t for t in txns if t.get("dr_cr_indctor") == "D"]
+
+        if not credits or not debits:
+            continue
+
+        # Remove same-day-same-amount pairs (routing pattern)
+        credit_dates_amts = {
+            (str(t.get("tran_date", ""))[:10], float(t.get("tran_amt_in_ac", 0)))
+            for t in credits
+        }
+        debit_dates_amts = {
+            (str(t.get("tran_date", ""))[:10], float(t.get("tran_amt_in_ac", 0)))
+            for t in debits
+        }
+        same_day_pairs = credit_dates_amts & debit_dates_amts
+        if same_day_pairs:
+            # Remove matched pairs from both sides
+            credits = [t for t in credits
+                       if (str(t.get("tran_date", ""))[:10],
+                           float(t.get("tran_amt_in_ac", 0))) not in same_day_pairs]
+            debits = [t for t in debits
+                      if (str(t.get("tran_date", ""))[:10],
+                          float(t.get("tran_amt_in_ac", 0))) not in same_day_pairs]
+
+        # After filtering, must still have both directions
+        if not credits or not debits:
+            continue
+
+        total_credit = sum(float(t.get("tran_amt_in_ac", 0)) for t in credits)
+        total_debit = sum(float(t.get("tran_amt_in_ac", 0)) for t in debits)
+
+        # Date ranges
+        credit_dates = sorted(d for t in credits if (d := _parse_date(t)) is not None)
+        debit_dates = sorted(d for t in debits if (d := _parse_date(t)) is not None)
+
+        # Flow pattern: who transacted first?
+        flow_pattern = "unknown"
+        if credit_dates and debit_dates:
+            if credit_dates[0] <= debit_dates[0]:
+                flow_pattern = "received_then_paid"
+            else:
+                flow_pattern = "paid_then_received"
+
+        result.append({
+            "merchant": merchant,
+            "total_credit": round(total_credit, 2),
+            "total_debit": round(total_debit, 2),
+            "net_flow": round(total_credit - total_debit, 2),
+            "credit_count": len(credits),
+            "debit_count": len(debits),
+            "flow_pattern": flow_pattern,
+            "first_credit": str(credit_dates[0]) if credit_dates else None,
+            "last_credit": str(credit_dates[-1]) if credit_dates else None,
+            "first_debit": str(debit_dates[0]) if debit_dates else None,
+            "last_debit": str(debit_dates[-1]) if debit_dates else None,
+        })
+
+    result.sort(key=lambda x: abs(x["net_flow"]), reverse=True)
+    return result
+
+
 # ---------------------------------------------------------------------------
 # Convenience entry point
 # ---------------------------------------------------------------------------
@@ -458,4 +697,7 @@ def compute_all_merchant_features(
         "amount_trends": get_merchant_amount_trend(transactions, exclude_self_transfers=exclude_self_transfers),
         "round_amount_merchants": get_round_amount_merchants(transactions, exclude_self_transfers=exclude_self_transfers),
         "new_merchant_ratio": get_new_merchant_ratio(transactions, exclude_self_transfers=exclude_self_transfers),
+        "favourite_merchants_ipt": get_favourite_merchants_ipt(transactions, exclude_self_transfers=exclude_self_transfers),
+        "significant_merchants": get_significant_merchants(transactions, exclude_self_transfers=exclude_self_transfers),
+        "bidirectional_merchants": get_bidirectional_merchants(transactions, exclude_self_transfers=exclude_self_transfers),
     }

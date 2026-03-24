@@ -18,21 +18,12 @@ from typing import Optional
 import pandas as pd
 
 from data.loader import get_transactions_df, load_rg_salary_data
+from config.keywords import SELF_TRANSFER_KEYWORDS, SMALL_TICKET_CATEGORIES
 
 logger = logging.getLogger(__name__)
 
-# Categories that indicate the account is used for everyday spending
-_SMALL_TICKET_CATS = {
-    "Food_Restaurants", "Food", "Grocery", "Grocery_Supermarket",
-    "Fuel", "Pharmacy_Medical", "Pharmacy", "Shopping",
-    "Transport", "Entertainment", "Supermarket",
-}
-
-# Narration fragments that indicate a self-transfer
-_SELF_KEYWORDS = [
-    "SELF", "OWN A/C", "OWN ACCOUNT", "OWNACCOUNT",
-    "SELF TRF", "SELF TRANSFER", "SELF-TRANSFER",
-]
+_SMALL_TICKET_CATS = SMALL_TICKET_CATEGORIES
+_SELF_KEYWORDS = SELF_TRANSFER_KEYWORDS
 
 # Score deltas — kept as named constants so the document is easy to update
 _SCORE_EMI_PRESENT       = +15

@@ -529,6 +529,49 @@
             line-height: 1.7;
             white-space: pre-line;
         }
+        /* ── checklist ──────────────────────────── */
+        .checklist-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        .checklist-item {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            padding: 7px 12px;
+            border-radius: 6px;
+            border-left: 4px solid #e2e8f0;
+            background: #f8fafc;
+            font-size: 12.5px;
+            line-height: 1.4;
+        }
+        .checklist-item.cl-high    { border-left-color: #ef4444; background: #fef2f2; }
+        .checklist-item.cl-medium  { border-left-color: #f59e0b; background: #fffbeb; }
+        .checklist-item.cl-positive{ border-left-color: #10b981; background: #ecfdf5; }
+        .checklist-item.cl-neutral { border-left-color: #cbd5e1; }
+        .cl-icon {
+            font-size: 14px;
+            font-weight: 700;
+            flex-shrink: 0;
+            width: 18px;
+            text-align: center;
+        }
+        .cl-checked   .cl-icon { color: #ef4444; }
+        .cl-unchecked  .cl-icon { color: #94a3b8; }
+        .cl-checked.cl-positive .cl-icon { color: #10b981; }
+        .cl-checked.cl-neutral  .cl-icon { color: #64748b; }
+        .cl-label {
+            font-weight: 600;
+            color: #334155;
+        }
+        .cl-unchecked .cl-label { color: #94a3b8; font-weight: 500; }
+        .cl-detail {
+            font-weight: 400;
+            color: #64748b;
+            font-size: 11.5px;
+        }
+        .cl-unchecked .cl-detail { color: #cbd5e1; }
     </style>
 </head>
 <body>
@@ -708,13 +751,136 @@ Primary = main salary/income account · Secondary = supplementary · Conduit = p
             </div>
         </div>
         
-        <div class="sc-narrative">The customer&#39;s income is ₹51,020 per month, sourced from six transactions, resulting in an average net cash flow of ₹50,922. Their key spending categories include other expenses at ₹8,045 and mobility costs at ₹45. The customer has EMI commitments averaging ₹7,500 per payment, with two debit transactions per month.
+        <div class="sc-narrative">The customer&#39;s income is ₹51,020 per month, with an average net inflow of ₹313,622 and outflow of ₹8,090 over a period. Key spending categories include &#34;other&#34; at ₹8,045 and Mobility at ₹45. The customer has EMI commitments averaging ₹7,500 per payment, with two debit transactions per month.
 
-The customer&#39;s tradeline portfolio consists of N=27 total tradelines (M live=22, P closed=5). The portfolio features a mix of loan products, with Credit Card being the dominant product type, accounting for 26 live accounts. Total sanctioned exposure stands at INR 72,48,130, while total outstanding is INR 8,22,679. Unsecured sanction amount and outstanding are identical to total outstanding, indicating no separation between secured and unsecured loans. The credit card utilization percentage is 9.0%, which is elevated. The customer&#39;s creditworthiness assessment is cautious.
-
-Note: This is a synthesised summary based on automated banking and bureau analyses. Independent verification is recommended before final credit decisions.</div>
+The customer&#39;s tradeline portfolio consists of N=27 total tradelines (M live=22, P closed=5), featuring a mix of loan products, primarily Credit Card. Total sanctioned exposure stands at INR 72,48,130, while total outstanding is INR 8,22,679. Unsecured sanction amount and outstanding are identical to total outstanding, indicating no separation between secured and unsecured loans. The credit card utilization percentage is 9.0%, which is elevated. The customer&#39;s creditworthiness assessment is cautious due to the high risk profile indicated by their credit portfolio.</div>
         
 
+    </div>
+    
+
+    
+    
+    
+
+    
+    <div class="section">
+        <h3>Quick Assessment Checklist</h3>
+        <div class="checklist-grid">
+            
+            <div class="checklist-item cl-neutral cl-unchecked">
+                <span class="cl-icon">✗</span>
+                <span class="cl-label">ECS / NACH bounces</span>
+                
+            </div>
+            
+            <div class="checklist-item cl-neutral cl-unchecked">
+                <span class="cl-icon">✗</span>
+                <span class="cl-label">Loan disbursement detected</span>
+                
+            </div>
+            
+            <div class="checklist-item cl-positive cl-checked">
+                <span class="cl-icon">✓</span>
+                <span class="cl-label">Salary detected in banking</span>
+                
+                <span class="cl-detail">— ₹51,020 avg (6 transactions)</span>
+                
+            </div>
+            
+            <div class="checklist-item cl-medium cl-checked">
+                <span class="cl-icon">✓</span>
+                <span class="cl-label">EMI obligations present</span>
+                
+                <span class="cl-detail">— ₹7,500 total across 2 lender(s)</span>
+                
+            </div>
+            
+            <div class="checklist-item cl-neutral cl-unchecked">
+                <span class="cl-icon">✗</span>
+                <span class="cl-label">Rent payments present</span>
+                
+            </div>
+            
+            <div class="checklist-item cl-neutral cl-unchecked">
+                <span class="cl-icon">✗</span>
+                <span class="cl-label">Post-salary self-transfer</span>
+                
+            </div>
+            
+            <div class="checklist-item cl-positive cl-unchecked">
+                <span class="cl-icon">✗</span>
+                <span class="cl-label">DPD &gt; 0 in bureau</span>
+                
+            </div>
+            
+            <div class="checklist-item cl-positive cl-unchecked">
+                <span class="cl-icon">✗</span>
+                <span class="cl-label">Adverse events (write-off / settlement)</span>
+                
+            </div>
+            
+            <div class="checklist-item cl-neutral cl-unchecked">
+                <span class="cl-icon">✗</span>
+                <span class="cl-label">Betting / gaming transactions</span>
+                
+            </div>
+            
+            <div class="checklist-item cl-positive cl-unchecked">
+                <span class="cl-icon">✗</span>
+                <span class="cl-label">Account is conduit / secondary</span>
+                
+                <span class="cl-detail">— Classified as primary</span>
+                
+            </div>
+            
+            <div class="checklist-item cl-high cl-checked">
+                <span class="cl-icon">✓</span>
+                <span class="cl-label">High FOIR (&gt; 50%)</span>
+                
+                <span class="cl-detail">— Bureau FOIR: 68.5%</span>
+                
+            </div>
+            
+            <div class="checklist-item cl-neutral cl-unchecked">
+                <span class="cl-icon">✗</span>
+                <span class="cl-label">NACH mandate EMI detected</span>
+                
+            </div>
+            
+            <div class="checklist-item cl-neutral cl-unchecked">
+                <span class="cl-icon">✗</span>
+                <span class="cl-label">Home loan EMI payments</span>
+                
+            </div>
+            
+            <div class="checklist-item cl-neutral cl-unchecked">
+                <span class="cl-icon">✗</span>
+                <span class="cl-label">Credit card bill payments</span>
+                
+            </div>
+            
+            <div class="checklist-item cl-neutral cl-unchecked">
+                <span class="cl-icon">✗</span>
+                <span class="cl-label">Land purchase payments</span>
+                
+            </div>
+            
+            <div class="checklist-item cl-medium cl-checked">
+                <span class="cl-icon">✓</span>
+                <span class="cl-label">Transactions above 95th percentile</span>
+                
+                <span class="cl-detail">— Salary Feb 2026: ₹52,161 (credit); EMI EV: ₹5,000 (debit)</span>
+                
+            </div>
+            
+            <div class="checklist-item cl-neutral cl-unchecked">
+                <span class="cl-icon">✗</span>
+                <span class="cl-label">Automated (NACH/mandate) transactions</span>
+                
+            </div>
+            
+        </div>
     </div>
     
 
@@ -1406,22 +1572,13 @@ The customer&#39;s behavioral features indicate a relatively clean repayment pro
 
     
     <div class="section">
-        <h3>Customer Profile</h3>
-        <div class="summary-box">
-            <p>Ashish is a financially disciplined individual who works as an employee, likely in a corporate or government sector. He has a stable income and prioritizes saving, with a savings rate of 97.4%. His spending habits are minimal, with most transactions being small UPI payments to family members or friends. Ashish&#39;s financial health appears strong, with a positive cash flow for six consecutive months and manageable EMI commitments.
-
-Note: Based on the provided data, it is not possible to determine Ashish&#39;s profession, age, or other demographic information. The description above is based solely on his financial behavior and data.</p>
-        </div>
-    </div>
-    
-
-    
-    <div class="section">
         <h3>Executive Summary</h3>
         <div class="summary-box">
-            <p>The customer&#39;s banking profile presents a stable financial picture. Their average monthly salary is ₹51,020, sourced from six transactions, resulting in an average net cash flow of ₹50,922. This translates to a total inflow of ₹313,622 and an outflow of ₹8,090 per month. The customer&#39;s key spending categories include other expenses at ₹8,045 and mobility costs at ₹45. Additionally, the customer has EMI commitments averaging ₹7,500 per payment, with two debit transactions per month.
+            <p>The customer&#39;s banking profile indicates a stable financial situation. The average monthly salary is ₹51,020, with six transactions throughout the period, resulting in an average net income of ₹8,045 per month. This translates to a total inflow of ₹313,622 and an outflow of ₹8,090 over the same period. Key spending categories include &#34;other&#34; at ₹8,045 and Mobility at ₹45. The customer has EMI commitments averaging ₹7,500 per payment, with two debit transactions per month.
 
-The customer&#39;s banking profile also reveals some notable merchant activity. The most frequent merchant is BHOSALE RAJU TA, with four transactions totaling ₹800. Furthermore, the account appears to be their primary account, as EMI payments are visible and average two debit transactions per month. Notably, the customer has a Banking FOIR obligation-to-income ratio of 14.7%, which falls within the comfortable range.</p>
+The customer&#39;s banking profile also shows a significant presence of BHOSALE RAJU TA as their most frequent merchant, with four transactions totaling ₹800. Additionally, the account appears to be primary, as EMI payments are visible, and there is an average of two debit transactions per month. The obligation-to-income ratio stands at 14.7%, which falls within the comfortable range.
+
+The customer has experienced several transaction events over the past two months. In Jun 2025, the customer received ₹72,000 salary and transferred ₹72,000 to their own account the next day. In Jul 2025, the customer made an EMI payment debit of ₹3,750.</p>
         </div>
     </div>
     
@@ -1694,18 +1851,16 @@ The customer&#39;s banking profile also reveals some notable merchant activity. 
     <div class="section-divider">Combined Executive Summary</div>
     <div class="section">
         <div class="summary-box" style="border-left: 4px solid #2c3e50;">
-            <p>The customer&#39;s income is ₹51,020 per month, sourced from six transactions, resulting in an average net cash flow of ₹50,922. Their key spending categories include other expenses at ₹8,045 and mobility costs at ₹45. The customer has EMI commitments averaging ₹7,500 per payment, with two debit transactions per month.
+            <p>The customer&#39;s income is ₹51,020 per month, with an average net inflow of ₹313,622 and outflow of ₹8,090 over a period. Key spending categories include &#34;other&#34; at ₹8,045 and Mobility at ₹45. The customer has EMI commitments averaging ₹7,500 per payment, with two debit transactions per month.
 
-The customer&#39;s tradeline portfolio consists of N=27 total tradelines (M live=22, P closed=5). The portfolio features a mix of loan products, with Credit Card being the dominant product type, accounting for 26 live accounts. Total sanctioned exposure stands at INR 72,48,130, while total outstanding is INR 8,22,679. Unsecured sanction amount and outstanding are identical to total outstanding, indicating no separation between secured and unsecured loans. The credit card utilization percentage is 9.0%, which is elevated. The customer&#39;s creditworthiness assessment is cautious.
-
-Note: This is a synthesised summary based on automated banking and bureau analyses. Independent verification is recommended before final credit decisions.</p>
+The customer&#39;s tradeline portfolio consists of N=27 total tradelines (M live=22, P closed=5), featuring a mix of loan products, primarily Credit Card. Total sanctioned exposure stands at INR 72,48,130, while total outstanding is INR 8,22,679. Unsecured sanction amount and outstanding are identical to total outstanding, indicating no separation between secured and unsecured loans. The credit card utilization percentage is 9.0%, which is elevated. The customer&#39;s creditworthiness assessment is cautious due to the high risk profile indicated by their credit portfolio.</p>
         </div>
     </div>
     
 
     <div class="footer">
         
-        <p>Generated on 2026-03-23 | Currency: INR</p>
+        <p>Generated on 2026-03-24 | Currency: INR</p>
         
     </div>
 </body>

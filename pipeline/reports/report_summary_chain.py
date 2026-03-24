@@ -122,15 +122,18 @@ def _build_data_summary(report: CustomerReport, rg_salary_data: dict = None) -> 
         or (report.salary.narration.split()[0].title() if report.salary and report.salary.narration else None)
     )
 
-    # Category spending
+    # Category spending (exclude "Others" — merchant analysis covers those)
     if report.category_overview:
+        filtered_cats = {k: v for k, v in report.category_overview.items()
+                         if k.strip().lower() not in ("other", "others")}
         top_cats = sorted(
-            report.category_overview.items(),
+            filtered_cats.items(),
             key=lambda x: x[1],
             reverse=True
         )[:3]
-        cats_str = ", ".join(f"{k}: {v:,.0f}" for k, v in top_cats)
-        sections.append(f"Top spending categories: {cats_str}")
+        if top_cats:
+            cats_str = ", ".join(f"{k}: {v:,.0f}" for k, v in top_cats)
+            sections.append(f"Top spending categories: {cats_str}")
 
     # Monthly cashflow
     if report.monthly_cashflow:
@@ -215,6 +218,63 @@ def _build_data_summary(report: CustomerReport, rg_salary_data: dict = None) -> 
                 f"{concentration['total_merchants']} merchants total"
             )
 
+        # Favourite merchants with IPT (debit + credit separately)
+        favourites = mf.get("favourite_merchants_ipt", {})
+        for dir_label, dir_key in [("Favourite debit merchants", "debit"),
+                                    ("Favourite credit merchants", "credit")]:
+            fav_list = favourites.get(dir_key, [])
+            if fav_list:
+                fav_parts = []
+                for f in fav_list:
+                    ipt_str = (f", avg {f['avg_ipt_days']:.0f} days apart"
+                               if f.get("avg_ipt_days") else "")
+                    fav_parts.append(
+                        f"{f['merchant']} ({f['count']} txns, "
+                        f"INR {f['total_amount']:,.0f}{ipt_str})"
+                    )
+                m_parts.append(f"{dir_label}: " + "; ".join(fav_parts))
+
+        # Significant counterparties (>= 25% of total flow)
+        significant = mf.get("significant_merchants", [])
+        if significant:
+            sig_parts = []
+            for s in significant:
+                pcts = []
+                if s["debit_pct"] >= 0.25:
+                    pcts.append(f"{s['debit_pct']:.0%} of debits")
+                if s["credit_pct"] >= 0.25:
+                    pcts.append(f"{s['credit_pct']:.0%} of credits")
+                if pcts:
+                    sig_parts.append(
+                        f"{s['merchant']} accounts for {' and '.join(pcts)}"
+                    )
+            if sig_parts:
+                m_parts.append("Significant counterparties: " + "; ".join(sig_parts))
+
+        # Two-way merchants (both credits and debits, excluding self-transfers)
+        bidir = mf.get("bidirectional_merchants", [])
+        if bidir:
+            bi_parts = []
+            for b in bidir[:3]:
+                label = "net inflow" if b["net_flow"] >= 0 else "net outflow"
+                pattern = b.get("flow_pattern", "")
+                pattern_str = ""
+                if pattern == "received_then_paid":
+                    pattern_str = ", received first then paid"
+                elif pattern == "paid_then_received":
+                    pattern_str = ", paid first then received back"
+                date_str = ""
+                if b.get("first_credit") and b.get("first_debit"):
+                    date_str = (f", credits {b['first_credit']} to {b['last_credit']}"
+                                f", debits {b['first_debit']} to {b['last_debit']}")
+                bi_parts.append(
+                    f"{b['merchant']} (credit INR {b['total_credit']:,.0f}, "
+                    f"debit INR {b['total_debit']:,.0f}, "
+                    f"{label} INR {abs(b['net_flow']):,.0f}"
+                    f"{pattern_str}{date_str})"
+                )
+            m_parts.append("Two-way merchants: " + "; ".join(bi_parts))
+
         if m_parts:
             sections.append("MERCHANT PROFILE: " + ". ".join(m_parts))
 
@@ -230,6 +290,30 @@ def _build_data_summary(report: CustomerReport, rg_salary_data: dict = None) -> 
         events_block = format_events_for_prompt(report.events)
         if events_block:
             sections.append(events_block)
+
+    # Explicitly list absent data types so the LLM does not invent them
+    absent = []
+    if not _auth_salary_amt:
+        absent.append("salary income")
+    if not report.emis:
+        absent.append("EMI / loan repayments")
+    if not report.rent:
+        absent.append("rent payments")
+    if not report.bills:
+        absent.append("utility bills")
+    if not report.category_overview:
+        absent.append("spending categories")
+    if not report.monthly_cashflow:
+        absent.append("monthly cashflow")
+    if not report.merchant_features:
+        absent.append("merchant profile")
+    if not report.events:
+        absent.append("transaction events")
+    if absent:
+        sections.append(
+            "DATA NOT AVAILABLE (do NOT invent or assume these): "
+            + ", ".join(absent)
+        )
 
     return sections
 

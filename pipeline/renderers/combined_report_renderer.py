@@ -13,6 +13,8 @@ from typing import Optional
 from jinja2 import Environment, FileSystemLoader
 from fpdf import FPDF
 
+import numpy as np
+
 from schemas.customer_report import CustomerReport
 from schemas.bureau_report import BureauReport
 from schemas.loan_type import get_loan_type_display_name
@@ -465,6 +467,277 @@ def render_combined_report(
     return str(output_file)
 
 
+_ADVERSE_FLAGS = {"WRF", "SET", "SMA", "SUB", "DBT", "LSS", "WOF"}
+_BETTING_CATS = {"Digital_Betting_Gaming", "Betting_Gaming", "Betting", "Gaming"}
+
+
+def compute_checklist(
+    customer_report: Optional[CustomerReport],
+    bureau_report: Optional[BureauReport],
+    rg_salary_data: Optional[dict],
+) -> list:
+    """Compute yes/no checklist items from existing report data.
+
+    Returns list of dicts: {label, checked, severity, detail}.
+    """
+    items = []
+    events = (customer_report.events or []) if customer_report else []
+
+    def _events_of_type(etype):
+        return [e for e in events if e.get("type") == etype]
+
+    # 1. ECS/NACH bounces
+    bounces = _events_of_type("ecs_bounce")
+    items.append({
+        "label": "ECS / NACH bounces",
+        "checked": bool(bounces),
+        "severity": "high" if bounces else "neutral",
+        "detail": bounces[0].get("description") if bounces else None,
+    })
+
+    # 2. Loan disbursement detected
+    loan_events = (_events_of_type("loan_disbursal")
+                   or _events_of_type("loan_redistribution_suspect")
+                   or [e for e in _events_of_type("large_single_credit")
+                       if "lender" in str(e.get("description", "")).lower()
+                       or "loan" in str(e.get("description", "")).lower()])
+    items.append({
+        "label": "Loan disbursement detected",
+        "checked": bool(loan_events),
+        "severity": "high" if loan_events else "neutral",
+        "detail": loan_events[0].get("description") if loan_events else None,
+    })
+
+    # 2b. Post-disbursement fund usage (spending analysis after loan credit)
+    disb_usage = _events_of_type("post_disbursement_usage")
+    if disb_usage:
+        ev = disb_usage[0]
+        match_flag = ev.get("_amounts_match", False)
+        conc_pct   = ev.get("_concentration_pct", 0)
+        severity = "high" if match_flag else ("high" if conc_pct >= 50 else "medium")
+        items.append({
+            "label": "Post-disbursement fund diversion",
+            "checked": True,
+            "severity": severity,
+            "detail": ev.get("description"),
+        })
+    else:
+        items.append({
+            "label": "Post-disbursement fund diversion",
+            "checked": False,
+            "severity": "neutral",
+            "detail": None,
+        })
+
+    # 3. Salary detected
+    has_salary = customer_report and customer_report.salary is not None
+    sal_detail = None
+    if has_salary:
+        sal = customer_report.salary
+        sal_detail = f"₹{sal.avg_amount:,.0f} avg ({sal.frequency} transactions)"
+    items.append({
+        "label": "Salary detected in banking",
+        "checked": has_salary,
+        "severity": "positive" if has_salary else "neutral",
+        "detail": sal_detail,
+    })
+
+    # 4. EMI obligations
+    has_emis = customer_report and customer_report.emis and len(customer_report.emis) > 0
+    emi_detail = None
+    if has_emis:
+        total_emi = sum(e.amount for e in customer_report.emis)
+        emi_detail = f"₹{total_emi:,.0f} total across {len(customer_report.emis)} lender(s)"
+    items.append({
+        "label": "EMI obligations present",
+        "checked": bool(has_emis),
+        "severity": "medium" if has_emis else "neutral",
+        "detail": emi_detail,
+    })
+
+    # 5. Rent payments
+    has_rent = customer_report and customer_report.rent is not None
+    items.append({
+        "label": "Rent payments present",
+        "checked": bool(has_rent),
+        "severity": "neutral",
+        "detail": f"₹{customer_report.rent.amount:,.0f} ({customer_report.rent.frequency} transactions)" if has_rent else None,
+    })
+
+    # 6. Post-salary self-transfer
+    self_transfers = _events_of_type("self_transfer_post_salary")
+    items.append({
+        "label": "Post-salary self-transfer",
+        "checked": bool(self_transfers),
+        "severity": "medium" if self_transfers else "neutral",
+        "detail": self_transfers[0].get("description") if self_transfers else None,
+    })
+
+    # 7. DPD > 0 in bureau
+    has_dpd = False
+    dpd_detail = None
+    if bureau_report:
+        ei = bureau_report.executive_inputs
+        if ei.max_dpd is not None and ei.max_dpd > 0:
+            has_dpd = True
+            parts = [f"{ei.max_dpd} days"]
+            if ei.max_dpd_loan_type:
+                parts.append(ei.max_dpd_loan_type)
+            if ei.max_dpd_months_ago is not None:
+                parts.append(f"{ei.max_dpd_months_ago}M ago")
+            dpd_detail = " — ".join(parts)
+    items.append({
+        "label": "DPD > 0 in bureau",
+        "checked": has_dpd,
+        "severity": "high" if has_dpd else "positive",
+        "detail": dpd_detail,
+    })
+
+    # 8. Adverse events (write-off / settlement)
+    adverse_flags = []
+    if bureau_report:
+        for vec in bureau_report.feature_vectors.values():
+            for f in (vec.forced_event_flags or []):
+                if f in _ADVERSE_FLAGS:
+                    adverse_flags.append(f)
+    has_adverse = bool(adverse_flags)
+    items.append({
+        "label": "Adverse events (write-off / settlement)",
+        "checked": has_adverse,
+        "severity": "high" if has_adverse else "positive",
+        "detail": f"Flags: {', '.join(sorted(set(adverse_flags)))}" if has_adverse else None,
+    })
+
+    # 9. Betting / gaming spend
+    betting = 0.0
+    if customer_report and customer_report.category_overview:
+        for key in _BETTING_CATS:
+            if key in customer_report.category_overview:
+                betting = customer_report.category_overview[key]
+                break
+    items.append({
+        "label": "Betting / gaming transactions",
+        "checked": betting > 0,
+        "severity": "high" if betting >= 500 else ("medium" if betting > 0 else "neutral"),
+        "detail": f"₹{betting:,.0f} total spend" if betting > 0 else None,
+    })
+
+    # 10. Account type (conduit / secondary)
+    acct_type = "unknown"
+    if customer_report and customer_report.account_quality:
+        acct_type = customer_report.account_quality.get("account_type", "unknown")
+    is_non_primary = acct_type in ("conduit", "secondary")
+    items.append({
+        "label": "Account is conduit / secondary",
+        "checked": is_non_primary,
+        "severity": "high" if acct_type == "conduit" else ("medium" if acct_type == "secondary" else "positive"),
+        "detail": f"Classified as {acct_type}" if is_non_primary else f"Classified as {acct_type}",
+    })
+
+    # 11. High FOIR (>50%)
+    foir_val = None
+    if bureau_report and bureau_report.tradeline_features:
+        foir_val = bureau_report.tradeline_features.foir
+    has_high_foir = foir_val is not None and foir_val > 50
+    items.append({
+        "label": "High FOIR (> 50%)",
+        "checked": has_high_foir,
+        "severity": "high" if (foir_val and foir_val > 65) else ("medium" if has_high_foir else "neutral"),
+        "detail": f"Bureau FOIR: {foir_val:.1f}%" if foir_val is not None else None,
+    })
+
+    # 12. NACH mandate / SPLN EMI
+    mandate_emis = _events_of_type("mandate_emi")
+    items.append({
+        "label": "NACH mandate EMI detected",
+        "checked": bool(mandate_emis),
+        "severity": "medium" if mandate_emis else "neutral",
+        "detail": mandate_emis[0].get("description") if mandate_emis else None,
+    })
+
+    # 13. Home loan EMI payments
+    home_loan_events = _events_of_type("home_loan_emi")
+    items.append({
+        "label": "Home loan EMI payments",
+        "checked": bool(home_loan_events),
+        "severity": "neutral",
+        "detail": home_loan_events[0].get("description") if home_loan_events else None,
+    })
+
+    # 15. Credit card bill payments
+    cc_payments = _events_of_type("cc_payment")
+    items.append({
+        "label": "Credit card bill payments",
+        "checked": bool(cc_payments),
+        "severity": "positive" if cc_payments else "neutral",
+        "detail": cc_payments[0].get("description") if cc_payments else None,
+    })
+
+    # 16. Land payments
+    land_events = _events_of_type("land_payment")
+    items.append({
+        "label": "Land purchase payments",
+        "checked": bool(land_events),
+        "severity": "medium" if land_events else "neutral",
+        "detail": land_events[0].get("description") if land_events else None,
+    })
+
+    # 17 & 18. Transaction-level checks (require raw DataFrame)
+    try:
+        from data.loader import get_transactions_df
+        from utils.narration_utils import extract_recipient_name, clean_narration
+
+        cust_id = customer_report.meta.customer_id if customer_report else None
+        if cust_id is not None:
+            df = get_transactions_df()
+            cdf = df[df["cust_id"] == cust_id].copy()
+
+            if not cdf.empty:
+                narrations = cdf["tran_partclr"].fillna("")
+                amounts = cdf["tran_amt_in_ac"].fillna(0).astype(float)
+                directions = cdf["dr_cr_indctor"].fillna("")
+
+                # --- 17. Credits / debits above 95th percentile ---------------
+                outlier_parts = []
+                for direction, label in [("C", "credit"), ("D", "debit")]:
+                    mask = directions == direction
+                    dir_amounts = amounts[mask]
+                    if len(dir_amounts) < 5:
+                        continue
+                    p95 = np.percentile(dir_amounts, 95)
+                    outliers = cdf[mask & (amounts > p95)]
+                    for _, row in outliers.iterrows():
+                        narr = str(row.get("tran_partclr", ""))
+                        merchant = extract_recipient_name(narr) or clean_narration(narr) or "Unknown"
+                        amt = float(row.get("tran_amt_in_ac", 0))
+                        outlier_parts.append(f"{merchant}: ₹{amt:,.0f} ({label})")
+
+                has_outliers = bool(outlier_parts)
+                items.append({
+                    "label": "Transactions above 95th percentile",
+                    "checked": has_outliers,
+                    "severity": "medium" if has_outliers else "neutral",
+                    "detail": "; ".join(outlier_parts[:5]) if has_outliers else None,
+                })
+
+                # --- 18. Automated (NACH / mandate) debit & credit count ------
+                narr_upper = narrations.str.upper()
+                auto_mask = narr_upper.str.contains("NACH|MANDATE", na=False, regex=True)
+                auto_debits = int((auto_mask & (directions == "D")).sum())
+                auto_credits = int((auto_mask & (directions == "C")).sum())
+                auto_total = auto_debits + auto_credits
+                items.append({
+                    "label": "Automated (NACH/mandate) transactions",
+                    "checked": auto_total > 0,
+                    "severity": "neutral",
+                    "detail": f"{auto_total} total ({auto_debits} debits, {auto_credits} credits)" if auto_total > 0 else None,
+                })
+    except Exception:
+        pass  # fail-soft: skip transaction-level checks if data unavailable
+
+    return items
+
+
 def render_combined_report_html(
     customer_report: Optional[CustomerReport],
     bureau_report: Optional[BureauReport],
@@ -529,6 +802,8 @@ def render_combined_report_html(
         bureau_report.monthly_exposure if bureau_report else None
     )
 
+    checklist = compute_checklist(customer_report, bureau_report, rg_salary_data)
+
     template = env.get_template(template_name)
     return template.render(
         customer_report=customer_report,
@@ -541,4 +816,5 @@ def render_combined_report_html(
         rg_salary_data=rg_salary_data,
         scorecard=scorecard,
         exposure_summary=exposure_summary,
+        checklist=checklist,
     )

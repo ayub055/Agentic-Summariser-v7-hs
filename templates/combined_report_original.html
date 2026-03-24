@@ -510,6 +510,49 @@
             line-height: 1.7;
             white-space: pre-line;
         }
+        /* ── checklist ──────────────────────────── */
+        .checklist-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        .checklist-item {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            padding: 7px 12px;
+            border-radius: 6px;
+            border-left: 4px solid #e2e8f0;
+            background: #f8fafc;
+            font-size: 12.5px;
+            line-height: 1.4;
+        }
+        .checklist-item.cl-high    { border-left-color: #ef4444; background: #fef2f2; }
+        .checklist-item.cl-medium  { border-left-color: #f59e0b; background: #fffbeb; }
+        .checklist-item.cl-positive{ border-left-color: #10b981; background: #ecfdf5; }
+        .checklist-item.cl-neutral { border-left-color: #cbd5e1; }
+        .cl-icon {
+            font-size: 14px;
+            font-weight: 700;
+            flex-shrink: 0;
+            width: 18px;
+            text-align: center;
+        }
+        .cl-checked   .cl-icon { color: #ef4444; }
+        .cl-unchecked  .cl-icon { color: #94a3b8; }
+        .cl-checked.cl-positive .cl-icon { color: #10b981; }
+        .cl-checked.cl-neutral  .cl-icon { color: #64748b; }
+        .cl-label {
+            font-weight: 600;
+            color: #334155;
+        }
+        .cl-unchecked .cl-label { color: #94a3b8; font-weight: 500; }
+        .cl-detail {
+            font-weight: 400;
+            color: #64748b;
+            font-size: 11.5px;
+        }
+        .cl-unchecked .cl-detail { color: #cbd5e1; }
     </style>
 </head>
 <body>
@@ -624,6 +667,27 @@
         <div class="sc-narrative">{{ scorecard.narrative }}</div>
         {% endif %}
 
+    </div>
+    {% endif %}
+
+    {# ================================================================== #}
+    {# QUICK ASSESSMENT CHECKLIST                                          #}
+    {# ================================================================== #}
+
+    {% if checklist %}
+    <div class="section">
+        <h3>Quick Assessment Checklist</h3>
+        <div class="checklist-grid">
+            {% for item in checklist %}
+            <div class="checklist-item cl-{{ item.severity }} {{ 'cl-checked' if item.checked else 'cl-unchecked' }}">
+                <span class="cl-icon">{{ '✓' if item.checked else '✗' }}</span>
+                <span class="cl-label">{{ item.label }}</span>
+                {% if item.detail %}
+                <span class="cl-detail">— {{ item.detail }}</span>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
     </div>
     {% endif %}
 

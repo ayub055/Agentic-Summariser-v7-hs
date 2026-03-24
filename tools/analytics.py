@@ -280,7 +280,7 @@ def get_transaction_counts(customer_id: int) -> Dict[str, Any]:
         "monthly_credit_median": float(credit_monthly.groupby('month').size().median()) if len(credit_monthly) > 0 else 0,
         "monthly_debit_avg": float(debit_monthly.groupby('month').size().mean()) if len(debit_monthly) > 0 else 0,
         "monthly_debit_median": float(debit_monthly.groupby('month').size().median()) if len(debit_monthly) > 0 else 0,
-        "credit_debit_ratio": len(credits) / len(debits) if len(debits) > 0 else float('inf')
+        "credit_debit_ratio": len(credits) / len(debits) if len(debits) > 0 else 0
     }
 
 
@@ -396,7 +396,7 @@ def get_income_stability(customer_id: int) -> Dict[str, Any]:
     income_mean = monthly_income.mean()
 
     # Coefficient of variation (lower = more stable)
-    cv = (income_std / income_mean) if income_mean > 0 else float('inf')
+    cv = (income_std / income_mean) if income_mean > 0 else 0
 
     # Stability score (0-100, higher = more stable)
     stability_score = max(0, min(100, 100 - (cv * 100)))
@@ -512,7 +512,7 @@ def generate_lender_profile(customer_id: int) -> Dict[str, Any]:
     income = total_income['total_income']
     spending = total_spending['total_spending']
     savings_rate = (income - spending) / income if income > 0 else 0
-    income_expense_ratio = income / spending if spending > 0 else float('inf')
+    income_expense_ratio = income / spending if spending > 0 else 0
 
     # Risk scoring
     risk_factors = []
