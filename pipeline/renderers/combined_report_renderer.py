@@ -14,6 +14,7 @@ from jinja2 import Environment, FileSystemLoader
 from fpdf import FPDF
 
 import numpy as np
+import config.thresholds as T
 
 from schemas.customer_report import CustomerReport
 from schemas.bureau_report import BureauReport
@@ -758,6 +759,109 @@ def compute_checklist(
                     "severity": "neutral",
                     "detail": f"{auto_total} total ({auto_debits} debits, {auto_credits} credits)" if auto_total > 0 else None,
                 })
+
+                # --- 19. Payment mode distribution shift -----------------
+                import pandas as pd
+
+                def _infer_mode(row):
+                    """Infer payment mode from tran_type, falling back to narration."""
+                    tt = row.get("tran_type")
+                    if pd.notna(tt) and str(tt).strip():
+                        return str(tt).strip()
+                    nu = str(row.get("tran_partclr", "")).strip().upper()
+                    if "UPI" in nu:
+                        return "UPI"
+                    if "NEFT" in nu:
+                        return "NEFT"
+                    if "IMPS" in nu:
+                        return "IMPS"
+                    if "RTGS" in nu:
+                        return "RTGS"
+                    if "NACH-" in nu:
+                        return "NACH"
+                    if "MB:RECEIVED" in nu or "MB:SENT" in nu:
+                        return "Mobile Banking"
+                    if "IFT-" in nu:
+                        return "IFT"
+                    if nu.startswith("IB:RECEIVED FROM") or "IB:FUND" in nu:
+                        return "Internet Banking"
+                    if nu.startswith("FUND TRF FROM") or nu.startswith("FT FROM") or nu.startswith("FUNDS TRF FROM"):
+                        return "Funds Transfer"
+                    if nu.startswith("ATL/") or nu.startswith("ATW/"):
+                        return "ATM"
+                    if nu.startswith("PG "):
+                        return "Payment Gateway"
+                    if nu.startswith("PCD/"):
+                        return "Card Payment"
+                    if nu.startswith("CLG TO "):
+                        return "Cheque"
+                    return "Other"
+
+                _mode_col = cdf.apply(_infer_mode, axis=1)
+                _dates = pd.to_datetime(cdf["tran_date"], format="%Y-%m-%d", errors="coerce")
+                _periods = _dates.dt.to_period("M")
+                _months_all = sorted(_periods.dropna().unique())
+
+                if len(_months_all) >= T.MODE_SHIFT_MIN_MONTHS:
+                    _recent_set = set(_months_all[-T.MODE_SHIFT_RECENT_MONTHS:])
+                    _is_recent = _periods.map(
+                        lambda m: m in _recent_set if pd.notna(m) else False
+                    )
+
+                    _earlier_mask = ~_is_recent & _periods.notna()
+                    _recent_mask = _is_recent
+
+                    if (int(_earlier_mask.sum()) >= T.MODE_SHIFT_MIN_TRANSACTIONS
+                            and int(_recent_mask.sum()) >= T.MODE_SHIFT_MIN_TRANSACTIONS):
+
+                        _e_dist = _mode_col[_earlier_mask].value_counts(normalize=True) * 100
+                        _r_dist = _mode_col[_recent_mask].value_counts(normalize=True) * 100
+
+                        _all_modes = sorted(set(_e_dist.index) | set(_r_dist.index))
+                        _shifts = {}
+                        for _m in _all_modes:
+                            _old = _e_dist.get(_m, 0.0)
+                            _new = _r_dist.get(_m, 0.0)
+                            _delta = _new - _old
+                            if abs(_delta) >= T.MODE_SHIFT_THRESHOLD_PP:
+                                _shifts[_m] = (_old, _new, _delta)
+
+                        if _shifts:
+                            _parts = []
+                            for _m, (_old, _new, _delta) in sorted(
+                                _shifts.items(), key=lambda x: -abs(x[1][2])
+                            ):
+                                _sign = "+" if _delta > 0 else ""
+                                _parts.append(
+                                    f"{_m}: {_old:.0f}% \u2192 {_new:.0f}% ({_sign}{_delta:.0f}pp)"
+                                )
+                            items.append({
+                                "label": "Payment mode distribution shift",
+                                "checked": True,
+                                "severity": "medium",
+                                "detail": "; ".join(_parts),
+                            })
+                        else:
+                            items.append({
+                                "label": "Payment mode distribution shift",
+                                "checked": False,
+                                "severity": "neutral",
+                                "detail": None,
+                            })
+                    else:
+                        items.append({
+                            "label": "Payment mode distribution shift",
+                            "checked": False,
+                            "severity": "neutral",
+                            "detail": None,
+                        })
+                else:
+                    items.append({
+                        "label": "Payment mode distribution shift",
+                        "checked": False,
+                        "severity": "neutral",
+                        "detail": None,
+                    })
     except Exception:
         pass  # fail-soft: skip transaction-level checks if data unavailable
 

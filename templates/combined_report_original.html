@@ -553,6 +553,36 @@
             font-size: 11.5px;
         }
         .cl-unchecked .cl-detail { color: #cbd5e1; }
+        details.collapsible-section > summary {
+            cursor: pointer;
+            list-style: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            background: #ecfdf5;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #064e3b;
+            user-select: none;
+            transition: background 0.15s;
+        }
+        details.collapsible-section > summary:hover {
+            background: #d1fae5;
+        }
+        details.collapsible-section > summary::before {
+            content: '▸';
+            font-size: 13px;
+            transition: transform 0.15s;
+        }
+        details.collapsible-section[open] > summary::before {
+            transform: rotate(90deg);
+        }
+        details.collapsible-section > summary::-webkit-details-marker { display: none; }
+        details.collapsible-section > .collapsible-body {
+            padding-top: 12px;
+        }
     </style>
 </head>
 <body>
@@ -577,8 +607,29 @@
         </div>
     </div>
 
-    <!-- Risk Scorecard -->
+    {# ── QUICK ASSESSMENT CHECKLIST (before scorecard) ── #}
+    {% if checklist %}
+    <div class="section">
+        <h3>Quick Assessment Checklist</h3>
+        <div class="checklist-grid">
+            {% for item in checklist %}
+            <div class="checklist-item cl-{{ item.severity }} {{ 'cl-checked' if item.checked else 'cl-unchecked' }}">
+                <span class="cl-icon">{{ '✓' if item.checked else '✗' }}</span>
+                <span class="cl-label">{{ item.label }}</span>
+                {% if item.detail %}
+                <span class="cl-detail">— {{ item.detail }}</span>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Risk Scorecard (collapsible) -->
     {% if scorecard %}
+    <details class="collapsible-section">
+        <summary>Risk Scorecard — click to expand</summary>
+        <div class="collapsible-body">
     <div class="scorecard">
         <div class="sc-verdict sc-rag-{{ scorecard.verdict_rag }}">
             ● Overall Risk: {{ scorecard.verdict }}
@@ -667,28 +718,9 @@
         <div class="sc-narrative">{{ scorecard.narrative }}</div>
         {% endif %}
 
-    </div>
-    {% endif %}
-
-    {# ================================================================== #}
-    {# QUICK ASSESSMENT CHECKLIST                                          #}
-    {# ================================================================== #}
-
-    {% if checklist %}
-    <div class="section">
-        <h3>Quick Assessment Checklist</h3>
-        <div class="checklist-grid">
-            {% for item in checklist %}
-            <div class="checklist-item cl-{{ item.severity }} {{ 'cl-checked' if item.checked else 'cl-unchecked' }}">
-                <span class="cl-icon">{{ '✓' if item.checked else '✗' }}</span>
-                <span class="cl-label">{{ item.label }}</span>
-                {% if item.detail %}
-                <span class="cl-detail">— {{ item.detail }}</span>
-                {% endif %}
-            </div>
-            {% endfor %}
-        </div>
-    </div>
+    </div>{# end .scorecard #}
+        </div>{# end collapsible-body #}
+    </details>{# end scorecard collapsible #}
     {% endif %}
 
     {# ================================================================== #}
@@ -847,10 +879,15 @@
     </div>
     {% endif %}
 
-    <!-- Portfolio Visualizations -->
+    <!-- Portfolio Visualizations (collapsible) -->
     {% if chart_data %}
     <div class="section">
-        <h3>Portfolio Visualizations</h3>
+        {% if exposure_summary %}
+        <p style="font-size:12.5px; color:#444; line-height:1.6; margin-bottom:10px;">{{ exposure_summary }}</p>
+        {% endif %}
+        <details class="collapsible-section">
+            <summary>Portfolio Visualizations — click to expand</summary>
+            <div class="collapsible-body">
         <div class="charts-grid">
             <div class="chart-card">
                 <h4>Product Mix by Count</h4>
@@ -874,9 +911,6 @@
             <div class="chart-card chart-timeseries">
                 <h4>Portfolio Exposure Over Time (Stacked by Product)</h4>
                 <canvas id="cmbChartTimeseries"></canvas>
-                {% if exposure_summary %}
-                <p style="margin-top:10px; font-size:12.5px; color:#444; line-height:1.6; border-top:1px solid #eee; padding-top:8px;">{{ exposure_summary }}</p>
-                {% endif %}
             </div>
 
             <!-- 6. DPD Event Timeline — hidden by JS if no events -->
@@ -885,6 +919,8 @@
                 <canvas id="cmbChartDpdTimeline"></canvas>
             </div>
         </div>
+            </div>{# end collapsible-body #}
+        </details>
     </div>
 
     <script>

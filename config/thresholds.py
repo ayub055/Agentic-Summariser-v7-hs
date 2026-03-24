@@ -110,3 +110,11 @@ POST_DISB_MIN_DEBIT: int = 5000            # Ignore debits below this amount
 # ---------------------------------------------------------------------------
 MERCHANT_FAVOURITE_TOP_N: int = 2          # Number of favourite merchants to highlight
 MERCHANT_SIGNIFICANT_PCT: float = 0.25     # ≥ 25 % of total flow = significant counterparty
+
+# ---------------------------------------------------------------------------
+# Mode-wise Distribution Shift  (checklist — banking)
+# ---------------------------------------------------------------------------
+MODE_SHIFT_RECENT_MONTHS: int = 2           # Recent window = last 2 calendar months
+MODE_SHIFT_THRESHOLD_PP: float = 15.0       # Flag if any mode shifts ≥ 15 percentage points
+MODE_SHIFT_MIN_TRANSACTIONS: int = 5        # Min txns per period to compare
+MODE_SHIFT_MIN_MONTHS: int = 3              # Need ≥ 3 distinct months of data

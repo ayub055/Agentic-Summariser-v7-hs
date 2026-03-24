@@ -572,6 +572,36 @@
             font-size: 11.5px;
         }
         .cl-unchecked .cl-detail { color: #cbd5e1; }
+        details.collapsible-section > summary {
+            cursor: pointer;
+            list-style: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            background: #ecfdf5;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #064e3b;
+            user-select: none;
+            transition: background 0.15s;
+        }
+        details.collapsible-section > summary:hover {
+            background: #d1fae5;
+        }
+        details.collapsible-section > summary::before {
+            content: '▸';
+            font-size: 13px;
+            transition: transform 0.15s;
+        }
+        details.collapsible-section[open] > summary::before {
+            transform: rotate(90deg);
+        }
+        details.collapsible-section > summary::-webkit-details-marker { display: none; }
+        details.collapsible-section > .collapsible-body {
+            padding-top: 12px;
+        }
     </style>
 </head>
 <body>
@@ -594,8 +624,151 @@
         </div>
     </div>
 
-    <!-- Risk Scorecard -->
     
+    
+    <div class="section">
+        <h3>Quick Assessment Checklist</h3>
+        <div class="checklist-grid">
+            
+            <div class="checklist-item cl-neutral cl-unchecked">
+                <span class="cl-icon">✗</span>
+                <span class="cl-label">ECS / NACH bounces</span>
+                
+            </div>
+            
+            <div class="checklist-item cl-neutral cl-unchecked">
+                <span class="cl-icon">✗</span>
+                <span class="cl-label">Loan disbursement detected</span>
+                
+            </div>
+            
+            <div class="checklist-item cl-neutral cl-unchecked">
+                <span class="cl-icon">✗</span>
+                <span class="cl-label">Post-disbursement fund diversion</span>
+                
+            </div>
+            
+            <div class="checklist-item cl-positive cl-checked">
+                <span class="cl-icon">✓</span>
+                <span class="cl-label">Salary detected in banking</span>
+                
+                <span class="cl-detail">— ₹51,020 avg (6 transactions)</span>
+                
+            </div>
+            
+            <div class="checklist-item cl-medium cl-checked">
+                <span class="cl-icon">✓</span>
+                <span class="cl-label">EMI obligations present</span>
+                
+                <span class="cl-detail">— ₹7,500 total across 2 lender(s)</span>
+                
+            </div>
+            
+            <div class="checklist-item cl-neutral cl-unchecked">
+                <span class="cl-icon">✗</span>
+                <span class="cl-label">Rent payments present</span>
+                
+            </div>
+            
+            <div class="checklist-item cl-neutral cl-unchecked">
+                <span class="cl-icon">✗</span>
+                <span class="cl-label">Post-salary self-transfer</span>
+                
+            </div>
+            
+            <div class="checklist-item cl-positive cl-unchecked">
+                <span class="cl-icon">✗</span>
+                <span class="cl-label">DPD &gt; 0 in bureau</span>
+                
+            </div>
+            
+            <div class="checklist-item cl-positive cl-unchecked">
+                <span class="cl-icon">✗</span>
+                <span class="cl-label">Adverse events (write-off / settlement)</span>
+                
+            </div>
+            
+            <div class="checklist-item cl-neutral cl-unchecked">
+                <span class="cl-icon">✗</span>
+                <span class="cl-label">Betting / gaming transactions</span>
+                
+            </div>
+            
+            <div class="checklist-item cl-positive cl-unchecked">
+                <span class="cl-icon">✗</span>
+                <span class="cl-label">Account is conduit / secondary</span>
+                
+                <span class="cl-detail">— Classified as primary</span>
+                
+            </div>
+            
+            <div class="checklist-item cl-high cl-checked">
+                <span class="cl-icon">✓</span>
+                <span class="cl-label">High FOIR (&gt; 50%)</span>
+                
+                <span class="cl-detail">— Bureau FOIR: 68.5%</span>
+                
+            </div>
+            
+            <div class="checklist-item cl-neutral cl-unchecked">
+                <span class="cl-icon">✗</span>
+                <span class="cl-label">NACH mandate EMI detected</span>
+                
+            </div>
+            
+            <div class="checklist-item cl-neutral cl-unchecked">
+                <span class="cl-icon">✗</span>
+                <span class="cl-label">Home loan EMI payments</span>
+                
+            </div>
+            
+            <div class="checklist-item cl-neutral cl-unchecked">
+                <span class="cl-icon">✗</span>
+                <span class="cl-label">Credit card bill payments</span>
+                
+            </div>
+            
+            <div class="checklist-item cl-neutral cl-unchecked">
+                <span class="cl-icon">✗</span>
+                <span class="cl-label">Land purchase payments</span>
+                
+            </div>
+            
+            <div class="checklist-item cl-neutral cl-unchecked">
+                <span class="cl-icon">✗</span>
+                <span class="cl-label">ATM withdrawals elevated</span>
+                
+            </div>
+            
+            <div class="checklist-item cl-medium cl-checked">
+                <span class="cl-icon">✓</span>
+                <span class="cl-label">Transactions above 95th percentile</span>
+                
+                <span class="cl-detail">— Salary Feb 2026: ₹52,161 (credit); EMI EV: ₹5,000 (debit)</span>
+                
+            </div>
+            
+            <div class="checklist-item cl-neutral cl-unchecked">
+                <span class="cl-icon">✗</span>
+                <span class="cl-label">Automated (NACH/mandate) transactions</span>
+                
+            </div>
+            
+            <div class="checklist-item cl-neutral cl-unchecked">
+                <span class="cl-icon">✗</span>
+                <span class="cl-label">Payment mode distribution shift</span>
+                
+            </div>
+            
+        </div>
+    </div>
+    
+
+    <!-- Risk Scorecard (collapsible) -->
+    
+    <details class="collapsible-section">
+        <summary>Risk Scorecard — click to expand</summary>
+        <div class="collapsible-body">
     <div class="scorecard">
         <div class="sc-verdict sc-rag-amber">
             ● Overall Risk: CAUTION
@@ -757,143 +930,8 @@ The customer&#39;s tradeline portfolio consists of N=27 total tradelines (M live
         
 
     </div>
-    
-
-    
-    
-    
-
-    
-    <div class="section">
-        <h3>Quick Assessment Checklist</h3>
-        <div class="checklist-grid">
-            
-            <div class="checklist-item cl-neutral cl-unchecked">
-                <span class="cl-icon">✗</span>
-                <span class="cl-label">ECS / NACH bounces</span>
-                
-            </div>
-            
-            <div class="checklist-item cl-neutral cl-unchecked">
-                <span class="cl-icon">✗</span>
-                <span class="cl-label">Loan disbursement detected</span>
-                
-            </div>
-            
-            <div class="checklist-item cl-neutral cl-unchecked">
-                <span class="cl-icon">✗</span>
-                <span class="cl-label">Post-disbursement fund diversion</span>
-                
-            </div>
-            
-            <div class="checklist-item cl-positive cl-checked">
-                <span class="cl-icon">✓</span>
-                <span class="cl-label">Salary detected in banking</span>
-                
-                <span class="cl-detail">— ₹51,020 avg (6 transactions)</span>
-                
-            </div>
-            
-            <div class="checklist-item cl-medium cl-checked">
-                <span class="cl-icon">✓</span>
-                <span class="cl-label">EMI obligations present</span>
-                
-                <span class="cl-detail">— ₹7,500 total across 2 lender(s)</span>
-                
-            </div>
-            
-            <div class="checklist-item cl-neutral cl-unchecked">
-                <span class="cl-icon">✗</span>
-                <span class="cl-label">Rent payments present</span>
-                
-            </div>
-            
-            <div class="checklist-item cl-neutral cl-unchecked">
-                <span class="cl-icon">✗</span>
-                <span class="cl-label">Post-salary self-transfer</span>
-                
-            </div>
-            
-            <div class="checklist-item cl-positive cl-unchecked">
-                <span class="cl-icon">✗</span>
-                <span class="cl-label">DPD &gt; 0 in bureau</span>
-                
-            </div>
-            
-            <div class="checklist-item cl-positive cl-unchecked">
-                <span class="cl-icon">✗</span>
-                <span class="cl-label">Adverse events (write-off / settlement)</span>
-                
-            </div>
-            
-            <div class="checklist-item cl-neutral cl-unchecked">
-                <span class="cl-icon">✗</span>
-                <span class="cl-label">Betting / gaming transactions</span>
-                
-            </div>
-            
-            <div class="checklist-item cl-positive cl-unchecked">
-                <span class="cl-icon">✗</span>
-                <span class="cl-label">Account is conduit / secondary</span>
-                
-                <span class="cl-detail">— Classified as primary</span>
-                
-            </div>
-            
-            <div class="checklist-item cl-high cl-checked">
-                <span class="cl-icon">✓</span>
-                <span class="cl-label">High FOIR (&gt; 50%)</span>
-                
-                <span class="cl-detail">— Bureau FOIR: 68.5%</span>
-                
-            </div>
-            
-            <div class="checklist-item cl-neutral cl-unchecked">
-                <span class="cl-icon">✗</span>
-                <span class="cl-label">NACH mandate EMI detected</span>
-                
-            </div>
-            
-            <div class="checklist-item cl-neutral cl-unchecked">
-                <span class="cl-icon">✗</span>
-                <span class="cl-label">Home loan EMI payments</span>
-                
-            </div>
-            
-            <div class="checklist-item cl-neutral cl-unchecked">
-                <span class="cl-icon">✗</span>
-                <span class="cl-label">Credit card bill payments</span>
-                
-            </div>
-            
-            <div class="checklist-item cl-neutral cl-unchecked">
-                <span class="cl-icon">✗</span>
-                <span class="cl-label">Land purchase payments</span>
-                
-            </div>
-            
-            <div class="checklist-item cl-neutral cl-unchecked">
-                <span class="cl-icon">✗</span>
-                <span class="cl-label">ATM withdrawals elevated</span>
-                
-            </div>
-            
-            <div class="checklist-item cl-medium cl-checked">
-                <span class="cl-icon">✓</span>
-                <span class="cl-label">Transactions above 95th percentile</span>
-                
-                <span class="cl-detail">— Salary Feb 2026: ₹52,161 (credit); EMI EV: ₹5,000 (debit)</span>
-                
-            </div>
-            
-            <div class="checklist-item cl-neutral cl-unchecked">
-                <span class="cl-icon">✗</span>
-                <span class="cl-label">Automated (NACH/mandate) transactions</span>
-                
-            </div>
-            
         </div>
-    </div>
+    </details>
     
 
     
@@ -1014,10 +1052,15 @@ The customer&#39;s tradeline portfolio consists of N=27 total tradelines (M live
     
     
 
-    <!-- Portfolio Visualizations -->
+    <!-- Portfolio Visualizations (collapsible) -->
     
     <div class="section">
-        <h3>Portfolio Visualizations</h3>
+        
+        <p style="font-size:12.5px; color:#444; line-height:1.6; margin-bottom:10px;">Sanctioned exposure peaked at ₹66.6L in Feb 2025, led by CC (₹63.5L) and PL (₹3.1L). Current exposure stands at ₹64.1L (CC, PL active), down 4% from peak — trend stable.</p>
+        
+        <details class="collapsible-section">
+            <summary>Portfolio Visualizations — click to expand</summary>
+            <div class="collapsible-body">
         <div class="charts-grid">
             <div class="chart-card">
                 <h4>Product Mix by Count</h4>
@@ -1041,9 +1084,6 @@ The customer&#39;s tradeline portfolio consists of N=27 total tradelines (M live
             <div class="chart-card chart-timeseries">
                 <h4>Portfolio Exposure Over Time (Stacked by Product)</h4>
                 <canvas id="cmbChartTimeseries"></canvas>
-                
-                <p style="margin-top:10px; font-size:12.5px; color:#444; line-height:1.6; border-top:1px solid #eee; padding-top:8px;">Sanctioned exposure peaked at ₹66.6L in Feb 2025, led by CC (₹63.5L) and PL (₹3.1L). Current exposure stands at ₹64.1L (CC, PL active), down 4% from peak — trend stable.</p>
-                
             </div>
 
             <!-- 6. DPD Event Timeline — hidden by JS if no events -->
@@ -1052,6 +1092,8 @@ The customer&#39;s tradeline portfolio consists of N=27 total tradelines (M live
                 <canvas id="cmbChartDpdTimeline"></canvas>
             </div>
         </div>
+            </div>
+        </details>
     </div>
 
     <script>
