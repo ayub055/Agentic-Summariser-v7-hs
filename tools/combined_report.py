@@ -26,6 +26,7 @@ _EXCEL_OUTPUT_DIR = os.path.join(
 def generate_combined_report_pdf(
     customer_id: int,
     theme: str = "original", # blue
+    save_intermediate: bool = True,
 ) -> Tuple[Optional[CustomerReport], Optional[BureauReport], str]:
     """Generate a combined banking + bureau report as one PDF.
 
@@ -39,6 +40,10 @@ def generate_combined_report_pdf(
 
     Args:
         customer_id: The customer identifier (CRN).
+        theme: HTML theme name (default "original").
+        save_intermediate: When False, skip saving individual banking/bureau
+            PDF/HTML files and the combined PDF — only save combined HTML
+            and Excel.  Used by batch_reports to avoid disk clutter.
 
     Returns:
         Tuple of (CustomerReport | None, BureauReport | None, combined_pdf_path).
@@ -46,14 +51,44 @@ def generate_combined_report_pdf(
     # 1. Customer report (cached by report_orchestrator)
     customer_report = None
     try:
-        customer_report, _ = generate_customer_report_pdf(customer_id)
+        if save_intermediate:
+            customer_report, _ = generate_customer_report_pdf(customer_id)
+        else:
+            # Build data + LLM narration but skip PDF/HTML rendering
+            from pipeline.reports.customer_report_builder import build_customer_report
+            from pipeline.reports.report_summary_chain import generate_customer_review
+            from data.loader import load_rg_salary_data
+            customer_report = build_customer_report(customer_id)
+            # LLM review (fail-soft, same logic as report_orchestrator)
+            if customer_report.meta.transaction_count >= 10:
+                try:
+                    _rg_sal = load_rg_salary_data(customer_id) or None
+                    customer_report.customer_review = generate_customer_review(
+                        customer_report, rg_salary_data=_rg_sal
+                    )
+                except Exception:
+                    pass
     except Exception as e:
         logger.warning(f"Banking report unavailable for {customer_id}: {e}")
 
     # 2. Bureau report
     bureau_report = None
     try:
-        bureau_report, _ = generate_bureau_report_pdf(customer_id)
+        if save_intermediate:
+            bureau_report, _ = generate_bureau_report_pdf(customer_id)
+        else:
+            # Build data + LLM narrative but skip PDF/HTML rendering
+            from pipeline.reports.bureau_report_builder import build_bureau_report
+            from pipeline.reports.report_summary_chain import generate_bureau_review
+            bureau_report = build_bureau_report(customer_id)
+            try:
+                bureau_report.narrative = generate_bureau_review(
+                    bureau_report.executive_inputs,
+                    tradeline_features=bureau_report.tradeline_features,
+                    monthly_exposure=bureau_report.monthly_exposure,
+                )
+            except Exception:
+                pass
     except Exception as e:
         logger.warning(f"Bureau report unavailable for {customer_id}: {e}")
 
@@ -126,6 +161,7 @@ def generate_combined_report_pdf(
     pdf_path = render_combined_report(
         customer_report, bureau_report, combined_summary=combined_summary,
         rg_salary_data=rg_salary_data, theme=theme,
+        save_pdf=save_intermediate,
     )
 
     # 4. Export one-row Excel file for this customer (batch-merge later)

@@ -28,6 +28,7 @@ from config.keywords import (
     LOAN_DISBURSEMENT_KEYWORDS,
     SELF_TRANSFER_KEYWORDS,
     SALARY_CREDIT_FRAGMENTS,
+    ATM_WITHDRAWAL_KEYWORDS,
     EVENT_KEYWORD_RULES,
 )
 
@@ -51,6 +52,21 @@ KEYWORD_RULES = EVENT_KEYWORD_RULES
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
+def _kw_to_regex(kw: str) -> str:
+    """Convert a keyword to a regex pattern.
+
+    Supports SQL-style ``%`` wildcard which matches any sequence of
+    characters.  Everything else is ``re.escape``-d so literal
+    characters are matched safely.
+
+    Examples:
+        "ECS RETURN"   → "ECS\\ RETURN"     (exact substring)
+        "NACH%BOUNCE"  → "NACH.*BOUNCE"     (wildcard)
+        "NACH%"        → "NACH.*"           (trailing wildcard)
+    """
+    parts = kw.split("%")
+    return ".*".join(re.escape(p) for p in parts)
 
 def _narr_upper(row) -> str:
     return str(row.get("tran_partclr", "")).upper()
@@ -170,9 +186,9 @@ def _apply_keyword_rules(df: pd.DataFrame) -> list:
         if subset.empty:
             continue
 
-        # Match rows
+        # Match rows — keywords support SQL-style % wildcard (matches any chars)
         narrations = subset["tran_partclr"].fillna("").str.upper()
-        pattern    = "|".join(re.escape(kw) for kw in keywords)
+        pattern    = "|".join(_kw_to_regex(kw) for kw in keywords)
         matched    = subset[narrations.str.contains(pattern, na=False, regex=True)].copy()
 
         if matched.empty:
@@ -954,6 +970,134 @@ def format_events_for_prompt(events: list) -> str:
 
 
 # ---------------------------------------------------------------------------
+# ATM withdrawal analysis
+# ---------------------------------------------------------------------------
+
+def _extract_atm_address(narration: str) -> Optional[str]:
+    """Extract address from ATM narration.
+
+    Format: ATL/<terminal>/<id>/<ADDRESS>/<time>
+    The address sits between the 3rd '/' and the last '/'.
+
+    Example:
+        "ATL/2543/81165/SANJAY NAGAR NIVARU/21:03"  →  "Sanjay Nagar Nivaru"
+    """
+    parts = narration.split("/")
+    if len(parts) >= 5:
+        # Everything between 3rd '/' and last '/' is the address
+        address = "/".join(parts[3:-1]).strip()
+        if address:
+            return address.title()
+    return None
+
+
+def _detect_atm_withdrawals(df: pd.DataFrame) -> list:
+    """Analyse ATM withdrawal patterns: trend and location extraction.
+
+    Compares the total ATM withdrawal amount in the last 3 months to the
+    first 3 months.  Extracts ATM addresses as likely nearby locations.
+    """
+    events = []
+    debits = df[df["dr_cr_indctor"] == "D"].copy()
+    if debits.empty:
+        return events
+
+    # Build regex from ATM keywords
+    atm_pattern = "|".join(_kw_to_regex(kw) for kw in ATM_WITHDRAWAL_KEYWORDS)
+    narrations = debits["tran_partclr"].fillna("").str.upper()
+    atm_mask = narrations.str.contains(atm_pattern, na=False, regex=True)
+    atm_txns = debits[atm_mask].copy()
+
+    if atm_txns.empty:
+        return events
+
+    atm_txns["tran_date"] = pd.to_datetime(atm_txns["tran_date"], errors="coerce")
+    atm_txns = atm_txns.dropna(subset=["tran_date"])
+
+    if atm_txns.empty:
+        return events
+
+    total_count = len(atm_txns)
+    total_amount = float(atm_txns["tran_amt_in_ac"].sum())
+
+    # Split months into first-half and last-half
+    atm_txns["_period"] = atm_txns["tran_date"].dt.to_period("M")
+    all_months = sorted(atm_txns["_period"].unique())
+    n_months = len(all_months)
+
+    if n_months >= 2:
+        mid = n_months // 2  # e.g. 6 months → mid=3, first=[0,1,2] last=[3,4,5]
+        first_months = set(all_months[:mid])
+        last_months = set(all_months[mid:])
+
+        first_half = atm_txns[atm_txns["_period"].isin(first_months)]
+        last_half = atm_txns[atm_txns["_period"].isin(last_months)]
+
+        first_amt = float(first_half["tran_amt_in_ac"].sum())
+        last_amt = float(last_half["tran_amt_in_ac"].sum())
+        first_count = len(first_half)
+        last_count = len(last_half)
+
+        if first_amt > 0:
+            change_pct = ((last_amt - first_amt) / first_amt) * 100
+        else:
+            change_pct = 100.0 if last_amt > 0 else 0.0
+
+        is_elevated = last_amt > first_amt and change_pct > 20
+    else:
+        first_amt = last_amt = 0
+        first_count = last_count = 0
+        change_pct = 0
+        is_elevated = False
+
+    # Extract unique addresses
+    addresses = set()
+    for _, row in atm_txns.iterrows():
+        narr = str(row.get("tran_partclr", ""))
+        addr = _extract_atm_address(narr)
+        if addr:
+            addresses.add(addr)
+
+    # Build description
+    desc = (
+        f"ATM withdrawals: {total_count} transactions totalling ₹{total_amount:,.0f}. "
+    )
+    if n_months >= 2:
+        desc += (
+            f"First {len(set(all_months[:n_months // 2]))} months: "
+            f"{first_count} txns ₹{first_amt:,.0f}; "
+            f"Last {len(set(all_months[n_months // 2:]))} months: "
+            f"{last_count} txns ₹{last_amt:,.0f} "
+            f"({'+' if change_pct >= 0 else ''}{change_pct:.0f}%). "
+        )
+    if addresses:
+        desc += "Locations: " + ", ".join(sorted(addresses))
+
+    significance = "medium" if is_elevated else "neutral"
+
+    events.append({
+        "type":        "atm_withdrawal",
+        "date":        str(atm_txns["tran_date"].min().date()),
+        "month_label": f"{total_count} ATM withdrawals across {n_months} month(s)",
+        "amount":      round(total_amount, 2),
+        "significance": significance,
+        "description": desc,
+        # Extra fields for checklist consumption
+        "_total_count":  total_count,
+        "_total_amount": round(total_amount, 2),
+        "_first_half_amount": round(first_amt, 2),
+        "_last_half_amount":  round(last_amt, 2),
+        "_first_half_count":  first_count,
+        "_last_half_count":   last_count,
+        "_change_pct":   round(change_pct, 1),
+        "_is_elevated":  is_elevated,
+        "_addresses":    sorted(addresses),
+    })
+
+    return events
+
+
+# ---------------------------------------------------------------------------
 # Public API
 # ---------------------------------------------------------------------------
 
@@ -1044,6 +1188,11 @@ def detect_events(customer_id: int, rg_salary_data: Optional[dict] = None) -> li
         events += _detect_large_single_credit(cust_df, salary_amount)
     except Exception as exc:
         logger.warning("event_detector: large_single_credit failed: %s", exc)
+
+    try:
+        events += _detect_atm_withdrawals(cust_df)
+    except Exception as exc:
+        logger.warning("event_detector: atm_withdrawals failed: %s", exc)
 
     # Deduplicate and sort
     events = _deduplicate(events)

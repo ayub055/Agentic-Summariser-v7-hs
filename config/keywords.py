@@ -40,7 +40,7 @@ LENDER_FRAGMENTS = [
 
 LOAN_DISBURSEMENT_KEYWORDS = [
     "LOAN DIS", "LOAN DISB", "LOAN DISBURS",
-    "LOAN CREDIT", "LOAN A/C CR", "SANCTIONED AMT",
+    "LOAN CREDIT", "LOAN A/C CR", "SANCTIONED",
     "LOAN AC NO", "PLCC",
 ]
 
@@ -65,13 +65,28 @@ HOME_LOAN_EMI_KEYWORDS = ["HOUSE LOAN", "HOME LOAN", "HOMELOAN"]
 CC_PAYMENT_KEYWORDS = [
     "CREDIT CARD PAYMENT", "BILL PAID TO CREDIT CARD",
     "CREDIT CARD BILL", "CC PAY", "CARD DUES",
-    "CC DUES", "CREDITCARD",
+    "CC DUES", "CREDITCARD", "CC BILL"
 ]
 
 # ---------------------------------------------------------------------------
 # Land payment detection
 # ---------------------------------------------------------------------------
 LAND_PAYMENT_KEYWORDS = [":LAND PAYMENT", " LAND PAYMENT "]
+
+# ---------------------------------------------------------------------------
+# ATM withdrawal detection
+# ---------------------------------------------------------------------------
+# Narration format: ATL/<terminal>/<id>/<address>/<time>
+ATM_WITHDRAWAL_KEYWORDS = ["%ATL/%"]
+
+# ---------------------------------------------------------------------------
+# ECS / NACH bounce detection
+# ---------------------------------------------------------------------------
+ECS_BOUNCE_KEYWORDS = [
+    "ECS%RETURN", "ECS%BOUNCE", "NACH%RETURN", "NACH%BOUNCE",
+    "ECS%DISHON", "NACH%DISHON", "MANDATE%REJECT",
+    "ECS%UNPAID", "NACH%UNPAID", "INSUFFICIENT FUND","I/W CHQ RTN"
+]
 
 # ---------------------------------------------------------------------------
 # Account-quality helpers
@@ -165,12 +180,8 @@ EVENT_KEYWORD_RULES = [
     # ── ECS / NACH bounce / return ────────────────────────────────────────
     {
         "type": "ecs_bounce",
-        "direction": "any",
-        "keywords": [
-            "ECS RETURN", "ECS BOUNCE", "NACH RETURN", "NACH BOUNCE",
-            "ECS DISHON", "NACH DISHON", "MANDATE REJECT",
-            "ECS UNPAID", "NACH UNPAID", "INSUFFICIENT FUND",
-        ],
+        "direction": "D",
+        "keywords": ECS_BOUNCE_KEYWORDS,
         "significance": "high",
         "label": "ECS/NACH bounce / return",
     },

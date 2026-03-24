@@ -417,6 +417,7 @@ def render_combined_report(
     combined_summary: Optional[str] = None,
     rg_salary_data: Optional[dict] = None,
     theme: str = "emerald",
+    save_pdf: bool = True,
 ) -> str:
     """Render combined PDF + HTML from both reports.
 
@@ -427,9 +428,10 @@ def render_combined_report(
                       Defaults to reports/combined_{customer_id}_report.pdf.
         combined_summary: LLM-generated synthesised executive summary.
         rg_salary_data: Optional internal salary algorithm data dict.
+        save_pdf: When False, skip PDF generation — only save HTML.
 
     Returns:
-        Path where PDF was saved.
+        Path where the output was saved (PDF path if save_pdf, else HTML path).
     """
     if output_path is None:
         # Derive customer_id from whichever report is available
@@ -444,11 +446,12 @@ def render_combined_report(
     output_file = Path(output_path)
     output_file.parent.mkdir(parents=True, exist_ok=True)
 
-    # Build and save PDF
-    pdf = _build_combined_pdf(customer_report, bureau_report, combined_summary)
-    pdf.output(str(output_file))
+    # Build and save PDF (optional)
+    if save_pdf:
+        pdf = _build_combined_pdf(customer_report, bureau_report, combined_summary)
+        pdf.output(str(output_file))
 
-    # Also save HTML version alongside the PDF
+    # Save HTML version alongside the PDF
     html_path = str(output_file).replace(".pdf", ".html")
     html_content = render_combined_report_html(
         customer_report, bureau_report, combined_summary=combined_summary,
@@ -464,7 +467,7 @@ def render_combined_report(
     with open(str(html_version_path), "w", encoding="utf-8") as f:
         f.write(html_content)
 
-    return str(output_file)
+    return str(output_file) if save_pdf else html_path
 
 
 _ADVERSE_FLAGS = {"WRF", "SET", "SMA", "SUB", "DBT", "LSS", "WOF"}
@@ -682,7 +685,30 @@ def compute_checklist(
         "detail": land_events[0].get("description") if land_events else None,
     })
 
-    # 17 & 18. Transaction-level checks (require raw DataFrame)
+    # 17. ATM withdrawals — trend and location
+    atm_events = _events_of_type("atm_withdrawal")
+    if atm_events:
+        ev = atm_events[0]
+        is_elevated = ev.get("_is_elevated", False)
+        addrs = ev.get("_addresses", [])
+        detail = ev.get("description", "")
+        if addrs:
+            detail += f" | Likely nearby: {', '.join(addrs[:3])}"
+        items.append({
+            "label": "ATM withdrawals elevated",
+            "checked": is_elevated,
+            "severity": "medium" if is_elevated else "neutral",
+            "detail": detail,
+        })
+    else:
+        items.append({
+            "label": "ATM withdrawals elevated",
+            "checked": False,
+            "severity": "neutral",
+            "detail": None,
+        })
+
+    # 18 & 19. Transaction-level checks (require raw DataFrame)
     try:
         from data.loader import get_transactions_df
         from utils.narration_utils import extract_recipient_name, clean_narration

@@ -70,7 +70,7 @@ def run_batch(crns: list, output_excel: str, resume: bool = False) -> None:
 
         logger.info("[%d/%d] Processing CRN %s …", i, total, crn)
         try:
-            generate_combined_report_pdf(int(crn))
+            generate_combined_report_pdf(int(crn), save_intermediate=False)
             succeeded += 1
         except Exception as exc:
             logger.error("CRN %s failed: %s", crn, exc)

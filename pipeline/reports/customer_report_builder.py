@@ -299,21 +299,29 @@ def _get_emi_block(customer_id: int) -> Optional[list]:
         if not supporting:
             return None
 
-        # Each supporting transaction becomes its own EMIBlock row
-        # with merchant name extracted from narration
+        # Group transactions by merchant/description, then create one
+        # EMIBlock per group with average amount and total count.
         from utils.narration_utils import extract_recipient_name, clean_narration
 
-        blocks = []
+        groups: dict = {}  # name -> list of amounts
+        samples: dict = {}  # name -> first txn (for sample_transaction)
         for txn in supporting:
             narration = txn.get('narration', '')
             name = extract_recipient_name(narration)
             if not name:
                 name = clean_narration(narration) or 'EMI Payment'
+            if name not in groups:
+                groups[name] = []
+                samples[name] = txn
+            groups[name].append(txn.get('amount', 0))
+
+        blocks = []
+        for name, amounts in groups.items():
             blocks.append(EMIBlock(
                 name=name,
-                amount=txn.get('amount', 0),
-                frequency=1,
-                sample_transaction=txn
+                amount=round(sum(amounts) / len(amounts), 2),
+                frequency=len(amounts),
+                sample_transaction=samples[name],
             ))
 
         return blocks if blocks else None
