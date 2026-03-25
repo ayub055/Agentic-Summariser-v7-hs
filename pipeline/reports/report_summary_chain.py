@@ -275,6 +275,12 @@ def _build_data_summary(report: CustomerReport, rg_salary_data: dict = None) -> 
                 )
             m_parts.append("Two-way merchants: " + "; ".join(bi_parts))
 
+        emerging = mf.get("emerging_merchants", {})
+        em_list = emerging.get("emerging_merchants", [])
+        if em_list:
+            names = ", ".join(e["name"] for e in em_list[:5])
+            m_parts.append(f"Emerging merchants (new in recent 3 months, absent before): {len(em_list)} — {names}")
+
         if m_parts:
             sections.append("MERCHANT PROFILE: " + ". ".join(m_parts))
 

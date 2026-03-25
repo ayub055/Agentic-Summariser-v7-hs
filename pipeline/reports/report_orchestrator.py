@@ -301,6 +301,14 @@ def _aggregate_to_report(
         for s in plan.sections
     ]
 
+    # Merchant behavioral features (same as build_customer_report path)
+    merchant_features = None
+    try:
+        from features.merchant_features import compute_all_merchant_features
+        merchant_features = compute_all_merchant_features(customer_id) or None
+    except Exception:
+        pass
+
     base_report = CustomerReport(
         meta=meta,
         category_overview=category_overview,
@@ -312,7 +320,8 @@ def _aggregate_to_report(
         bills=bills,
         savings=savings,
         risk_indicators=risk_indicators,
-        sections_meta=sections_meta
+        sections_meta=sections_meta,
+        merchant_features=merchant_features,
     )
 
     # Attach account quality + events (same as build_customer_report path)

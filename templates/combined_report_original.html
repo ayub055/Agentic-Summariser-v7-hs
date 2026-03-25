@@ -583,6 +583,39 @@
         details.collapsible-section > .collapsible-body {
             padding-top: 12px;
         }
+
+        /* ── clickable section dividers ───────── */
+        .section-divider.clickable {
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.15s;
+        }
+        .section-divider.clickable:hover {
+            background-color: #3730a3;
+        }
+        .section-divider .expand-arrow {
+            float: right;
+            font-size: 14px;
+            transition: transform 0.2s;
+        }
+        .section-divider .expand-arrow.open {
+            transform: rotate(90deg);
+        }
+        details.section-collapse {
+            margin-bottom: 0;
+        }
+        details.section-collapse > summary {
+            display: none;
+        }
+        .section-divider .expand-hint {
+            display: block;
+            font-size: 11px;
+            font-weight: 400;
+            opacity: 0.7;
+            letter-spacing: 0;
+            text-transform: none;
+            margin-top: 2px;
+        }
     </style>
 </head>
 <body>
@@ -625,14 +658,25 @@
     </div>
     {% endif %}
 
-    <!-- Risk Scorecard (collapsible) -->
+    <!-- Risk Variables & Snapshot (clickable, everything hidden) -->
     {% if scorecard %}
-    <details class="collapsible-section">
-        <summary>Risk Scorecard — click to expand</summary>
-        <div class="collapsible-body">
+    <div class="section-divider clickable" onclick="toggleSection('risk-details','risk-arrow')">Risk Variables & Snapshot <span class="expand-hint">Click to expand and read more detailed view</span><span class="expand-arrow" id="risk-arrow">&#9656;</span></div>
+
+    <details class="section-collapse" id="risk-details">
+    <summary></summary>
     <div class="scorecard">
         <div class="sc-verdict sc-rag-{{ scorecard.verdict_rag }}">
             ● Overall Risk: {{ scorecard.verdict }}
+        </div>
+        <div class="sc-3col">
+            <div class="sc-col sc-col-green">
+                <div class="sc-col-head">&#10003; Strengths</div>
+                {% for s in scorecard.strengths %}<div class="sc-col-item"><span class="sc-col-bullet" style="color:#34d399">●</span><span>{{ s }}</span></div>{% else %}<div style="color:#94a3b8;font-size:11px">None identified</div>{% endfor %}
+            </div>
+            <div class="sc-col sc-col-red">
+                <div class="sc-col-head">&#9888; Concerns</div>
+                {% for c in scorecard.concerns %}<div class="sc-col-item"><span class="sc-col-bullet" style="color:#f97316">●</span><span>{{ c }}</span></div>{% else %}<div style="color:#94a3b8;font-size:11px">None identified</div>{% endfor %}
+            </div>
         </div>
         {% if scorecard.signals %}
         <div class="sc-signals-grid">
@@ -704,32 +748,33 @@
             {% endif %}
         </div>
         {% endif %}
-        <div class="sc-3col">
-            <div class="sc-col sc-col-green">
-                <div class="sc-col-head">&#10003; Strengths</div>
-                {% for s in scorecard.strengths %}<div class="sc-col-item"><span class="sc-col-bullet" style="color:#34d399">●</span><span>{{ s }}</span></div>{% else %}<div style="color:#94a3b8;font-size:11px">None identified</div>{% endfor %}
-            </div>
-            <div class="sc-col sc-col-red">
-                <div class="sc-col-head">&#9888; Concerns</div>
-                {% for c in scorecard.concerns %}<div class="sc-col-item"><span class="sc-col-bullet" style="color:#f97316">●</span><span>{{ c }}</span></div>{% else %}<div style="color:#94a3b8;font-size:11px">None identified</div>{% endfor %}
-            </div>
-        </div>
         {% if scorecard.narrative %}
         <div class="sc-narrative">{{ scorecard.narrative }}</div>
         {% endif %}
-
-    </div>{# end .scorecard #}
-        </div>{# end collapsible-body #}
-    </details>{# end scorecard collapsible #}
+    </div>
+    </details>{# end risk-details #}
     {% endif %}
 
     {# ================================================================== #}
     {# PART 1: BUREAU REPORT                                               #}
     {# ================================================================== #}
 
-    <div class="section-divider">Bureau Tradeline Analysis</div>
+    <div class="section-divider clickable" onclick="toggleSection('bureau-details','bureau-arrow')">Bureau Tradeline Analysis <span class="expand-hint">Click to expand and read more detailed view</span><span class="expand-arrow" id="bureau-arrow">&#9656;</span></div>
 
     {% if bureau_report %}
+
+    <!-- Bureau Executive Summary (always visible) -->
+    {% if bureau_report.narrative %}
+    <div class="section">
+        <h3>Bureau Executive Summary</h3>
+        <div class="summary-box">
+            <p>{{ bureau_report.narrative }}</p>
+        </div>
+    </div>
+    {% endif %}
+
+    <details class="section-collapse" id="bureau-details">
+    <summary></summary>
 
     <!-- Portfolio Summary -->
     <div class="section">
@@ -879,15 +924,13 @@
     </div>
     {% endif %}
 
-    <!-- Portfolio Visualizations (collapsible) -->
+    <!-- Portfolio Visualizations (always visible when bureau section is open) -->
     {% if chart_data %}
     <div class="section">
         {% if exposure_summary %}
         <p style="font-size:12.5px; color:#444; line-height:1.6; margin-bottom:10px;">{{ exposure_summary }}</p>
         {% endif %}
-        <details class="collapsible-section">
-            <summary>Portfolio Visualizations — click to expand</summary>
-            <div class="collapsible-body">
+        <h3>Portfolio Visualizations</h3>
         <div class="charts-grid">
             <div class="chart-card">
                 <h4>Product Mix by Count</h4>
@@ -919,8 +962,6 @@
                 <canvas id="cmbChartDpdTimeline"></canvas>
             </div>
         </div>
-            </div>{# end collapsible-body #}
-        </details>
     </div>
 
     <script>
@@ -1094,16 +1135,6 @@
         })();
     })();
     </script>
-    {% endif %}
-
-    <!-- Bureau Executive Summary -->
-    {% if bureau_report.narrative %}
-    <div class="section">
-        <h3>Bureau Executive Summary</h3>
-        <div class="summary-box">
-            <p>{{ bureau_report.narrative }}</p>
-        </div>
-    </div>
     {% endif %}
 
     <!-- Key Findings & Inferences -->
@@ -1314,6 +1345,8 @@
     </div>
     {% endif %}
 
+    </details>{# end bureau-details #}
+
     {% else %}
     {# Bureau data not available #}
     <div class="section">
@@ -1327,13 +1360,26 @@
     {# DIVIDER                                                             #}
     {# ================================================================== #}
 
-    <div class="section-divider">Banking / Transaction Report</div>
+    <div class="section-divider clickable" onclick="toggleSection('banking-details','banking-arrow')">Banking / Transaction Report <span class="expand-hint">Click to expand and read more detailed view</span><span class="expand-arrow" id="banking-arrow">&#9656;</span></div>
 
     {# ================================================================== #}
     {# PART 2: BANKING / TRANSACTION REPORT                               #}
     {# ================================================================== #}
 
     {% if customer_report %}
+
+    {# Banking Executive Summary — always visible #}
+    {% if customer_report.customer_review and customer_report.meta.transaction_count >= 10 %}
+    <div class="section">
+        <h3>Banking Executive Summary</h3>
+        <div class="summary-box">
+            <p>{{ customer_report.customer_review }}</p>
+        </div>
+    </div>
+    {% endif %}
+
+    <details class="section-collapse" id="banking-details">
+    <summary></summary>
 
     {% if customer_report.meta.transaction_count < 10 %}
     <div class="section">
@@ -1387,15 +1433,6 @@
                 <div class="value">{% if tl_features.income_source and ('rg_sal' in tl_features.income_source|lower or 'rg_income' in tl_features.income_source|lower) %}Salaried / Regular Credits{% else %}{{ tl_features.node|segment }}{% endif %}</div>
             </div>
             {% endif %}
-        </div>
-    </div>
-    {% endif %}
-
-    {% if customer_report.customer_review and customer_report.meta.transaction_count >= 10 %}
-    <div class="section">
-        <h3>Executive Summary</h3>
-        <div class="summary-box">
-            <p>{{ customer_report.customer_review }}</p>
         </div>
     </div>
     {% endif %}
@@ -1666,6 +1703,8 @@
     {% endif %}
     {% endif %}
 
+    </details>{# end banking-details #}
+
     {% else %}
     {# Banking data not available #}
     <div class="section">
@@ -1695,5 +1734,19 @@
         <p>Generated on {{ bureau_report.meta.generated_at[:10] }}</p>
         {% endif %}
     </div>
+
+    <script>
+    function toggleSection(detailsId, arrowId) {
+        var d = document.getElementById(detailsId);
+        var a = document.getElementById(arrowId);
+        if (d.open) {
+            d.removeAttribute('open');
+            a.classList.remove('open');
+        } else {
+            d.setAttribute('open', '');
+            a.classList.add('open');
+        }
+    }
+    </script>
 </body>
 </html>

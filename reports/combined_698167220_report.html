@@ -602,6 +602,39 @@
         details.collapsible-section > .collapsible-body {
             padding-top: 12px;
         }
+
+        /* ── clickable section dividers ───────── */
+        .section-divider.clickable {
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.15s;
+        }
+        .section-divider.clickable:hover {
+            background-color: #3730a3;
+        }
+        .section-divider .expand-arrow {
+            float: right;
+            font-size: 14px;
+            transition: transform 0.2s;
+        }
+        .section-divider .expand-arrow.open {
+            transform: rotate(90deg);
+        }
+        details.section-collapse {
+            margin-bottom: 0;
+        }
+        details.section-collapse > summary {
+            display: none;
+        }
+        .section-divider .expand-hint {
+            display: block;
+            font-size: 11px;
+            font-weight: 400;
+            opacity: 0.7;
+            letter-spacing: 0;
+            text-transform: none;
+            margin-top: 2px;
+        }
     </style>
 </head>
 <body>
@@ -760,18 +793,37 @@
                 
             </div>
             
+            <div class="checklist-item cl-medium cl-checked">
+                <span class="cl-icon">✓</span>
+                <span class="cl-label">Emerging merchants detected</span>
+                
+                <span class="cl-detail">— 6 new: EMI VEHICLE, REKHA KANSAL, SALIM AMIN ATTA</span>
+                
+            </div>
+            
         </div>
     </div>
     
 
-    <!-- Risk Scorecard (collapsible) -->
+    <!-- Risk Variables & Snapshot (clickable, everything hidden) -->
     
-    <details class="collapsible-section">
-        <summary>Risk Scorecard — click to expand</summary>
-        <div class="collapsible-body">
+    <div class="section-divider clickable" onclick="toggleSection('risk-details','risk-arrow')">Risk Variables & Snapshot <span class="expand-hint">Click to expand and read more detailed view</span><span class="expand-arrow" id="risk-arrow">&#9656;</span></div>
+
+    <details class="section-collapse" id="risk-details">
+    <summary></summary>
     <div class="scorecard">
         <div class="sc-verdict sc-rag-amber">
             ● Overall Risk: CAUTION
+        </div>
+        <div class="sc-3col">
+            <div class="sc-col sc-col-green">
+                <div class="sc-col-head">&#10003; Strengths</div>
+                <div class="sc-col-item"><span class="sc-col-bullet" style="color:#34d399">●</span><span>No delinquency detected across the portfolio</span></div><div class="sc-col-item"><span class="sc-col-bullet" style="color:#34d399">●</span><span>Credit card utilization at 9% [Opened: Aug 2018 – Nov 2025 | Last Closed: Nov 2025]</span></div><div class="sc-col-item"><span class="sc-col-bullet" style="color:#34d399">●</span><span>Zero DPD across all products in recent 6-9 month windows</span></div>
+            </div>
+            <div class="sc-col sc-col-red">
+                <div class="sc-col-head">&#9888; Concerns</div>
+                <div class="sc-col-item"><span class="sc-col-bullet" style="color:#f97316">●</span><span>Unsecured sanction is 100% of total (INR 72,48,130 of INR 72,48,130)</span></div>
+            </div>
         </div>
         
         <div class="sc-signals-grid">
@@ -913,24 +965,12 @@ Primary = main salary/income account · Secondary = supplementary · Conduit = p
             
         </div>
         
-        <div class="sc-3col">
-            <div class="sc-col sc-col-green">
-                <div class="sc-col-head">&#10003; Strengths</div>
-                <div class="sc-col-item"><span class="sc-col-bullet" style="color:#34d399">●</span><span>No delinquency detected across the portfolio</span></div><div class="sc-col-item"><span class="sc-col-bullet" style="color:#34d399">●</span><span>Credit card utilization at 9% [Opened: Aug 2018 – Nov 2025 | Last Closed: Nov 2025]</span></div><div class="sc-col-item"><span class="sc-col-bullet" style="color:#34d399">●</span><span>Zero DPD across all products in recent 6-9 month windows</span></div>
-            </div>
-            <div class="sc-col sc-col-red">
-                <div class="sc-col-head">&#9888; Concerns</div>
-                <div class="sc-col-item"><span class="sc-col-bullet" style="color:#f97316">●</span><span>Unsecured sanction is 100% of total (INR 72,48,130 of INR 72,48,130)</span></div>
-            </div>
-        </div>
         
-        <div class="sc-narrative">The customer&#39;s income is ₹313,622 per month, sourced from six salary transactions averaging ₹51,020 each. The average monthly cash flow indicates an inflow of ₹50,922 and outflow of ₹8,090, resulting in a net positive balance of ₹42,832. Key spending categories include mobility expenses at 45% of the total expenditure, with EMI commitments averaging ₹7,500 per payment.
+        <div class="sc-narrative">The customer&#39;s income profile indicates a stable financial picture. The customer&#39;s salary income averages ₹51,020 per month from six transactions, contributing significantly to their average monthly cash flow of ₹50,922 and outflow of ₹8,090, resulting in a net positive balance of ₹42,832. The customer has established relationships with EMI EV and EMI VEHICLE, which receive debit transactions of ₹5,000 and ₹2,500, respectively.
 
-The customer&#39;s tradeline portfolio consists of N=27 total tradelines (M live=22, P closed=5), featuring a mix of loan products, primarily Credit Card accounts. Total sanctioned exposure stands at INR 72,48,130, while total outstanding is INR 8,22,679. Unsecured sanction amount and outstanding are identical to total outstanding, indicating no separation between secured and unsecured loans. The credit card utilization percentage is 9.0%, which is elevated. The customer&#39;s creditworthiness assessment is cautious due to the high risk profile indicated by their credit portfolio.</div>
+The customer&#39;s credit portfolio features 27 total tradelines (M live=22, P closed=5), primarily consisting of Credit Card loan products. Total sanctioned exposure stands at INR 72,48,130, while total outstanding is INR 8,22,679. Unsecured sanction amount and outstanding are identical to total outstanding, indicating no separation between secured and unsecured loans. The credit card utilization percentage is 9.0%, which is elevated. A cautious assessment of the customer&#39;s creditworthiness is warranted due to their high debt servicing ratio and elevated credit utilization.</div>
         
-
     </div>
-        </div>
     </details>
     
 
@@ -938,9 +978,26 @@ The customer&#39;s tradeline portfolio consists of N=27 total tradelines (M live
     
     
 
-    <div class="section-divider">Bureau Tradeline Analysis</div>
+    <div class="section-divider clickable" onclick="toggleSection('bureau-details','bureau-arrow')">Bureau Tradeline Analysis <span class="expand-hint">Click to expand and read more detailed view</span><span class="expand-arrow" id="bureau-arrow">&#9656;</span></div>
 
     
+
+    <!-- Bureau Executive Summary (always visible) -->
+    
+    <div class="section">
+        <h3>Bureau Executive Summary</h3>
+        <div class="summary-box">
+            <p>Here is the executive summary:
+
+The customer&#39;s tradeline portfolio consists of N=27 total tradelines (M live=22, P closed=5). The portfolio features a mix of loan products, with Credit Card being the dominant product type, accounting for 26 live accounts. Total sanctioned exposure stands at INR 72,48,130, while total outstanding is INR 8,22,679. Unsecured sanction amount and outstanding are identical to total outstanding, indicating no separation between secured and unsecured loans. The credit card utilization percentage is 9.0%, which is elevated. There are no defaulted loan types present in the data.
+
+The customer&#39;s behavioral features indicate a relatively clean repayment profile, with zero DPD across all products and windows, no missed payments. The trade-to-enquiry ratio is 40.00% for unsecured trades, indicating moderate enquiry activity. Loan acquisition velocity is also notable, with an average interpurchase time of 3.45 months. However, the sanctioned exposure trend shows a decrease in sanctioned exposure over the past 12 and 6 months, from ₹66.6L to ₹64.1L and ₹66.6L to ₹64.3L respectively, indicating some stability in the trend.</p>
+        </div>
+    </div>
+    
+
+    <details class="section-collapse" id="bureau-details">
+    <summary></summary>
 
     <!-- Portfolio Summary -->
     <div class="section">
@@ -1052,15 +1109,13 @@ The customer&#39;s tradeline portfolio consists of N=27 total tradelines (M live
     
     
 
-    <!-- Portfolio Visualizations (collapsible) -->
+    <!-- Portfolio Visualizations (always visible when bureau section is open) -->
     
     <div class="section">
         
         <p style="font-size:12.5px; color:#444; line-height:1.6; margin-bottom:10px;">Sanctioned exposure peaked at ₹66.6L in Feb 2025, led by CC (₹63.5L) and PL (₹3.1L). Current exposure stands at ₹64.1L (CC, PL active), down 4% from peak — trend stable.</p>
         
-        <details class="collapsible-section">
-            <summary>Portfolio Visualizations — click to expand</summary>
-            <div class="collapsible-body">
+        <h3>Portfolio Visualizations</h3>
         <div class="charts-grid">
             <div class="chart-card">
                 <h4>Product Mix by Count</h4>
@@ -1092,8 +1147,6 @@ The customer&#39;s tradeline portfolio consists of N=27 total tradelines (M live
                 <canvas id="cmbChartDpdTimeline"></canvas>
             </div>
         </div>
-            </div>
-        </details>
     </div>
 
     <script>
@@ -1267,20 +1320,6 @@ The customer&#39;s tradeline portfolio consists of N=27 total tradelines (M live
         })();
     })();
     </script>
-    
-
-    <!-- Bureau Executive Summary -->
-    
-    <div class="section">
-        <h3>Bureau Executive Summary</h3>
-        <div class="summary-box">
-            <p>Here is the executive summary:
-
-The customer&#39;s tradeline portfolio consists of N=27 total tradelines (M live=22, P closed=5). The portfolio features a mix of loan products, with Credit Card being the dominant product type, accounting for 26 live accounts. Total sanctioned exposure stands at INR 72,48,130, while total outstanding is INR 8,22,679. Unsecured sanction amount and outstanding are identical to total outstanding, indicating no separation between secured and unsecured loans. The credit card utilization percentage is 9.0%, which is elevated. There are no defaulted loan types present in the data.
-
-The customer&#39;s behavioral features indicate a relatively clean repayment profile, with zero DPD across all products and windows, no missed payments. The trade-to-enquiry ratio is 40.00% for unsecured trades, indicating moderate enquiry activity. Loan acquisition velocity is also notable, with an average interpurchase time of 3.45 months. However, the sanctioned exposure trend shows a decrease in sanctioned exposure over the past 12 and 6 months, from ₹66.6L to ₹64.1L and ₹66.6L to ₹64.3L respectively, indicating some stability in the trend.</p>
-        </div>
-    </div>
     
 
     <!-- Key Findings & Inferences -->
@@ -1561,19 +1600,38 @@ The customer&#39;s behavioral features indicate a relatively clean repayment pro
     </div>
     
 
+    </details>
+
     
 
     
     
     
 
-    <div class="section-divider">Banking / Transaction Report</div>
+    <div class="section-divider clickable" onclick="toggleSection('banking-details','banking-arrow')">Banking / Transaction Report <span class="expand-hint">Click to expand and read more detailed view</span><span class="expand-arrow" id="banking-arrow">&#9656;</span></div>
 
     
     
     
 
     
+
+    
+    
+    <div class="section">
+        <h3>Banking Executive Summary</h3>
+        <div class="summary-box">
+            <p>The customer&#39;s banking profile presents a stable financial picture. The average monthly cash flow indicates an inflow of ₹50,922 and outflow of ₹8,090, resulting in a net positive balance of ₹42,832. This is largely driven by the customer&#39;s salary income, which averages ₹51,020 per month from six transactions. The EMI commitments of ₹7,500 per payment, with two debit transactions, contribute to the overall cash flow. Notably, the banking FOIR ratio stands at 14.7%, indicating a comfortable level of debt servicing.
+
+The customer&#39;s merchant behavior is characterized by regular interactions with BHOSALE RAJU TA, who receives four transactions worth ₹200 each. The most frequent merchant, BHOSALE RAJU TA, has been visited four times in the recent period. Additionally, the customer has established relationships with EMI EV and EMI VEHICLE, which receive debit transactions of ₹5,000 and ₹2,500, respectively. These merchants account for a significant proportion of the customer&#39;s spending, with Salary Oct 2025 accounts for 98% of credits and EMI EV accounts for 62% of debits.
+
+The customer has experienced several transaction events in recent months. In Jun 2025, the customer received ₹72,000 salary and transferred ₹72,000 to their own account the next day. In Jul 2025, the customer made an EMI payment debit of ₹3,750 (MB:SENT MONEY TO OWN 2411726562/EMI VEHICLE). The customer has also received payments from emerging merchants such as REKHA KANSAL and SALIM AMIN ATTA in recent months.</p>
+        </div>
+    </div>
+    
+
+    <details class="section-collapse" id="banking-details">
+    <summary></summary>
 
     
 
@@ -1620,19 +1678,6 @@ The customer&#39;s behavioral features indicate a relatively clean repayment pro
                 <div class="value">Salaried / Regular Credits</div>
             </div>
             
-        </div>
-    </div>
-    
-
-    
-    <div class="section">
-        <h3>Executive Summary</h3>
-        <div class="summary-box">
-            <p>The customer&#39;s banking profile presents a stable financial picture. The average monthly cash flow indicates an inflow of ₹50,922 and outflow of ₹8,090, resulting in a net positive balance of ₹42,832. This is supported by a total income of ₹313,622 from six salary transactions, with the average amount being ₹51,020 per month. Key spending categories include mobility expenses at 45% of the total expenditure, with EMI commitments averaging ₹7,500 per payment.
-
-The customer&#39;s banking profile also reveals a primary account, as evidenced by the visibility of EMI payments and an average of two debit transactions per month. The most frequent merchant is BHOSALE RAJU TA, with four transactions totaling ₹200. Notably, the customer has been making regular EMI payments, with an average amount of ₹3,750 per month.
-
-In Jun 2025, the customer received ₹72,000 salary and transferred ₹72,000 to their own account the next day. In Jul 2025, the customer made a payment of ₹7,500 for EMI.</p>
         </div>
     </div>
     
@@ -1895,6 +1940,8 @@ In Jun 2025, the customer received ₹72,000 salary and transferred ₹72,000 to
     
     
 
+    </details>
+
     
 
     
@@ -1905,17 +1952,31 @@ In Jun 2025, the customer received ₹72,000 salary and transferred ₹72,000 to
     <div class="section-divider">Combined Executive Summary</div>
     <div class="section">
         <div class="summary-box" style="border-left: 4px solid #2c3e50;">
-            <p>The customer&#39;s income is ₹313,622 per month, sourced from six salary transactions averaging ₹51,020 each. The average monthly cash flow indicates an inflow of ₹50,922 and outflow of ₹8,090, resulting in a net positive balance of ₹42,832. Key spending categories include mobility expenses at 45% of the total expenditure, with EMI commitments averaging ₹7,500 per payment.
+            <p>The customer&#39;s income profile indicates a stable financial picture. The customer&#39;s salary income averages ₹51,020 per month from six transactions, contributing significantly to their average monthly cash flow of ₹50,922 and outflow of ₹8,090, resulting in a net positive balance of ₹42,832. The customer has established relationships with EMI EV and EMI VEHICLE, which receive debit transactions of ₹5,000 and ₹2,500, respectively.
 
-The customer&#39;s tradeline portfolio consists of N=27 total tradelines (M live=22, P closed=5), featuring a mix of loan products, primarily Credit Card accounts. Total sanctioned exposure stands at INR 72,48,130, while total outstanding is INR 8,22,679. Unsecured sanction amount and outstanding are identical to total outstanding, indicating no separation between secured and unsecured loans. The credit card utilization percentage is 9.0%, which is elevated. The customer&#39;s creditworthiness assessment is cautious due to the high risk profile indicated by their credit portfolio.</p>
+The customer&#39;s credit portfolio features 27 total tradelines (M live=22, P closed=5), primarily consisting of Credit Card loan products. Total sanctioned exposure stands at INR 72,48,130, while total outstanding is INR 8,22,679. Unsecured sanction amount and outstanding are identical to total outstanding, indicating no separation between secured and unsecured loans. The credit card utilization percentage is 9.0%, which is elevated. A cautious assessment of the customer&#39;s creditworthiness is warranted due to their high debt servicing ratio and elevated credit utilization.</p>
         </div>
     </div>
     
 
     <div class="footer">
         
-        <p>Generated on 2026-03-24 | Currency: INR</p>
+        <p>Generated on 2026-03-25 | Currency: INR</p>
         
     </div>
+
+    <script>
+    function toggleSection(detailsId, arrowId) {
+        var d = document.getElementById(detailsId);
+        var a = document.getElementById(arrowId);
+        if (d.open) {
+            d.removeAttribute('open');
+            a.classList.remove('open');
+        } else {
+            d.setAttribute('open', '');
+            a.classList.add('open');
+        }
+    }
+    </script>
 </body>
 </html>

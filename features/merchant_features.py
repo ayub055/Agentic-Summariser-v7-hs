@@ -433,6 +433,53 @@ def get_new_merchant_ratio(
     }
 
 
+def get_emerging_merchants(
+    transactions: List[Dict[str, Any]],
+    recent_months: int = 3,
+    direction: str = "D",
+    exclude_self_transfers: bool = True,
+) -> Dict[str, Any]:
+    """Merchants appearing in recent N months but absent in the preceding N months.
+
+    Returns:
+        Dict with emerging_merchants list, recent_window, prior_window.
+    """
+    empty = {"emerging_merchants": [], "recent_window": "", "prior_window": ""}
+    groups = _group_by_merchant(transactions, direction, exclude_self_transfers)
+    if not groups:
+        return empty
+
+    all_months: set = set()
+    for txns in groups.values():
+        for t in txns:
+            m = _get_month(t)
+            if m:
+                all_months.add(m)
+
+    sorted_months = sorted(all_months)
+    if len(sorted_months) < recent_months * 2:
+        return empty
+
+    recent_set = set(sorted_months[-recent_months:])
+    prior_set = set(sorted_months[-recent_months * 2:-recent_months])
+
+    emerging = []
+    for merchant, txns in groups.items():
+        merchant_months = set(_get_month(t) for t in txns if _get_month(t))
+        if merchant_months & recent_set and not merchant_months & prior_set:
+            count = sum(1 for t in txns if _get_month(t) in recent_set)
+            total = sum(float(t.get("tran_amt_in_ac", 0)) for t in txns if _get_month(t) in recent_set)
+            emerging.append({"name": merchant, "count": count, "total_amount": round(total, 2)})
+
+    emerging.sort(key=lambda x: x["total_amount"], reverse=True)
+
+    return {
+        "emerging_merchants": emerging,
+        "recent_window": f"{min(recent_set)} to {max(recent_set)}",
+        "prior_window": f"{min(prior_set)} to {max(prior_set)}",
+    }
+
+
 def get_favourite_merchants_ipt(
     transactions: List[Dict[str, Any]],
     top_n: Optional[int] = None,
@@ -697,6 +744,7 @@ def compute_all_merchant_features(
         "amount_trends": get_merchant_amount_trend(transactions, exclude_self_transfers=exclude_self_transfers),
         "round_amount_merchants": get_round_amount_merchants(transactions, exclude_self_transfers=exclude_self_transfers),
         "new_merchant_ratio": get_new_merchant_ratio(transactions, exclude_self_transfers=exclude_self_transfers),
+        "emerging_merchants": get_emerging_merchants(transactions, exclude_self_transfers=exclude_self_transfers),
         "favourite_merchants_ipt": get_favourite_merchants_ipt(transactions, exclude_self_transfers=exclude_self_transfers),
         "significant_merchants": get_significant_merchants(transactions, exclude_self_transfers=exclude_self_transfers),
         "bidirectional_merchants": get_bidirectional_merchants(transactions, exclude_self_transfers=exclude_self_transfers),

@@ -865,6 +865,16 @@ def compute_checklist(
     except Exception:
         pass  # fail-soft: skip transaction-level checks if data unavailable
 
+    # Emerging merchants (new in recent months, absent before)
+    if customer_report and customer_report.merchant_features:
+        em = customer_report.merchant_features.get("emerging_merchants", {})
+        em_list = em.get("emerging_merchants", [])
+        if em_list:
+            names = ", ".join(e["name"] for e in em_list[:3])
+            detail = f"{len(em_list)} new: {names}"
+            items.append({"label": "Emerging merchants detected", "checked": True,
+                           "severity": "medium", "detail": detail})
+
     return items
 
 
