@@ -19,8 +19,8 @@ from schemas.customer_report import CustomerReport
 from data.loader import get_transactions_df
 from utils.helpers import mask_customer_id, format_inr
 from schemas.loan_type import LoanType, get_loan_type_display_name
-from config.settings import EXPLAINER_MODEL, SUMMARY_MODEL, LLM_TEMPERATURE, LLM_TEMPERATURE_CREATIVE, LLM_SEED
-from utils.llm_utils import strip_think
+from config.settings import EXPLAINER_MODEL, SUMMARY_MODEL, LLM_TEMPERATURE, LLM_TEMPERATURE_CREATIVE, LLM_SEED, is_thinking_model
+from utils.llm_utils import strip_think, extract_reasoning
 from config.prompts import (
     CUSTOMER_REVIEW_PROMPT,
     CUSTOMER_PERSONA_PROMPT,
@@ -43,12 +43,14 @@ def create_summary_chain(model_name: str = _SUMMARY_MODEL):
         model_name: Ollama model to use (default: llama3.1:8b)
 
     Returns:
-        LCEL chain that takes {customer_id, data_summary} and returns str
+        LCEL chain that takes {customer_id, data_summary} and returns AIMessage
     """
     prompt = ChatPromptTemplate.from_template(CUSTOMER_REVIEW_PROMPT)
-    llm = ChatOllama(model=model_name, temperature=LLM_TEMPERATURE, seed=LLM_SEED)
+    reasoning = True if is_thinking_model(model_name) else None
+    llm = ChatOllama(model=model_name, temperature=LLM_TEMPERATURE, seed=LLM_SEED,
+                     reasoning=reasoning)
 
-    return prompt | llm | StrOutputParser()
+    return prompt | llm
 
 
 def generate_customer_review(
@@ -88,7 +90,7 @@ def generate_customer_review(
             "customer_id": mask_customer_id(report.meta.customer_id),
             "data_summary": data_summary,
         })
-        review = strip_think(raw, label="CustomerReview")
+        review = extract_reasoning(raw, label="CustomerReview")
         return review.strip() if review else None
     except Exception as e:
         logger.warning("Customer review generation failed: %s", e)
@@ -327,8 +329,10 @@ def _build_data_summary(report: CustomerReport, rg_salary_data: dict = None) -> 
 def create_persona_chain(model_name: str = _SUMMARY_MODEL):
     """Create an LCEL chain for generating customer persona."""
     prompt = ChatPromptTemplate.from_template(CUSTOMER_PERSONA_PROMPT)
-    llm = ChatOllama(model=model_name, temperature=LLM_TEMPERATURE_CREATIVE, seed=LLM_SEED)
-    return prompt | llm | StrOutputParser()
+    reasoning = True if is_thinking_model(model_name) else None
+    llm = ChatOllama(model=model_name, temperature=LLM_TEMPERATURE_CREATIVE, seed=LLM_SEED,
+                     reasoning=reasoning)
+    return prompt | llm
 
 
 def generate_customer_persona(
@@ -364,7 +368,7 @@ def generate_customer_persona(
             "comprehensive_data": comprehensive_data,
             "transaction_sample": transaction_sample,
         })
-        persona = strip_think(raw, label="CustomerPersona")
+        persona = extract_reasoning(raw, label="CustomerPersona")
         return persona.strip() if persona else None
     except Exception as e:
         logger.warning("Customer persona generation failed: %s", e)
@@ -947,11 +951,13 @@ def generate_bureau_review(
 
     try:
         prompt = ChatPromptTemplate.from_template(BUREAU_REVIEW_PROMPT)
-        llm = ChatOllama(model=model_name, temperature=LLM_TEMPERATURE, seed=LLM_SEED)
-        chain = prompt | llm | StrOutputParser()
+        reasoning = True if is_thinking_model(model_name) else None
+        llm = ChatOllama(model=model_name, temperature=LLM_TEMPERATURE, seed=LLM_SEED,
+                         reasoning=reasoning)
+        chain = prompt | llm
 
         raw = chain.invoke({"data_summary": data_summary})
-        review = strip_think(raw, label="BureauReview")
+        review = extract_reasoning(raw, label="BureauReview")
         return review.strip() if review else None
     except Exception as e:
         logger.warning("Bureau review generation failed: %s", e)
@@ -997,8 +1003,10 @@ def generate_combined_executive_summary(
 
     try:
         prompt = ChatPromptTemplate.from_template(COMBINED_EXECUTIVE_PROMPT)
-        llm = ChatOllama(model=model_name, temperature=0, seed=LLM_SEED)
-        chain = prompt | llm | StrOutputParser()
+        reasoning = True if is_thinking_model(model_name) else None
+        llm = ChatOllama(model=model_name, temperature=0, seed=LLM_SEED,
+                         reasoning=reasoning)
+        chain = prompt | llm
 
         raw = chain.invoke({
             "customer_id": customer_id,
@@ -1006,7 +1014,7 @@ def generate_combined_executive_summary(
             "bureau_summary": bureau_summary or "(not available)",
             "additional_context": additional_context,
         })
-        result = strip_think(raw, label="CombinedSummary")
+        result = extract_reasoning(raw, label="CombinedSummary")
         return result.strip() if result else None
     except Exception as e:
         logger.warning("Combined executive summary generation failed: %s", e)

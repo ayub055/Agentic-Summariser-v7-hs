@@ -14,8 +14,16 @@ MAX_ITERATIONS = 10
 # Pipeline models
 PARSER_MODEL = "mistral"          # Intent parsing + report planner — needs fast JSON, no think tags
 EXPLAINER_MODEL = "llama3.2"      # Real-time query chat explainer — fast response
-# SUMMARY_MODEL = "deepseek-r1:14b"
-SUMMARY_MODEL = "llama3.2" # Report summaries — async, reasoning quality matters # Report summaries — async, reasoning quality matters
+SUMMARY_MODEL = "deepseek-r1:8b" # Report summaries — reasoning model with <think> traces
+
+# Models that support the Ollama `think` parameter (emit <think> reasoning traces)
+THINKING_MODEL_PREFIXES = ("deepseek-r1", "qwq", "qwen3", "phi4-reasoning")
+
+
+def is_thinking_model(model_name: str) -> bool:
+    """Check if a model supports reasoning/thinking mode."""
+    name = model_name.lower()
+    return any(name.startswith(p) for p in THINKING_MODEL_PREFIXES)
 
 # LLM inference parameters — change here to affect all LLM calls
 LLM_TEMPERATURE: float = 0       # Deterministic output for all analytical calls

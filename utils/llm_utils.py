@@ -38,6 +38,48 @@ def _write_reasoning_to_file(label: str, content: str) -> None:
         logger.warning("Failed to write reasoning log: %s", e)
 
 
+def extract_reasoning(message, label: str = "LLM") -> str:
+    """Extract reasoning from AIMessage.additional_kwargs and log it.
+
+    When ChatOllama is used with reasoning=True, the thinking content is
+    placed in additional_kwargs["reasoning_content"] rather than in the
+    message content.  This function captures that reasoning, logs it to
+    the reasoning file (if enabled), and returns only the clean content.
+
+    Also handles the legacy case where <think> tags are inline in content
+    (reasoning=None on older Ollama versions).
+
+    Args:
+        message: AIMessage from ChatOllama (or plain str for backwards compat).
+        label:   Descriptive label for the log entry.
+
+    Returns:
+        Clean answer text (str).
+    """
+    # Backwards compat: if someone passes a plain string, fall through to strip_think
+    if isinstance(message, str):
+        return strip_think(message, label=label)
+
+    content = message.content or ""
+    reasoning = (message.additional_kwargs or {}).get("reasoning_content", "")
+
+    if reasoning:
+        reasoning = reasoning.strip()
+        logger.debug(
+            "\n============================================================\n"
+            "[%s — REASONING]\n"
+            "------------------------------------------------------------\n"
+            "%s\n"
+            "============================================================",
+            label,
+            reasoning,
+        )
+        _write_reasoning_to_file(label, reasoning)
+
+    # Also handle any inline <think> tags (belt-and-suspenders)
+    return strip_think(content, label=label)
+
+
 def strip_think(text: str, label: str = "LLM") -> str:
     """Strip <think>...</think> block from DeepSeek-R1 / CoT model output.
 

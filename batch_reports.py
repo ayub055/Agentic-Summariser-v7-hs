@@ -144,18 +144,18 @@ def main() -> None:
         logger.error("No CRNs to process. Exiting.")
         sys.exit(1)
 
-    # Reasoning trace logging (deepseek only)
+    # Reasoning trace logging
     if args.log_reasoning:
         from config.settings import SUMMARY_MODEL
-        if "deepseek" in SUMMARY_MODEL.lower():
-            from utils.llm_utils import set_reasoning_log_file
-            set_reasoning_log_file(args.log_reasoning)
-            logger.info("Reasoning traces will be logged to %s", args.log_reasoning)
-        else:
+        from utils.llm_utils import set_reasoning_log_file
+        if "deepseek" not in SUMMARY_MODEL.lower():
             logger.warning(
-                "Reasoning logging requested but SUMMARY_MODEL is '%s' (not deepseek). Skipping.",
+                "SUMMARY_MODEL is '%s' — reasoning traces require a thinking model "
+                "(deepseek, qwq, qwen3). Logging enabled but file may stay empty.",
                 SUMMARY_MODEL,
             )
+        set_reasoning_log_file(args.log_reasoning)
+        logger.info("Reasoning traces will be logged to %s", args.log_reasoning)
 
     resume = args.resume and not args.force
     if resume:
