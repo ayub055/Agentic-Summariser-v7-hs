@@ -633,8 +633,8 @@
                     <span class="tl-chip-value">{{ "%.2f"|format(tl_features.cc_balance_utilization_pct) if tl_features.cc_balance_utilization_pct is not none else "N/A" }}</span>
                 </div>
                 {# pct_bal_pl_lv: safe <87.06 #}
-                <div class="tl-chip {% if tl_features.pl_balance_remaining_pct is not none and tl_features.pl_balance_remaining_pct < 87.06 %}chip-green{% else %}chip-red{% endif %}">
-                    <span class="tl-chip-label">PL Bal %</span>
+                <div class="tl-chip {% if tl_features.pl_balance_remaining_pct is none %}chip-neutral{% elif tl_features.pl_balance_remaining_pct < 87.06 %}chip-green{% else %}chip-red{% endif %}">
+                    <span class="tl-chip-label">PL Out %</span>
                     <span class="tl-chip-value">{{ "%.2f"|format(tl_features.pl_balance_remaining_pct) if tl_features.pl_balance_remaining_pct is not none else "N/A" }}</span>
                 </div>
                 {# tr_to_enq_ratio_uns_l24m: safe ≥13.74 #}
@@ -1073,8 +1073,8 @@
                 </div>
             </div>
             <div class="rf-item">
-                <label>PL Balance Remaining %</label>
-                <div class="value {% if tl_features.pl_balance_remaining_pct is not none and tl_features.pl_balance_remaining_pct < 87.06 %}safe{% else %}risk{% endif %}">{{ "%.2f"|format(tl_features.pl_balance_remaining_pct) if tl_features.pl_balance_remaining_pct is not none else "N/A" }}</div>
+                <label>PL Outstanding %</label>
+                <div class="value {% if tl_features.pl_balance_remaining_pct is none %}neutral{% elif tl_features.pl_balance_remaining_pct < 87.06 %}safe{% else %}risk{% endif %}">{{ "%.2f"|format(tl_features.pl_balance_remaining_pct) if tl_features.pl_balance_remaining_pct is not none else "N/A" }}</div>
             </div>
             <div class="rf-item">
                 <label>Unsecured Enquiries (12M)</label>

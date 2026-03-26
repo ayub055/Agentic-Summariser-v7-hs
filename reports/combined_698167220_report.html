@@ -530,10 +530,23 @@
             white-space: pre-line;
         }
         /* ── checklist ──────────────────────────── */
-        .checklist-grid {
+        .checklist-columns {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 8px;
+            gap: 20px;
+        }
+        .checklist-col h4 {
+            font-size: 13px;
+            font-weight: 600;
+            margin: 0 0 8px 0;
+            padding-bottom: 4px;
+            border-bottom: 1px solid #e2e8f0;
+            color: #334155;
+        }
+        .checklist-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
         }
         .checklist-item {
             display: flex;
@@ -661,146 +674,185 @@
     
     <div class="section">
         <h3>Quick Assessment Checklist</h3>
-        <div class="checklist-grid">
-            
-            <div class="checklist-item cl-neutral cl-unchecked">
-                <span class="cl-icon">✗</span>
-                <span class="cl-label">ECS / NACH bounces</span>
-                
+        <div class="checklist-columns">
+            <div class="checklist-col">
+                <h4>Bureau Checklist</h4>
+                <div class="checklist-grid">
+                    
+                    <div class="checklist-item cl-positive cl-unchecked">
+                        <span class="cl-icon">✗</span>
+                        <span class="cl-label">DPD &gt; 0 in bureau</span>
+                        
+                    </div>
+                    
+                    <div class="checklist-item cl-positive cl-unchecked">
+                        <span class="cl-icon">✗</span>
+                        <span class="cl-label">Adverse events (write-off / settlement)</span>
+                        
+                    </div>
+                    
+                    <div class="checklist-item cl-high cl-checked">
+                        <span class="cl-icon">✓</span>
+                        <span class="cl-label">High FOIR (&gt; 50%)</span>
+                        
+                        <span class="cl-detail">— Bureau FOIR: 68.5%</span>
+                        
+                    </div>
+                    
+                    <div class="checklist-item cl-positive cl-unchecked">
+                        <span class="cl-icon">✗</span>
+                        <span class="cl-label">CC utilization elevated (≥30%)</span>
+                        
+                        <span class="cl-detail">— CC utilization: 0.1%</span>
+                        
+                    </div>
+                    
+                    <div class="checklist-item cl-neutral cl-checked">
+                        <span class="cl-icon">✓</span>
+                        <span class="cl-label">Customer has Kotak loan</span>
+                        
+                        <span class="cl-detail">— 1 Kotak loan(s): credit_card(1)</span>
+                        
+                    </div>
+                    
+                    <div class="checklist-item cl-positive cl-unchecked">
+                        <span class="cl-icon">✗</span>
+                        <span class="cl-label">Kotak loan default (live)</span>
+                        
+                    </div>
+                    
+                    <div class="checklist-item cl-neutral cl-unchecked">
+                        <span class="cl-icon">✗</span>
+                        <span class="cl-label">Live Home Loan detected</span>
+                        
+                    </div>
+                    
+                    <div class="checklist-item cl-positive cl-checked">
+                        <span class="cl-icon">✓</span>
+                        <span class="cl-label">Bureau thick</span>
+                        
+                    </div>
+                    
+                    <div class="checklist-item cl-positive cl-checked">
+                        <span class="cl-icon">✓</span>
+                        <span class="cl-label">Banking thick</span>
+                        
+                    </div>
+                    
+                    <div class="checklist-item cl-neutral cl-unchecked">
+                        <span class="cl-icon">✗</span>
+                        <span class="cl-label">Exposure elevated</span>
+                        
+                        <span class="cl-detail">— Exposure 12M: Stable</span>
+                        
+                    </div>
+                    
+                </div>
             </div>
-            
-            <div class="checklist-item cl-neutral cl-unchecked">
-                <span class="cl-icon">✗</span>
-                <span class="cl-label">Loan disbursement detected</span>
-                
+            <div class="checklist-col">
+                <h4>Banking Checklist</h4>
+                <div class="checklist-grid">
+                    
+                    <div class="checklist-item cl-neutral cl-unchecked">
+                        <span class="cl-icon">✗</span>
+                        <span class="cl-label">ECS / NACH bounces</span>
+                        
+                    </div>
+                    
+                    <div class="checklist-item cl-neutral cl-unchecked">
+                        <span class="cl-icon">✗</span>
+                        <span class="cl-label">Loan disbursement detected</span>
+                        
+                    </div>
+                    
+                    <div class="checklist-item cl-neutral cl-unchecked">
+                        <span class="cl-icon">✗</span>
+                        <span class="cl-label">Post-disbursement fund diversion</span>
+                        
+                    </div>
+                    
+                    <div class="checklist-item cl-positive cl-checked">
+                        <span class="cl-icon">✓</span>
+                        <span class="cl-label">Salary detected in banking</span>
+                        
+                        <span class="cl-detail">— ₹51,020 avg (6 transactions)</span>
+                        
+                    </div>
+                    
+                    <div class="checklist-item cl-medium cl-checked">
+                        <span class="cl-icon">✓</span>
+                        <span class="cl-label">EMI obligations present</span>
+                        
+                        <span class="cl-detail">— ₹7,500 total across 2 lender(s)</span>
+                        
+                    </div>
+                    
+                    <div class="checklist-item cl-neutral cl-unchecked">
+                        <span class="cl-icon">✗</span>
+                        <span class="cl-label">Rent payments present</span>
+                        
+                    </div>
+                    
+                    <div class="checklist-item cl-neutral cl-unchecked">
+                        <span class="cl-icon">✗</span>
+                        <span class="cl-label">Post-salary self-transfer</span>
+                        
+                    </div>
+                    
+                    <div class="checklist-item cl-neutral cl-unchecked">
+                        <span class="cl-icon">✗</span>
+                        <span class="cl-label">NACH mandate EMI detected</span>
+                        
+                    </div>
+                    
+                    <div class="checklist-item cl-neutral cl-unchecked">
+                        <span class="cl-icon">✗</span>
+                        <span class="cl-label">Credit card bill payments</span>
+                        
+                    </div>
+                    
+                    <div class="checklist-item cl-neutral cl-unchecked">
+                        <span class="cl-icon">✗</span>
+                        <span class="cl-label">Land purchase payments</span>
+                        
+                    </div>
+                    
+                    <div class="checklist-item cl-neutral cl-unchecked">
+                        <span class="cl-icon">✗</span>
+                        <span class="cl-label">ATM withdrawals elevated</span>
+                        
+                    </div>
+                    
+                    <div class="checklist-item cl-medium cl-checked">
+                        <span class="cl-icon">✓</span>
+                        <span class="cl-label">Transactions above 95th percentile</span>
+                        
+                        <span class="cl-detail">— Salary Feb 2026: ₹52,161 (credit); EMI EV: ₹5,000 (debit)</span>
+                        
+                    </div>
+                    
+                    <div class="checklist-item cl-neutral cl-unchecked">
+                        <span class="cl-icon">✗</span>
+                        <span class="cl-label">Automated (NACH/mandate) transactions</span>
+                        
+                    </div>
+                    
+                    <div class="checklist-item cl-neutral cl-unchecked">
+                        <span class="cl-icon">✗</span>
+                        <span class="cl-label">Payment mode distribution shift</span>
+                        
+                    </div>
+                    
+                    <div class="checklist-item cl-medium cl-checked">
+                        <span class="cl-icon">✓</span>
+                        <span class="cl-label">Emerging merchants detected</span>
+                        
+                        <span class="cl-detail">— 6 new: EMI VEHICLE, REKHA KANSAL, SALIM AMIN ATTA</span>
+                        
+                    </div>
+                    
+                </div>
             </div>
-            
-            <div class="checklist-item cl-neutral cl-unchecked">
-                <span class="cl-icon">✗</span>
-                <span class="cl-label">Post-disbursement fund diversion</span>
-                
-            </div>
-            
-            <div class="checklist-item cl-positive cl-checked">
-                <span class="cl-icon">✓</span>
-                <span class="cl-label">Salary detected in banking</span>
-                
-                <span class="cl-detail">— ₹51,020 avg (6 transactions)</span>
-                
-            </div>
-            
-            <div class="checklist-item cl-medium cl-checked">
-                <span class="cl-icon">✓</span>
-                <span class="cl-label">EMI obligations present</span>
-                
-                <span class="cl-detail">— ₹7,500 total across 2 lender(s)</span>
-                
-            </div>
-            
-            <div class="checklist-item cl-neutral cl-unchecked">
-                <span class="cl-icon">✗</span>
-                <span class="cl-label">Rent payments present</span>
-                
-            </div>
-            
-            <div class="checklist-item cl-neutral cl-unchecked">
-                <span class="cl-icon">✗</span>
-                <span class="cl-label">Post-salary self-transfer</span>
-                
-            </div>
-            
-            <div class="checklist-item cl-positive cl-unchecked">
-                <span class="cl-icon">✗</span>
-                <span class="cl-label">DPD &gt; 0 in bureau</span>
-                
-            </div>
-            
-            <div class="checklist-item cl-positive cl-unchecked">
-                <span class="cl-icon">✗</span>
-                <span class="cl-label">Adverse events (write-off / settlement)</span>
-                
-            </div>
-            
-            <div class="checklist-item cl-neutral cl-unchecked">
-                <span class="cl-icon">✗</span>
-                <span class="cl-label">Betting / gaming transactions</span>
-                
-            </div>
-            
-            <div class="checklist-item cl-positive cl-unchecked">
-                <span class="cl-icon">✗</span>
-                <span class="cl-label">Account is conduit / secondary</span>
-                
-                <span class="cl-detail">— Classified as primary</span>
-                
-            </div>
-            
-            <div class="checklist-item cl-high cl-checked">
-                <span class="cl-icon">✓</span>
-                <span class="cl-label">High FOIR (&gt; 50%)</span>
-                
-                <span class="cl-detail">— Bureau FOIR: 68.5%</span>
-                
-            </div>
-            
-            <div class="checklist-item cl-neutral cl-unchecked">
-                <span class="cl-icon">✗</span>
-                <span class="cl-label">NACH mandate EMI detected</span>
-                
-            </div>
-            
-            <div class="checklist-item cl-neutral cl-unchecked">
-                <span class="cl-icon">✗</span>
-                <span class="cl-label">Home loan EMI payments</span>
-                
-            </div>
-            
-            <div class="checklist-item cl-neutral cl-unchecked">
-                <span class="cl-icon">✗</span>
-                <span class="cl-label">Credit card bill payments</span>
-                
-            </div>
-            
-            <div class="checklist-item cl-neutral cl-unchecked">
-                <span class="cl-icon">✗</span>
-                <span class="cl-label">Land purchase payments</span>
-                
-            </div>
-            
-            <div class="checklist-item cl-neutral cl-unchecked">
-                <span class="cl-icon">✗</span>
-                <span class="cl-label">ATM withdrawals elevated</span>
-                
-            </div>
-            
-            <div class="checklist-item cl-medium cl-checked">
-                <span class="cl-icon">✓</span>
-                <span class="cl-label">Transactions above 95th percentile</span>
-                
-                <span class="cl-detail">— Salary Feb 2026: ₹52,161 (credit); EMI EV: ₹5,000 (debit)</span>
-                
-            </div>
-            
-            <div class="checklist-item cl-neutral cl-unchecked">
-                <span class="cl-icon">✗</span>
-                <span class="cl-label">Automated (NACH/mandate) transactions</span>
-                
-            </div>
-            
-            <div class="checklist-item cl-neutral cl-unchecked">
-                <span class="cl-icon">✗</span>
-                <span class="cl-label">Payment mode distribution shift</span>
-                
-            </div>
-            
-            <div class="checklist-item cl-medium cl-checked">
-                <span class="cl-icon">✓</span>
-                <span class="cl-label">Emerging merchants detected</span>
-                
-                <span class="cl-detail">— 6 new: EMI VEHICLE, REKHA KANSAL, SALIM AMIN ATTA</span>
-                
-            </div>
-            
         </div>
     </div>
     
@@ -966,9 +1018,9 @@ Primary = main salary/income account · Secondary = supplementary · Conduit = p
         </div>
         
         
-        <div class="sc-narrative">The customer&#39;s income profile indicates a stable financial picture. The customer&#39;s salary income averages ₹51,020 per month from six transactions, contributing significantly to their average monthly cash flow of ₹50,922 and outflow of ₹8,090, resulting in a net positive balance of ₹42,832. The customer has established relationships with EMI EV and EMI VEHICLE, which receive debit transactions of ₹5,000 and ₹2,500, respectively.
+        <div class="sc-narrative">The customer&#39;s income profile indicates a stable financial picture. The customer&#39;s salary income averages ₹51,020 per month from six transactions, resulting in an average monthly cash flow of ₹50,922 and outflow of ₹8,090, with a net positive balance of ₹42,832. The customer has established relationships with EMI EV and EMI VEHICLE, which receive debit transactions of ₹5,000 and ₹2,500, respectively.
 
-The customer&#39;s credit portfolio features 27 total tradelines (M live=22, P closed=5), primarily consisting of Credit Card loan products. Total sanctioned exposure stands at INR 72,48,130, while total outstanding is INR 8,22,679. Unsecured sanction amount and outstanding are identical to total outstanding, indicating no separation between secured and unsecured loans. The credit card utilization percentage is 9.0%, which is elevated. A cautious assessment of the customer&#39;s creditworthiness is warranted due to their high debt servicing ratio and elevated credit utilization.</div>
+The customer&#39;s tradeline portfolio consists of N=27 total tradelines (M live=22, P closed=5), featuring a mix of loan products, with Credit Card being the dominant product type. Total sanctioned exposure stands at INR 72,48,130, while total outstanding is INR 8,22,679. Unsecured sanction amount and outstanding are identical to total outstanding, indicating no separation between secured and unsecured loans. The credit card utilization percentage is 9.0%, which is elevated. The customer&#39;s creditworthiness assessment is cautious due to the high FOIR (total) of 68.5% and elevated credit card utilization.</div>
         
     </div>
     </details>
@@ -989,9 +1041,9 @@ The customer&#39;s credit portfolio features 27 total tradelines (M live=22, P c
         <div class="summary-box">
             <p>Here is the executive summary:
 
-The customer&#39;s tradeline portfolio consists of N=27 total tradelines (M live=22, P closed=5). The portfolio features a mix of loan products, with Credit Card being the dominant product type, accounting for 26 live accounts. Total sanctioned exposure stands at INR 72,48,130, while total outstanding is INR 8,22,679. Unsecured sanction amount and outstanding are identical to total outstanding, indicating no separation between secured and unsecured loans. The credit card utilization percentage is 9.0%, which is elevated. There are no defaulted loan types present in the data.
+The customer&#39;s tradeline portfolio consists of N=27 total tradelines (M live=22, P closed=5). The portfolio features a mix of loan products, with Credit Card being the dominant product type. Total sanctioned exposure stands at INR 72,48,130, while total outstanding is INR 8,22,679. Unsecured sanction amount and outstanding are identical to total outstanding, indicating no separation between secured and unsecured loans. The credit card utilization percentage is 9.0%, which is elevated. There are no defaulted loan types present in the data.
 
-The customer&#39;s behavioral features indicate a relatively clean repayment profile, with zero DPD across all products and windows, no missed payments. The trade-to-enquiry ratio is 40.00% for unsecured trades, indicating moderate enquiry activity. Loan acquisition velocity is also notable, with an average interpurchase time of 3.45 months. However, the sanctioned exposure trend shows a decrease in sanctioned exposure over the past 12 and 6 months, from ₹66.6L to ₹64.1L and ₹66.6L to ₹64.3L respectively, indicating some stability in the trend.</p>
+The customer&#39;s behavioral features indicate a relatively clean repayment profile, with zero DPD across all products and windows, no missed payments. The trade-to-enquiry ratio is 40.00% for unsecured trades, indicating moderate enquiry activity. Loan acquisition velocity is also notable, with an average interpurchase time of 3.45 months. However, the FOIR (total) stands at 68.5%, indicating over-leveraging, while the FOIR (unsecured only) is 60.8%. The sanctioned exposure trend has decreased by 4% over the last 12 months, from ₹66.6L to ₹64.1L, and by 3% over the last 6 months, from prior 6M avg ₹66.6L to recent 6M avg ₹64.3L.</p>
         </div>
     </div>
     
@@ -1550,7 +1602,7 @@ The customer&#39;s behavioral features indicate a relatively clean repayment pro
                 </div>
             </div>
             <div class="rf-item">
-                <label>PL Balance Remaining %</label>
+                <label>PL Outstanding %</label>
                 <div class="value safe">53.46</div>
             </div>
             <div class="rf-item">
@@ -1952,16 +2004,16 @@ The customer has experienced several transaction events in recent months. In Jun
     <div class="section-divider">Combined Executive Summary</div>
     <div class="section">
         <div class="summary-box" style="border-left: 4px solid #2c3e50;">
-            <p>The customer&#39;s income profile indicates a stable financial picture. The customer&#39;s salary income averages ₹51,020 per month from six transactions, contributing significantly to their average monthly cash flow of ₹50,922 and outflow of ₹8,090, resulting in a net positive balance of ₹42,832. The customer has established relationships with EMI EV and EMI VEHICLE, which receive debit transactions of ₹5,000 and ₹2,500, respectively.
+            <p>The customer&#39;s income profile indicates a stable financial picture. The customer&#39;s salary income averages ₹51,020 per month from six transactions, resulting in an average monthly cash flow of ₹50,922 and outflow of ₹8,090, with a net positive balance of ₹42,832. The customer has established relationships with EMI EV and EMI VEHICLE, which receive debit transactions of ₹5,000 and ₹2,500, respectively.
 
-The customer&#39;s credit portfolio features 27 total tradelines (M live=22, P closed=5), primarily consisting of Credit Card loan products. Total sanctioned exposure stands at INR 72,48,130, while total outstanding is INR 8,22,679. Unsecured sanction amount and outstanding are identical to total outstanding, indicating no separation between secured and unsecured loans. The credit card utilization percentage is 9.0%, which is elevated. A cautious assessment of the customer&#39;s creditworthiness is warranted due to their high debt servicing ratio and elevated credit utilization.</p>
+The customer&#39;s tradeline portfolio consists of N=27 total tradelines (M live=22, P closed=5), featuring a mix of loan products, with Credit Card being the dominant product type. Total sanctioned exposure stands at INR 72,48,130, while total outstanding is INR 8,22,679. Unsecured sanction amount and outstanding are identical to total outstanding, indicating no separation between secured and unsecured loans. The credit card utilization percentage is 9.0%, which is elevated. The customer&#39;s creditworthiness assessment is cautious due to the high FOIR (total) of 68.5% and elevated credit card utilization.</p>
         </div>
     </div>
     
 
     <div class="footer">
         
-        <p>Generated on 2026-03-25 | Currency: INR</p>
+        <p>Generated on 2026-03-26 | Currency: INR</p>
         
     </div>
 

@@ -639,7 +639,7 @@ def _format_tradeline_features_for_prompt(tf, product_types: set = None) -> str:
         tag = _annotate_value(v, [(">", T.PL_BAL_REMAINING_HIGH_RISK, " [HIGH RISK — most PL balance still outstanding]"),
                                    (">", T.PL_BAL_REMAINING_MODERATE_RISK, " [MODERATE — significant PL balance remaining]"),
                                    ("<=", T.PL_BAL_REMAINING_POSITIVE, " [POSITIVE — largely repaid]")])
-        lines.append(f"    PL Balance Remaining: {_fmt(v)}%{tag}")
+        lines.append(f"    PL Outstanding: {_fmt(v)}%{tag}")
 
     # --- Enquiry Behavior ---
     lines.append("  ENQUIRY BEHAVIOR:")

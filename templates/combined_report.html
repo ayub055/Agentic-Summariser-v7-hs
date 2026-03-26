@@ -511,10 +511,23 @@
             white-space: pre-line;
         }
         /* ── checklist ──────────────────────────── */
-        .checklist-grid {
+        .checklist-columns {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 8px;
+            gap: 20px;
+        }
+        .checklist-col h4 {
+            font-size: 13px;
+            font-weight: 600;
+            margin: 0 0 8px 0;
+            padding-bottom: 4px;
+            border-bottom: 1px solid #e2e8f0;
+            color: #334155;
+        }
+        .checklist-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
         }
         .checklist-item {
             display: flex;
@@ -650,19 +663,38 @@
     {# QUICK ASSESSMENT CHECKLIST (before scorecard)                       #}
     {# ================================================================== #}
 
-    {% if checklist %}
+    {% if bureau_checklist or banking_checklist %}
     <div class="section">
         <h3>Quick Assessment Checklist</h3>
-        <div class="checklist-grid">
-            {% for item in checklist %}
-            <div class="checklist-item cl-{{ item.severity }} {{ 'cl-checked' if item.checked else 'cl-unchecked' }}">
-                <span class="cl-icon">{{ '✓' if item.checked else '✗' }}</span>
-                <span class="cl-label">{{ item.label }}</span>
-                {% if item.detail %}
-                <span class="cl-detail">— {{ item.detail }}</span>
-                {% endif %}
+        <div class="checklist-columns">
+            <div class="checklist-col">
+                <h4>Bureau Checklist</h4>
+                <div class="checklist-grid">
+                    {% for item in bureau_checklist %}
+                    <div class="checklist-item cl-{{ item.severity }} {{ 'cl-checked' if item.checked else 'cl-unchecked' }}">
+                        <span class="cl-icon">{{ '✓' if item.checked else '✗' }}</span>
+                        <span class="cl-label">{{ item.label }}</span>
+                        {% if item.detail %}
+                        <span class="cl-detail">— {{ item.detail }}</span>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
             </div>
-            {% endfor %}
+            <div class="checklist-col">
+                <h4>Banking Checklist</h4>
+                <div class="checklist-grid">
+                    {% for item in banking_checklist %}
+                    <div class="checklist-item cl-{{ item.severity }} {{ 'cl-checked' if item.checked else 'cl-unchecked' }}">
+                        <span class="cl-icon">{{ '✓' if item.checked else '✗' }}</span>
+                        <span class="cl-label">{{ item.label }}</span>
+                        {% if item.detail %}
+                        <span class="cl-detail">— {{ item.detail }}</span>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
         </div>
     </div>
     {% endif %}
@@ -1304,8 +1336,8 @@
                 </div>
             </div>
             <div class="rf-item">
-                <label>PL Balance Remaining %</label>
-                <div class="value {% if tl_features.pl_balance_remaining_pct is not none and tl_features.pl_balance_remaining_pct < 87.06 %}safe{% else %}risk{% endif %}">{{ "%.2f"|format(tl_features.pl_balance_remaining_pct) if tl_features.pl_balance_remaining_pct is not none else "N/A" }}</div>
+                <label>PL Outstanding %</label>
+                <div class="value {% if tl_features.pl_balance_remaining_pct is none %}neutral{% elif tl_features.pl_balance_remaining_pct < 87.06 %}safe{% else %}risk{% endif %}">{{ "%.2f"|format(tl_features.pl_balance_remaining_pct) if tl_features.pl_balance_remaining_pct is not none else "N/A" }}</div>
             </div>
             <div class="rf-item">
                 <label>Unsecured Enquiries (12M)</label>

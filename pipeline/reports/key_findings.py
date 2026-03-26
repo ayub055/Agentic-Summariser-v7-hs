@@ -400,14 +400,14 @@ def _tradeline_findings(
         if tf.pl_balance_remaining_pct > T.PL_BAL_REMAINING_HIGH_RISK:
             findings.append(KeyFinding(
                 category="Utilization",
-                finding=f"PL balance remaining: {tf.pl_balance_remaining_pct:.1f}%",
+                finding=f"PL outstanding: {tf.pl_balance_remaining_pct:.1f}%",
                 inference="Most PL sanctioned amount still outstanding; limited principal repayment progress",
                 severity="high_risk",
             ))
         elif tf.pl_balance_remaining_pct <= T.PL_BAL_REMAINING_POSITIVE:
             findings.append(KeyFinding(
                 category="Utilization",
-                finding=f"PL balance remaining: {tf.pl_balance_remaining_pct:.1f}%",
+                finding=f"PL outstanding: {tf.pl_balance_remaining_pct:.1f}%",
                 inference="Significant PL principal already repaid; good repayment progress",
                 severity="positive",
             ))
@@ -525,7 +525,7 @@ def _composite_findings(
     if cc_util is not None and cc_util > T.COMPOSITE_UTIL_LEVERAGE and pl_bal is not None and pl_bal > T.COMPOSITE_BAL_LEVERAGE:
         findings.append(KeyFinding(
             category="Composite Signal",
-            finding=f"CC utilization at {cc_util:.1f}%{cc_tl} and PL balance remaining at {pl_bal:.1f}%{pl_tl}",
+            finding=f"CC utilization at {cc_util:.1f}%{cc_tl} and PL outstanding at {pl_bal:.1f}%{pl_tl}",
             inference="Elevated leverage across both revolving and term products; limited debt servicing headroom",
             severity="moderate_risk",
         ))

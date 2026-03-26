@@ -303,7 +303,7 @@ def _build_bureau_pdf(report: BureauReport) -> FPDF:
         # Utilization
         _render_group_header(pdf, "Utilization")
         _render_feature_pair(pdf, "CC Balance Utilization %", tf.cc_balance_utilization_pct)
-        _render_feature_pair(pdf, "PL Balance Remaining %", tf.pl_balance_remaining_pct)
+        _render_feature_pair(pdf, "PL Outstanding %", tf.pl_balance_remaining_pct)
         pdf.ln(3)
 
         # Enquiry Behavior

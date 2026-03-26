@@ -259,7 +259,7 @@ def _build_combined_pdf(
 
             _render_group_header(pdf, "Utilization")
             _render_feature_pair(pdf, "CC Balance Utilization %", tf.cc_balance_utilization_pct)
-            _render_feature_pair(pdf, "PL Balance Remaining %", tf.pl_balance_remaining_pct)
+            _render_feature_pair(pdf, "PL Outstanding %", tf.pl_balance_remaining_pct)
             pdf.ln(3)
 
             _render_group_header(pdf, "Enquiry Behavior")
@@ -479,105 +479,22 @@ def compute_checklist(
     customer_report: Optional[CustomerReport],
     bureau_report: Optional[BureauReport],
     rg_salary_data: Optional[dict],
-) -> list:
+) -> dict:
     """Compute yes/no checklist items from existing report data.
 
-    Returns list of dicts: {label, checked, severity, detail}.
+    Returns dict with keys ``bureau`` and ``banking``, each a list of
+    dicts: {label, checked, severity, detail}.
     """
-    items = []
+    bureau_items: list = []
+    banking_items: list = []
     events = (customer_report.events or []) if customer_report else []
 
     def _events_of_type(etype):
         return [e for e in events if e.get("type") == etype]
 
-    # 1. ECS/NACH bounces
-    bounces = _events_of_type("ecs_bounce")
-    items.append({
-        "label": "ECS / NACH bounces",
-        "checked": bool(bounces),
-        "severity": "high" if bounces else "neutral",
-        "detail": bounces[0].get("description") if bounces else None,
-    })
+    # ── BUREAU CHECKLIST ──────────────────────────────────────────
 
-    # 2. Loan disbursement detected
-    loan_events = (_events_of_type("loan_disbursal")
-                   or _events_of_type("loan_redistribution_suspect")
-                   or [e for e in _events_of_type("large_single_credit")
-                       if "lender" in str(e.get("description", "")).lower()
-                       or "loan" in str(e.get("description", "")).lower()])
-    items.append({
-        "label": "Loan disbursement detected",
-        "checked": bool(loan_events),
-        "severity": "high" if loan_events else "neutral",
-        "detail": loan_events[0].get("description") if loan_events else None,
-    })
-
-    # 2b. Post-disbursement fund usage (spending analysis after loan credit)
-    disb_usage = _events_of_type("post_disbursement_usage")
-    if disb_usage:
-        ev = disb_usage[0]
-        match_flag = ev.get("_amounts_match", False)
-        conc_pct   = ev.get("_concentration_pct", 0)
-        severity = "high" if match_flag else ("high" if conc_pct >= 50 else "medium")
-        items.append({
-            "label": "Post-disbursement fund diversion",
-            "checked": True,
-            "severity": severity,
-            "detail": ev.get("description"),
-        })
-    else:
-        items.append({
-            "label": "Post-disbursement fund diversion",
-            "checked": False,
-            "severity": "neutral",
-            "detail": None,
-        })
-
-    # 3. Salary detected
-    has_salary = customer_report and customer_report.salary is not None
-    sal_detail = None
-    if has_salary:
-        sal = customer_report.salary
-        sal_detail = f"₹{sal.avg_amount:,.0f} avg ({sal.frequency} transactions)"
-    items.append({
-        "label": "Salary detected in banking",
-        "checked": has_salary,
-        "severity": "positive" if has_salary else "neutral",
-        "detail": sal_detail,
-    })
-
-    # 4. EMI obligations
-    has_emis = customer_report and customer_report.emis and len(customer_report.emis) > 0
-    emi_detail = None
-    if has_emis:
-        total_emi = sum(e.amount for e in customer_report.emis)
-        emi_detail = f"₹{total_emi:,.0f} total across {len(customer_report.emis)} lender(s)"
-    items.append({
-        "label": "EMI obligations present",
-        "checked": bool(has_emis),
-        "severity": "medium" if has_emis else "neutral",
-        "detail": emi_detail,
-    })
-
-    # 5. Rent payments
-    has_rent = customer_report and customer_report.rent is not None
-    items.append({
-        "label": "Rent payments present",
-        "checked": bool(has_rent),
-        "severity": "neutral",
-        "detail": f"₹{customer_report.rent.amount:,.0f} ({customer_report.rent.frequency} transactions)" if has_rent else None,
-    })
-
-    # 6. Post-salary self-transfer
-    self_transfers = _events_of_type("self_transfer_post_salary")
-    items.append({
-        "label": "Post-salary self-transfer",
-        "checked": bool(self_transfers),
-        "severity": "medium" if self_transfers else "neutral",
-        "detail": self_transfers[0].get("description") if self_transfers else None,
-    })
-
-    # 7. DPD > 0 in bureau
+    # B1. DPD > 0 in bureau
     has_dpd = False
     dpd_detail = None
     if bureau_report:
@@ -590,14 +507,14 @@ def compute_checklist(
             if ei.max_dpd_months_ago is not None:
                 parts.append(f"{ei.max_dpd_months_ago}M ago")
             dpd_detail = " — ".join(parts)
-    items.append({
+    bureau_items.append({
         "label": "DPD > 0 in bureau",
         "checked": has_dpd,
         "severity": "high" if has_dpd else "positive",
         "detail": dpd_detail,
     })
 
-    # 8. Adverse events (write-off / settlement)
+    # B2. Adverse events (write-off / settlement)
     adverse_flags = []
     if bureau_report:
         for vec in bureau_report.feature_vectors.values():
@@ -605,88 +522,289 @@ def compute_checklist(
                 if f in _ADVERSE_FLAGS:
                     adverse_flags.append(f)
     has_adverse = bool(adverse_flags)
-    items.append({
+    bureau_items.append({
         "label": "Adverse events (write-off / settlement)",
         "checked": has_adverse,
         "severity": "high" if has_adverse else "positive",
         "detail": f"Flags: {', '.join(sorted(set(adverse_flags)))}" if has_adverse else None,
     })
 
-    # 9. Betting / gaming spend
-    betting = 0.0
-    if customer_report and customer_report.category_overview:
-        for key in _BETTING_CATS:
-            if key in customer_report.category_overview:
-                betting = customer_report.category_overview[key]
-                break
-    items.append({
-        "label": "Betting / gaming transactions",
-        "checked": betting > 0,
-        "severity": "high" if betting >= 500 else ("medium" if betting > 0 else "neutral"),
-        "detail": f"₹{betting:,.0f} total spend" if betting > 0 else None,
-    })
-
-    # 10. Account type (conduit / secondary)
-    acct_type = "unknown"
-    if customer_report and customer_report.account_quality:
-        acct_type = customer_report.account_quality.get("account_type", "unknown")
-    is_non_primary = acct_type in ("conduit", "secondary")
-    items.append({
-        "label": "Account is conduit / secondary",
-        "checked": is_non_primary,
-        "severity": "high" if acct_type == "conduit" else ("medium" if acct_type == "secondary" else "positive"),
-        "detail": f"Classified as {acct_type}" if is_non_primary else f"Classified as {acct_type}",
-    })
-
-    # 11. High FOIR (>50%)
+    # B3. High FOIR (>50%)
     foir_val = None
     if bureau_report and bureau_report.tradeline_features:
         foir_val = bureau_report.tradeline_features.foir
     has_high_foir = foir_val is not None and foir_val > 50
-    items.append({
+    bureau_items.append({
         "label": "High FOIR (> 50%)",
         "checked": has_high_foir,
         "severity": "high" if (foir_val and foir_val > 65) else ("medium" if has_high_foir else "neutral"),
         "detail": f"Bureau FOIR: {foir_val:.1f}%" if foir_val is not None else None,
     })
 
-    # 12. NACH mandate / SPLN EMI
+    # B4. CC utilization elevated (>=30%)
+    cc_util = None
+    if bureau_report:
+        from schemas.loan_type import LoanType
+        cc_vec = bureau_report.feature_vectors.get(LoanType.CC)
+        if cc_vec and cc_vec.utilization_ratio is not None:
+            cc_util = cc_vec.utilization_ratio
+    bureau_items.append({
+        "label": "CC utilization elevated (\u226530%)",
+        "checked": cc_util is not None and cc_util >= 30,
+        "severity": "high" if (cc_util is not None and cc_util >= 75) else (
+            "medium" if (cc_util is not None and cc_util >= 30) else "positive"
+        ),
+        "detail": f"CC utilization: {cc_util:.1f}%" if cc_util is not None else None,
+    })
+
+    # B5. Kotak loan presence
+    kotak_total = 0
+    kotak_type_dist: list = []
+    if bureau_report:
+        from schemas.loan_type import LoanType
+        for lt, vec in bureau_report.feature_vectors.items():
+            if vec.on_us_count > 0:
+                kotak_total += vec.on_us_count
+                kotak_type_dist.append(f"{lt.value}({vec.on_us_count})")
+    kotak_detail = None
+    if kotak_total > 0:
+        kotak_detail = f"{kotak_total} Kotak loan(s): {', '.join(kotak_type_dist)}"
+    bureau_items.append({
+        "label": "Customer has Kotak loan",
+        "checked": kotak_total > 0,
+        "severity": "neutral" if kotak_total > 0 else "neutral",
+        "detail": kotak_detail,
+    })
+
+    # B6. Kotak loan default (live loans only) — query raw bureau data
+    kotak_defaults: list = []
+    try:
+        if bureau_report:
+            from pipeline.extractors.bureau_feature_extractor import _load_bureau_data
+            from schemas.loan_type import ON_US_SECTORS, normalize_loan_type
+            cust_id = bureau_report.meta.customer_id
+            if cust_id is not None:
+                _CLOSED = {"closed", "written off", "written-off", "settled", "npa", "loss", "doubtful", "write-off"}
+                raw_rows = _load_bureau_data()
+                cust_str = str(cust_id)
+                for row in raw_rows:
+                    if str(row.get("crn", "")).strip() != cust_str:
+                        continue
+                    sector = str(row.get("sector", "")).strip().upper()
+                    if sector not in ON_US_SECTORS:
+                        continue
+                    status = str(row.get("loan_status", "")).strip().lower()
+                    if status in _CLOSED:
+                        continue
+                    # Live Kotak tradeline — check for default
+                    raw_dpd = 0
+                    try:
+                        raw_dpd = int(float(row.get("max_dpd", 0) or 0))
+                    except (ValueError, TypeError):
+                        pass
+                    dpd_str = str(row.get("dpd_string", "")).upper()
+                    has_adverse_flag = any(f in dpd_str for f in _ADVERSE_FLAGS)
+                    if raw_dpd > 0 or has_adverse_flag:
+                        lt_raw = str(row.get("loan_type_new", "")).strip()
+                        lt_canonical = normalize_loan_type(lt_raw)
+                        parts = [lt_canonical.value]
+                        if raw_dpd > 0:
+                            parts.append(f"DPD {raw_dpd}")
+                        if has_adverse_flag:
+                            flags = [f for f in _ADVERSE_FLAGS if f in dpd_str]
+                            parts.append(f"Flags: {','.join(flags)}")
+                        kotak_defaults.append(" — ".join(parts))
+    except Exception:
+        pass  # fail-soft
+    has_kotak_default = bool(kotak_defaults)
+    bureau_items.append({
+        "label": "Kotak loan default (live)",
+        "checked": has_kotak_default,
+        "severity": "high" if has_kotak_default else ("positive" if kotak_total > 0 else "neutral"),
+        "detail": "; ".join(kotak_defaults[:5]) if has_kotak_default else None,
+    })
+
+    # B7. Live Home Loan detected
+    hl_live = False
+    hl_detail = None
+    if bureau_report:
+        from schemas.loan_type import LoanType
+        hl_vec = bureau_report.feature_vectors.get(LoanType.HL)
+        if hl_vec and hl_vec.live_count > 0:
+            hl_live = True
+            sanc = hl_vec.total_sanctioned_amount
+            on_us = hl_vec.on_us_count
+            off_us = hl_vec.off_us_count
+            hl_detail = f"Sanctioned: ₹{sanc:,.0f} | On-Us: {on_us}, Off-Us: {off_us}"
+    bureau_items.append({
+        "label": "Live Home Loan detected",
+        "checked": hl_live,
+        "severity": "neutral" if hl_live else "neutral",
+        "detail": hl_detail,
+    })
+
+    # B8. Bureau thickness
+    bu_grp_val = None
+    if bureau_report and bureau_report.tradeline_features:
+        bu_grp_val = bureau_report.tradeline_features.bu_grp
+    bu_thick = bu_grp_val is not None and "thick" in bu_grp_val.lower()
+    bureau_items.append({
+        "label": "Bureau thick",
+        "checked": bu_thick,
+        "severity": "positive" if bu_thick else "medium",
+        "detail": None if bu_thick else (bu_grp_val if bu_grp_val else "Data unavailable"),
+    })
+
+    # B9. Banking thickness
+    bank_grp_val = None
+    if bureau_report and bureau_report.tradeline_features:
+        bank_grp_val = bureau_report.tradeline_features.bank_grp
+    bank_thick = bank_grp_val is not None and "thick" in bank_grp_val.lower()
+    bureau_items.append({
+        "label": "Banking thick",
+        "checked": bank_thick,
+        "severity": "positive" if bank_thick else "medium",
+        "detail": None if bank_thick else (bank_grp_val if bank_grp_val else "Data unavailable"),
+    })
+
+    # B10. Exposure trend elevated
+    exposure_elevated = False
+    exposure_detail = None
+    exposure_rag = "neutral"
+    if bureau_report:
+        from tools.scorecard import _exposure_signals
+        signals = _exposure_signals(getattr(bureau_report, "monthly_exposure", None))
+        if signals:
+            chip = signals[0]
+            exposure_rag = chip.get("rag", "neutral")
+            exposure_elevated = exposure_rag in ("amber", "red")
+            exposure_detail = f"{chip.get('label', 'Exposure')}: {chip.get('value', '')}"
+    bureau_items.append({
+        "label": "Exposure elevated",
+        "checked": exposure_elevated,
+        "severity": "high" if exposure_rag == "red" else (
+            "medium" if exposure_elevated else ("positive" if exposure_rag == "green" else "neutral")
+        ),
+        "detail": exposure_detail,
+    })
+
+    # ── BANKING CHECKLIST ─────────────────────────────────────────
+
+    # K1. ECS/NACH bounces
+    bounces = _events_of_type("ecs_bounce")
+    banking_items.append({
+        "label": "ECS / NACH bounces",
+        "checked": bool(bounces),
+        "severity": "high" if bounces else "neutral",
+        "detail": bounces[0].get("description") if bounces else None,
+    })
+
+    # K2. Loan disbursement detected
+    loan_events = (_events_of_type("loan_disbursal")
+                   or _events_of_type("loan_redistribution_suspect")
+                   or [e for e in _events_of_type("large_single_credit")
+                       if "lender" in str(e.get("description", "")).lower()
+                       or "loan" in str(e.get("description", "")).lower()])
+    banking_items.append({
+        "label": "Loan disbursement detected",
+        "checked": bool(loan_events),
+        "severity": "high" if loan_events else "neutral",
+        "detail": loan_events[0].get("description") if loan_events else None,
+    })
+
+    # K3. Post-disbursement fund usage
+    disb_usage = _events_of_type("post_disbursement_usage")
+    if disb_usage:
+        ev = disb_usage[0]
+        match_flag = ev.get("_amounts_match", False)
+        conc_pct   = ev.get("_concentration_pct", 0)
+        severity = "high" if match_flag else ("high" if conc_pct >= 50 else "medium")
+        banking_items.append({
+            "label": "Post-disbursement fund diversion",
+            "checked": True,
+            "severity": severity,
+            "detail": ev.get("description"),
+        })
+    else:
+        banking_items.append({
+            "label": "Post-disbursement fund diversion",
+            "checked": False,
+            "severity": "neutral",
+            "detail": None,
+        })
+
+    # K4. Salary detected
+    has_salary = customer_report and customer_report.salary is not None
+    sal_detail = None
+    if has_salary:
+        sal = customer_report.salary
+        sal_detail = f"₹{sal.avg_amount:,.0f} avg ({sal.frequency} transactions)"
+    banking_items.append({
+        "label": "Salary detected in banking",
+        "checked": has_salary,
+        "severity": "positive" if has_salary else "neutral",
+        "detail": sal_detail,
+    })
+
+    # K5. EMI obligations
+    has_emis = customer_report and customer_report.emis and len(customer_report.emis) > 0
+    emi_detail = None
+    if has_emis:
+        total_emi = sum(e.amount for e in customer_report.emis)
+        emi_detail = f"₹{total_emi:,.0f} total across {len(customer_report.emis)} lender(s)"
+    banking_items.append({
+        "label": "EMI obligations present",
+        "checked": bool(has_emis),
+        "severity": "medium" if has_emis else "neutral",
+        "detail": emi_detail,
+    })
+
+    # K6. Rent payments
+    has_rent = customer_report and customer_report.rent is not None
+    banking_items.append({
+        "label": "Rent payments present",
+        "checked": bool(has_rent),
+        "severity": "neutral",
+        "detail": f"₹{customer_report.rent.amount:,.0f} ({customer_report.rent.frequency} transactions)" if has_rent else None,
+    })
+
+    # K7. Post-salary self-transfer
+    self_transfers = _events_of_type("self_transfer_post_salary")
+    banking_items.append({
+        "label": "Post-salary self-transfer",
+        "checked": bool(self_transfers),
+        "severity": "medium" if self_transfers else "neutral",
+        "detail": self_transfers[0].get("description") if self_transfers else None,
+    })
+
+    # K8. NACH mandate / SPLN EMI
     mandate_emis = _events_of_type("mandate_emi")
-    items.append({
+    banking_items.append({
         "label": "NACH mandate EMI detected",
         "checked": bool(mandate_emis),
         "severity": "medium" if mandate_emis else "neutral",
         "detail": mandate_emis[0].get("description") if mandate_emis else None,
     })
 
-    # 13. Home loan EMI payments
-    home_loan_events = _events_of_type("home_loan_emi")
-    items.append({
-        "label": "Home loan EMI payments",
-        "checked": bool(home_loan_events),
-        "severity": "neutral",
-        "detail": home_loan_events[0].get("description") if home_loan_events else None,
-    })
-
-    # 15. Credit card bill payments
+    # K9. Credit card bill payments
     cc_payments = _events_of_type("cc_payment")
-    items.append({
+    banking_items.append({
         "label": "Credit card bill payments",
         "checked": bool(cc_payments),
         "severity": "positive" if cc_payments else "neutral",
         "detail": cc_payments[0].get("description") if cc_payments else None,
     })
 
-    # 16. Land payments
+    # K11. Land payments
     land_events = _events_of_type("land_payment")
-    items.append({
+    banking_items.append({
         "label": "Land purchase payments",
         "checked": bool(land_events),
         "severity": "medium" if land_events else "neutral",
         "detail": land_events[0].get("description") if land_events else None,
     })
 
-    # 17. ATM withdrawals — trend and location
+    # K12. ATM withdrawals — trend and location
     atm_events = _events_of_type("atm_withdrawal")
     if atm_events:
         ev = atm_events[0]
@@ -695,21 +813,21 @@ def compute_checklist(
         detail = ev.get("description", "")
         if addrs:
             detail += f" | Likely nearby: {', '.join(addrs[:3])}"
-        items.append({
+        banking_items.append({
             "label": "ATM withdrawals elevated",
             "checked": is_elevated,
             "severity": "medium" if is_elevated else "neutral",
             "detail": detail,
         })
     else:
-        items.append({
+        banking_items.append({
             "label": "ATM withdrawals elevated",
             "checked": False,
             "severity": "neutral",
             "detail": None,
         })
 
-    # 18 & 19. Transaction-level checks (require raw DataFrame)
+    # K13–K15. Transaction-level checks (require raw DataFrame)
     try:
         from data.loader import get_transactions_df
         from utils.narration_utils import extract_recipient_name, clean_narration
@@ -724,7 +842,7 @@ def compute_checklist(
                 amounts = cdf["tran_amt_in_ac"].fillna(0).astype(float)
                 directions = cdf["dr_cr_indctor"].fillna("")
 
-                # --- 17. Credits / debits above 95th percentile ---------------
+                # --- K13. Credits / debits above 95th percentile ---------------
                 outlier_parts = []
                 for direction, label in [("C", "credit"), ("D", "debit")]:
                     mask = directions == direction
@@ -740,27 +858,27 @@ def compute_checklist(
                         outlier_parts.append(f"{merchant}: ₹{amt:,.0f} ({label})")
 
                 has_outliers = bool(outlier_parts)
-                items.append({
+                banking_items.append({
                     "label": "Transactions above 95th percentile",
                     "checked": has_outliers,
                     "severity": "medium" if has_outliers else "neutral",
                     "detail": "; ".join(outlier_parts[:5]) if has_outliers else None,
                 })
 
-                # --- 18. Automated (NACH / mandate) debit & credit count ------
+                # --- K14. Automated (NACH / mandate) debit & credit count ------
                 narr_upper = narrations.str.upper()
                 auto_mask = narr_upper.str.contains("NACH|MANDATE", na=False, regex=True)
                 auto_debits = int((auto_mask & (directions == "D")).sum())
                 auto_credits = int((auto_mask & (directions == "C")).sum())
                 auto_total = auto_debits + auto_credits
-                items.append({
+                banking_items.append({
                     "label": "Automated (NACH/mandate) transactions",
                     "checked": auto_total > 0,
                     "severity": "neutral",
                     "detail": f"{auto_total} total ({auto_debits} debits, {auto_credits} credits)" if auto_total > 0 else None,
                 })
 
-                # --- 19. Payment mode distribution shift -----------------
+                # --- K15. Payment mode distribution shift -----------------
                 import pandas as pd
 
                 def _infer_mode(row):
@@ -835,28 +953,28 @@ def compute_checklist(
                                 _parts.append(
                                     f"{_m}: {_old:.0f}% \u2192 {_new:.0f}% ({_sign}{_delta:.0f}pp)"
                                 )
-                            items.append({
+                            banking_items.append({
                                 "label": "Payment mode distribution shift",
                                 "checked": True,
                                 "severity": "medium",
                                 "detail": "; ".join(_parts),
                             })
                         else:
-                            items.append({
+                            banking_items.append({
                                 "label": "Payment mode distribution shift",
                                 "checked": False,
                                 "severity": "neutral",
                                 "detail": None,
                             })
                     else:
-                        items.append({
+                        banking_items.append({
                             "label": "Payment mode distribution shift",
                             "checked": False,
                             "severity": "neutral",
                             "detail": None,
                         })
                 else:
-                    items.append({
+                    banking_items.append({
                         "label": "Payment mode distribution shift",
                         "checked": False,
                         "severity": "neutral",
@@ -865,17 +983,17 @@ def compute_checklist(
     except Exception:
         pass  # fail-soft: skip transaction-level checks if data unavailable
 
-    # Emerging merchants (new in recent months, absent before)
+    # K16. Emerging merchants (new in recent months, absent before)
     if customer_report and customer_report.merchant_features:
         em = customer_report.merchant_features.get("emerging_merchants", {})
         em_list = em.get("emerging_merchants", [])
         if em_list:
             names = ", ".join(e["name"] for e in em_list[:3])
             detail = f"{len(em_list)} new: {names}"
-            items.append({"label": "Emerging merchants detected", "checked": True,
-                           "severity": "medium", "detail": detail})
+            banking_items.append({"label": "Emerging merchants detected", "checked": True,
+                                   "severity": "medium", "detail": detail})
 
-    return items
+    return {"bureau": bureau_items, "banking": banking_items}
 
 
 def render_combined_report_html(
@@ -888,8 +1006,7 @@ def render_combined_report_html(
     """Render combined HTML from both reports using Jinja2 template.
 
     Args:
-        theme: Color scheme to use. Options: "emerald" (default), "original",
-               "teal", "blue", "sunset".
+        theme: Color scheme to use. Options: "emerald" (default), "original".
 
     Returns:
         HTML string.
@@ -897,9 +1014,6 @@ def render_combined_report_html(
     THEME_TEMPLATES = {
         "emerald":  "combined_report.html",
         "original": "combined_report_original.html",
-        "teal":     "combined_report_teal_coral.html",
-        "blue":     "combined_report_blue_gold.html",
-        "sunset":   "combined_report_sunset.html",
     }
     template_name = THEME_TEMPLATES.get(theme, THEME_TEMPLATES["emerald"])
     template_dir = Path(__file__).parent.parent.parent / "templates"
@@ -956,5 +1070,6 @@ def render_combined_report_html(
         rg_salary_data=rg_salary_data,
         scorecard=scorecard,
         exposure_summary=exposure_summary,
-        checklist=checklist,
+        bureau_checklist=checklist["bureau"],
+        banking_checklist=checklist["banking"],
     )
