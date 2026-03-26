@@ -23,22 +23,21 @@ def set_reasoning_log_file(path: str) -> None:
     _reasoning_log_file = path
 
 
-def _write_reasoning_to_file(label: str, content: str) -> None:
+def _write_reasoning_to_file(label: str, content: str, customer_id=None) -> None:
     """Append reasoning content to the log file if enabled and label is loggable."""
     if not _reasoning_log_file or label not in _LOGGABLE_LABELS or not content:
         return
     try:
+        crn_str = f" | CRN {customer_id}" if customer_id else ""
         with open(_reasoning_log_file, "a", encoding="utf-8") as f:
-            f.write(f"\n{'='*60}\n")
-            f.write(f"[{label}] — {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
-            f.write(f"{'-'*60}\n")
-            f.write(content)
-            f.write(f"\n{'='*60}\n\n")
+            f.write(f"\n## {label}{crn_str}\n")
+            f.write(f"*{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}*\n\n")
+            f.write(f"```\n{content}\n```\n\n---\n")
     except Exception as e:
         logger.warning("Failed to write reasoning log: %s", e)
 
 
-def extract_reasoning(message, label: str = "LLM") -> str:
+def extract_reasoning(message, label: str = "LLM", customer_id=None) -> str:
     """Extract reasoning from AIMessage.additional_kwargs and log it.
 
     When ChatOllama is used with reasoning=True, the thinking content is
@@ -50,8 +49,9 @@ def extract_reasoning(message, label: str = "LLM") -> str:
     (reasoning=None on older Ollama versions).
 
     Args:
-        message: AIMessage from ChatOllama (or plain str for backwards compat).
-        label:   Descriptive label for the log entry.
+        message:     AIMessage from ChatOllama (or plain str for backwards compat).
+        label:       Descriptive label for the log entry.
+        customer_id: Optional CRN to include in the log entry.
 
     Returns:
         Clean answer text (str).
@@ -74,7 +74,7 @@ def extract_reasoning(message, label: str = "LLM") -> str:
             label,
             reasoning,
         )
-        _write_reasoning_to_file(label, reasoning)
+        _write_reasoning_to_file(label, reasoning, customer_id=customer_id)
 
     # Also handle any inline <think> tags (belt-and-suspenders)
     return strip_think(content, label=label)

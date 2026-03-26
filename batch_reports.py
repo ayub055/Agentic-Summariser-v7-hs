@@ -112,9 +112,9 @@ def main() -> None:
         "--log-reasoning",
         type=str,
         nargs="?",
-        const="reports/reasoning_log.txt",
+        const="reports/reasoning_log.md",
         default=None,
-        help="Log DeepSeek reasoning traces to file (default: reports/reasoning_log.txt). Only works with deepseek models.",
+        help="Log DeepSeek reasoning traces to file (default: reports/reasoning_log.md). Only works with deepseek models.",
     )
     resume_group = parser.add_mutually_exclusive_group()
     resume_group.add_argument(

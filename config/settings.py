@@ -14,7 +14,7 @@ MAX_ITERATIONS = 10
 # Pipeline models
 PARSER_MODEL = "mistral"          # Intent parsing + report planner — needs fast JSON, no think tags
 EXPLAINER_MODEL = "llama3.2"      # Real-time query chat explainer — fast response
-SUMMARY_MODEL = "deepseek-r1:8b" # Report summaries — reasoning model with <think> traces
+SUMMARY_MODEL = "llama3.2" # Report summaries — reasoning model with <think> traces
 
 # Models that support the Ollama `think` parameter (emit <think> reasoning traces)
 THINKING_MODEL_PREFIXES = ("deepseek-r1", "qwq", "qwen3", "phi4-reasoning")

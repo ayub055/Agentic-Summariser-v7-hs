@@ -519,9 +519,7 @@
         .checklist-col h4 {
             font-size: 13px;
             font-weight: 600;
-            margin: 0 0 8px 0;
-            padding-bottom: 4px;
-            border-bottom: 1px solid #e2e8f0;
+            margin: 0;
             color: #334155;
         }
         .checklist-grid {
@@ -551,10 +549,9 @@
             width: 18px;
             text-align: center;
         }
-        .cl-checked   .cl-icon { color: #ef4444; }
-        .cl-unchecked  .cl-icon { color: #94a3b8; }
-        .cl-checked.cl-positive .cl-icon { color: #10b981; }
-        .cl-checked.cl-neutral  .cl-icon { color: #64748b; }
+        .cl-checked   .cl-icon { color: #10b981; }
+        .cl-unchecked  .cl-icon { color: #ef4444; }
+        .cl-neutral    .cl-icon { color: #94a3b8; }
         .cl-label {
             font-weight: 600;
             color: #334155;
@@ -566,6 +563,32 @@
             font-size: 11.5px;
         }
         .cl-unchecked .cl-detail { color: #cbd5e1; }
+        /* ── checklist sort dropdown ───────────── */
+        .checklist-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        .checklist-header h4 {
+            font-size: 13px;
+            font-weight: 600;
+            margin: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+            color: #334155;
+        }
+        .checklist-sort {
+            font-size: 11px;
+            padding: 3px 8px;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            background: #fff;
+            color: #64748b;
+            cursor: pointer;
+            outline: none;
+        }
+        .checklist-sort:hover { border-color: #94a3b8; }
 
         /* ── collapsible sections ──────────────── */
         details.collapsible-section {
@@ -668,10 +691,17 @@
         <h3>Quick Assessment Checklist</h3>
         <div class="checklist-columns">
             <div class="checklist-col">
-                <h4>Bureau Checklist</h4>
-                <div class="checklist-grid">
+                <div class="checklist-header">
+                    <h4>Bureau Checklist</h4>
+                    <select class="checklist-sort" onchange="sortChecklist(this, 'bureau-checklist-grid')">
+                        <option value="default">Sort: Default</option>
+                        <option value="severity">Sort: Severity</option>
+                        <option value="status">Sort: Status</option>
+                    </select>
+                </div>
+                <div class="checklist-grid" id="bureau-checklist-grid">
                     {% for item in bureau_checklist %}
-                    <div class="checklist-item cl-{{ item.severity }} {{ 'cl-checked' if item.checked else 'cl-unchecked' }}">
+                    <div class="checklist-item cl-{{ item.severity }} {{ 'cl-checked' if item.checked else 'cl-unchecked' }}" data-severity="{{ item.severity }}" data-checked="{{ 'yes' if item.checked else 'no' }}" data-order="{{ loop.index }}">
                         <span class="cl-icon">{{ '✓' if item.checked else '✗' }}</span>
                         <span class="cl-label">{{ item.label }}</span>
                         {% if item.detail %}
@@ -682,10 +712,17 @@
                 </div>
             </div>
             <div class="checklist-col">
-                <h4>Banking Checklist</h4>
-                <div class="checklist-grid">
+                <div class="checklist-header">
+                    <h4>Banking Checklist</h4>
+                    <select class="checklist-sort" onchange="sortChecklist(this, 'banking-checklist-grid')">
+                        <option value="default">Sort: Default</option>
+                        <option value="severity">Sort: Severity</option>
+                        <option value="status">Sort: Status</option>
+                    </select>
+                </div>
+                <div class="checklist-grid" id="banking-checklist-grid">
                     {% for item in banking_checklist %}
-                    <div class="checklist-item cl-{{ item.severity }} {{ 'cl-checked' if item.checked else 'cl-unchecked' }}">
+                    <div class="checklist-item cl-{{ item.severity }} {{ 'cl-checked' if item.checked else 'cl-unchecked' }}" data-severity="{{ item.severity }}" data-checked="{{ 'yes' if item.checked else 'no' }}" data-order="{{ loop.index }}">
                         <span class="cl-icon">{{ '✓' if item.checked else '✗' }}</span>
                         <span class="cl-label">{{ item.label }}</span>
                         {% if item.detail %}
@@ -1787,6 +1824,30 @@
             d.setAttribute('open', '');
             a.classList.add('open');
         }
+    }
+
+    function sortChecklist(selectEl, gridId) {
+        var grid = document.getElementById(gridId);
+        var items = Array.from(grid.querySelectorAll('.checklist-item'));
+        var criteria = selectEl.value;
+        var severityOrder = { high: 0, medium: 1, neutral: 2, positive: 3 };
+
+        items.sort(function(a, b) {
+            if (criteria === 'severity') {
+                var sa = severityOrder[a.dataset.severity] !== undefined ? severityOrder[a.dataset.severity] : 9;
+                var sb = severityOrder[b.dataset.severity] !== undefined ? severityOrder[b.dataset.severity] : 9;
+                return sa - sb;
+            } else if (criteria === 'status') {
+                var ca = a.dataset.checked === 'yes' ? 0 : 1;
+                var cb = b.dataset.checked === 'yes' ? 0 : 1;
+                if (ca !== cb) return ca - cb;
+                return parseInt(a.dataset.order) - parseInt(b.dataset.order);
+            } else {
+                return parseInt(a.dataset.order) - parseInt(b.dataset.order);
+            }
+        });
+
+        items.forEach(function(item) { grid.appendChild(item); });
     }
     </script>
 </body>

@@ -86,6 +86,7 @@ def generate_combined_report_pdf(
                     bureau_report.executive_inputs,
                     tradeline_features=bureau_report.tradeline_features,
                     monthly_exposure=bureau_report.monthly_exposure,
+                    customer_id=customer_id,
                 )
             except Exception:
                 pass

@@ -90,7 +90,7 @@ def generate_customer_review(
             "customer_id": mask_customer_id(report.meta.customer_id),
             "data_summary": data_summary,
         })
-        review = extract_reasoning(raw, label="CustomerReview")
+        review = extract_reasoning(raw, label="CustomerReview", customer_id=report.meta.customer_id)
         return review.strip() if review else None
     except Exception as e:
         logger.warning("Customer review generation failed: %s", e)
@@ -368,7 +368,7 @@ def generate_customer_persona(
             "comprehensive_data": comprehensive_data,
             "transaction_sample": transaction_sample,
         })
-        persona = extract_reasoning(raw, label="CustomerPersona")
+        persona = extract_reasoning(raw, label="CustomerPersona", customer_id=report.meta.customer_id)
         return persona.strip() if persona else None
     except Exception as e:
         logger.warning("Customer persona generation failed: %s", e)
@@ -930,6 +930,7 @@ def generate_bureau_review(
     tradeline_features=None,
     monthly_exposure=None,
     model_name: str = _SUMMARY_MODEL,
+    customer_id=None,
 ) -> Optional[str]:
     """Generate an LLM-based bureau portfolio review from executive summary inputs.
 
@@ -957,7 +958,7 @@ def generate_bureau_review(
         chain = prompt | llm
 
         raw = chain.invoke({"data_summary": data_summary})
-        review = extract_reasoning(raw, label="BureauReview")
+        review = extract_reasoning(raw, label="BureauReview", customer_id=customer_id)
         return review.strip() if review else None
     except Exception as e:
         logger.warning("Bureau review generation failed: %s", e)
@@ -1014,7 +1015,7 @@ def generate_combined_executive_summary(
             "bureau_summary": bureau_summary or "(not available)",
             "additional_context": additional_context,
         })
-        result = extract_reasoning(raw, label="CombinedSummary")
+        result = extract_reasoning(raw, label="CombinedSummary", customer_id=customer_id)
         return result.strip() if result else None
     except Exception as e:
         logger.warning("Combined executive summary generation failed: %s", e)
