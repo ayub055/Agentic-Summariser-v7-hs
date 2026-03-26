@@ -7,9 +7,35 @@ and other chain-of-thought models.
 
 import re
 import logging
-from typing import Iterator
+from datetime import datetime
+from typing import Iterator, Optional
 
 logger = logging.getLogger(__name__)
+
+# ── Reasoning file logger (deepseek only) ────────────────────────────
+_reasoning_log_file: Optional[str] = None
+_LOGGABLE_LABELS = {"CustomerReview", "BureauReview"}
+
+
+def set_reasoning_log_file(path: str) -> None:
+    """Enable writing think-block reasoning to a text file."""
+    global _reasoning_log_file
+    _reasoning_log_file = path
+
+
+def _write_reasoning_to_file(label: str, content: str) -> None:
+    """Append reasoning content to the log file if enabled and label is loggable."""
+    if not _reasoning_log_file or label not in _LOGGABLE_LABELS or not content:
+        return
+    try:
+        with open(_reasoning_log_file, "a", encoding="utf-8") as f:
+            f.write(f"\n{'='*60}\n")
+            f.write(f"[{label}] — {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+            f.write(f"{'-'*60}\n")
+            f.write(content)
+            f.write(f"\n{'='*60}\n\n")
+    except Exception as e:
+        logger.warning("Failed to write reasoning log: %s", e)
 
 
 def strip_think(text: str, label: str = "LLM") -> str:
@@ -41,6 +67,7 @@ def strip_think(text: str, label: str = "LLM") -> str:
                 label,
                 think_content,
             )
+            _write_reasoning_to_file(label, think_content)
         text = re.sub(r"<think>.*?</think>", "", text, flags=re.DOTALL).strip()
 
     return text

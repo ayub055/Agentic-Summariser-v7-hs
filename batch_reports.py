@@ -108,6 +108,14 @@ def main() -> None:
         default="reports/batch_output.xlsx",
         help="Output path for merged Excel (default: reports/batch_output.xlsx)",
     )
+    parser.add_argument(
+        "--log-reasoning",
+        type=str,
+        nargs="?",
+        const="reports/reasoning_log.txt",
+        default=None,
+        help="Log DeepSeek reasoning traces to file (default: reports/reasoning_log.txt). Only works with deepseek models.",
+    )
     resume_group = parser.add_mutually_exclusive_group()
     resume_group.add_argument(
         "--resume",
@@ -135,6 +143,19 @@ def main() -> None:
     if not crns:
         logger.error("No CRNs to process. Exiting.")
         sys.exit(1)
+
+    # Reasoning trace logging (deepseek only)
+    if args.log_reasoning:
+        from config.settings import SUMMARY_MODEL
+        if "deepseek" in SUMMARY_MODEL.lower():
+            from utils.llm_utils import set_reasoning_log_file
+            set_reasoning_log_file(args.log_reasoning)
+            logger.info("Reasoning traces will be logged to %s", args.log_reasoning)
+        else:
+            logger.warning(
+                "Reasoning logging requested but SUMMARY_MODEL is '%s' (not deepseek). Skipping.",
+                SUMMARY_MODEL,
+            )
 
     resume = args.resume and not args.force
     if resume:

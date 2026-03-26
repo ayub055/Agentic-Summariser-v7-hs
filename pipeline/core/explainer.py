@@ -102,9 +102,11 @@ class ResponseExplainer:
                 # Special formatting for category presence lookup
                 if r.tool_name == "category_presence_lookup" and "present" in data:
                     lines.append(self._format_category_presence(data))
-                # Special formatting for customer report
-                elif r.tool_name == "generate_customer_report" and "pdf_path" in data:
+                # Special formatting for customer / combined / bureau reports
+                elif r.tool_name in ("generate_customer_report", "generate_combined_report") and "pdf_path" in data:
                     lines.append(self._format_customer_report(data))
+                elif r.tool_name == "generate_bureau_report" and "pdf_path" in data:
+                    lines.append(self._format_bureau_report(data))
                 else:
                     lines.append(f"{r.tool_name}: {r.result}")
         return "\n".join(lines)
@@ -140,12 +142,14 @@ class ResponseExplainer:
         return "\n".join(lines)
 
     def _format_customer_report(self, data: Dict[str, Any]) -> str:
-        """Format customer report result with key highlights."""
+        """Format customer/combined report result with key highlights."""
         lines = []
         meta = data.get('meta', {})
 
+        is_combined = data.get('report_type') == 'combined'
+        title = "COMBINED FINANCIAL REPORT" if is_combined else "CUSTOMER FINANCIAL REPORT"
         lines.append("=" * 60)
-        lines.append("CUSTOMER FINANCIAL REPORT")
+        lines.append(title)
         lines.append("=" * 60)
         cust_id = meta.get('customer_id', 'N/A')
         lines.append(f"Customer ID: {mask_customer_id(cust_id) if cust_id != 'N/A' else 'N/A'}")
@@ -212,6 +216,34 @@ class ResponseExplainer:
 
         return "\n".join(lines)
 
+    def _format_bureau_report(self, data: Dict[str, Any]) -> str:
+        """Format bureau report result with key highlights."""
+        lines = []
+        lines.append("=" * 60)
+        lines.append("BUREAU TRADELINE REPORT")
+        lines.append("=" * 60)
+        lines.append(f"Report saved to: {data.get('pdf_path', 'N/A')}")
+        lines.append("-" * 60)
+
+        # Executive summary inputs (flat keys from asdict)
+        lines.append(f"Total Tradelines: {data.get('total_tradelines', 'N/A')}")
+        lines.append(f"  Live: {data.get('live_tradelines', 'N/A')}")
+        lines.append(f"  Closed: {data.get('closed_tradelines', 'N/A')}")
+        lines.append(f"Total Sanctioned: {data.get('total_sanctioned', 0):,.0f}")
+        lines.append(f"Total Outstanding: {data.get('total_outstanding', 0):,.0f}")
+        lines.append(f"Total Overdue: {data.get('total_overdue', 0):,.0f}")
+        lines.append(f"Max DPD: {data.get('max_dpd', 'N/A')}")
+        if data.get('delinquency_flag'):
+            lines.append(f"Delinquency: YES")
+
+        # Narrative (LLM summary)
+        narrative = data.get('narrative')
+        if narrative:
+            lines.append(f"\nBureau Narrative:\n{narrative}")
+
+        lines.append("=" * 60)
+        return "\n".join(lines)
+
     def format_simple(self, results: List[ToolResult]) -> str:
         """Simple formatting without LLM - for faster responses."""
         lines = []
@@ -248,7 +280,10 @@ class ResponseExplainer:
                 # Category presence lookup
                 if "present" in data and "category" in data:
                     lines.append(self._format_category_presence(data))
-                # Customer report
+                # Customer / combined report
                 if "pdf_path" in data and "populated_sections" in data:
                     lines.append(self._format_customer_report(data))
+                # Bureau report
+                if "pdf_path" in data and "narrative" in data and r.tool_name == "generate_bureau_report":
+                    lines.append(self._format_bureau_report(data))
         return "\n".join(lines) if lines else "No results found."
