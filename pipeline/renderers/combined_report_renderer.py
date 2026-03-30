@@ -746,7 +746,16 @@ def compute_checklist(
         "detail": sal_detail,
     })
 
-    # K5. EMI obligations
+    # K5. Post-salary self-transfer (paired with salary above)
+    self_transfers = _events_of_type("self_transfer_post_salary")
+    banking_items.append({
+        "label": "Post-salary self-transfer",
+        "checked": bool(self_transfers),
+        "severity": "medium" if self_transfers else "neutral",
+        "detail": self_transfers[0].get("description") if self_transfers else None,
+    })
+
+    # K6. EMI obligations
     has_emis = customer_report and customer_report.emis and len(customer_report.emis) > 0
     emi_detail = None
     if has_emis:
@@ -759,31 +768,22 @@ def compute_checklist(
         "detail": emi_detail,
     })
 
-    # K6. Rent payments
-    has_rent = customer_report and customer_report.rent is not None
-    banking_items.append({
-        "label": "Rent payments present",
-        "checked": bool(has_rent),
-        "severity": "neutral",
-        "detail": f"₹{customer_report.rent.amount:,.0f} ({customer_report.rent.frequency} transactions)" if has_rent else None,
-    })
-
-    # K7. Post-salary self-transfer
-    self_transfers = _events_of_type("self_transfer_post_salary")
-    banking_items.append({
-        "label": "Post-salary self-transfer",
-        "checked": bool(self_transfers),
-        "severity": "medium" if self_transfers else "neutral",
-        "detail": self_transfers[0].get("description") if self_transfers else None,
-    })
-
-    # K8. NACH mandate / SPLN EMI
+    # K7. NACH mandate / SPLN EMI (paired with EMI above)
     mandate_emis = _events_of_type("mandate_emi")
     banking_items.append({
         "label": "NACH mandate EMI detected",
         "checked": bool(mandate_emis),
         "severity": "medium" if mandate_emis else "neutral",
         "detail": mandate_emis[0].get("description") if mandate_emis else None,
+    })
+
+    # K8. Rent payments
+    has_rent = customer_report and customer_report.rent is not None
+    banking_items.append({
+        "label": "Rent payments present",
+        "checked": bool(has_rent),
+        "severity": "neutral",
+        "detail": f"₹{customer_report.rent.amount:,.0f} ({customer_report.rent.frequency} transactions)" if has_rent else None,
     })
 
     # K9. Credit card bill payments
@@ -1393,6 +1393,12 @@ def render_combined_report_html(
     checklist = compute_checklist(customer_report, bureau_report, rg_salary_data)
     persona = compute_probable_persona(bureau_report)
 
+    # Feature flags — flip to True to restore hidden sections
+    section_flags = {
+        "show_scorecard_narrative": False,   # summary text inside Risk Variables
+        "show_combined_executive": False,    # Combined Executive Summary at bottom
+    }
+
     template = env.get_template(template_name)
     return template.render(
         customer_report=customer_report,
@@ -1408,4 +1414,5 @@ def render_combined_report_html(
         bureau_checklist=checklist["bureau"],
         banking_checklist=checklist["banking"],
         persona=persona,
+        section_flags=section_flags,
     )

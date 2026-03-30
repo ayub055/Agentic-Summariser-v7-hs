@@ -838,7 +838,7 @@
             {% endif %}
         </div>
         {% endif %}
-        {% if scorecard.narrative %}
+        {% if section_flags.show_scorecard_narrative and scorecard.narrative %}
         <div class="sc-narrative">{{ scorecard.narrative }}</div>
         {% endif %}
     </div>
@@ -1622,7 +1622,7 @@
             <tbody>
                 {% for cat, amount in customer_report.category_overview.items()|sort(attribute='1', reverse=true) %}
                 <tr>
-                    <td>{{ "Un-categorised" if cat == "Other" else cat }}</td>
+                    <td>{{ "Un-categorised" if cat|lower == "other" else cat }}</td>
                     <td class="amount">{{ "{:,.2f}".format(amount) }}</td>
                 </tr>
                 {% endfor %}
@@ -1808,7 +1808,7 @@
     {# PART 3: COMBINED EXECUTIVE SUMMARY                                  #}
     {# ================================================================== #}
 
-    {% if combined_summary %}
+    {% if section_flags.show_combined_executive and combined_summary %}
     <div class="section-divider">Combined Executive Summary</div>
     <div class="section">
         <div class="summary-box" style="border-left: 4px solid #065f46;">
