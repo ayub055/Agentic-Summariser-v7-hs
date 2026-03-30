@@ -375,6 +375,44 @@ def extract_bureau_features(customer_id: int) -> Dict[LoanType, BureauLoanFeatur
     return vectors
 
 
+def extract_raw_loan_type_profile(customer_id: int) -> dict:
+    """Extract raw loan type counts and amounts for persona classification.
+
+    Reuses the module-level ``_load_bureau_data()`` cache — no new I/O.
+
+    Returns:
+        {
+            "raw_counts": {"Business Loan - General": 2, ...},
+            "raw_sanctioned": {"Business Loan - General": 3500000.0, ...},
+            "raw_live_counts": {"Credit Card": 1, ...},
+            "total_tradelines": 5,
+        }
+    """
+    all_rows = _load_bureau_data()
+    customer_rows = [r for r in all_rows if _safe_int(r.get("crn", "")) == customer_id]
+
+    raw_counts: Dict[str, int] = defaultdict(int)
+    raw_sanctioned: Dict[str, float] = defaultdict(float)
+    raw_live_counts: Dict[str, int] = defaultdict(int)
+
+    for row in customer_rows:
+        raw_type = row.get("loan_type_new", "").strip()
+        if not raw_type:
+            raw_type = "Unknown"
+        raw_counts[raw_type] += 1
+        raw_sanctioned[raw_type] += _safe_float(row.get("sanction_amount", ""))
+        status = row.get("loan_status", "").strip().lower()
+        if status not in _CLOSED_STATUSES:
+            raw_live_counts[raw_type] += 1
+
+    return {
+        "raw_counts": dict(raw_counts),
+        "raw_sanctioned": dict(raw_sanctioned),
+        "raw_live_counts": dict(raw_live_counts),
+        "total_tradelines": len(customer_rows),
+    }
+
+
 def extract_tu_score(customer_id: int) -> Optional[int]:
     """Extract TransUnion credit score for a customer from dpd_data."""
     all_rows = _load_bureau_data()

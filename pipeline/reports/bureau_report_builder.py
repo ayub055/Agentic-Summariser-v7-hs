@@ -9,7 +9,7 @@ from datetime import datetime
 
 from schemas.customer_report import ReportMeta
 from schemas.bureau_report import BureauReport
-from ..extractors.bureau_feature_extractor import extract_bureau_features, compute_monthly_exposure, extract_tu_score
+from ..extractors.bureau_feature_extractor import extract_bureau_features, compute_monthly_exposure, extract_tu_score, extract_raw_loan_type_profile
 from ..extractors.bureau_feature_aggregator import aggregate_bureau_features
 from ..extractors.tradeline_feature_extractor import extract_tradeline_features
 from .key_findings import extract_key_findings
@@ -102,6 +102,13 @@ def build_bureau_report(customer_id: int) -> BureauReport:
     except Exception as e:
         logger.warning(f"Monthly exposure computation failed for {customer_id}: {e}")
 
+    # 4c. Raw loan type profile for persona classification (fail-soft)
+    raw_loan_profile = None
+    try:
+        raw_loan_profile = extract_raw_loan_type_profile(customer_id)
+    except Exception as e:
+        logger.warning(f"Raw loan type profile extraction failed for {customer_id}: {e}")
+
     # 5. Assemble report
     report = BureauReport(
         meta=meta,
@@ -110,6 +117,7 @@ def build_bureau_report(customer_id: int) -> BureauReport:
         tradeline_features=tradeline_features,
         key_findings=key_findings,
         monthly_exposure=monthly_exposure,
+        raw_loan_profile=raw_loan_profile,
     )
 
     # 6. Validate (fail-soft: log warnings, return partial report)

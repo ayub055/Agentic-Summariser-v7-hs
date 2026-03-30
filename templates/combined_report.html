@@ -736,6 +736,18 @@
     </div>
     {% endif %}
 
+    <!-- Probable Customer Persona -->
+    {% if persona and persona.profiles %}
+    <div class="section">
+        <h3>Probable Customer Persona</h3>
+        <p style="font-size:13.5px; color:#334155; line-height:1.7;">
+            Probable profile of customer is
+            {% for p in persona.profiles %}{% if not loop.first %}{% if loop.last %} and {% else %}, {% endif %}{% endif %}<strong>{{ p.label }}</strong>{% if p.detail %} ({{ p.detail }}){% endif %}{% endfor %}.{% if persona.stress_flags %}
+            Stress indicators: {% for s in persona.stress_flags %}{% if not loop.first %}, {% endif %}{{ s.label }}{% if s.detail %} ({{ s.detail }}){% endif %}{% endfor %}.{% endif %}
+        </p>
+    </div>
+    {% endif %}
+
     <!-- Risk Variables & Snapshot (clickable, everything hidden) -->
     {% if scorecard %}
     <div class="section-divider clickable" onclick="toggleSection('risk-details','risk-arrow')">Risk Variables & Snapshot <span class="expand-hint">Click to expand and read more detailed view</span><span class="expand-arrow" id="risk-arrow">&#9656;</span></div>
@@ -1610,7 +1622,7 @@
             <tbody>
                 {% for cat, amount in customer_report.category_overview.items()|sort(attribute='1', reverse=true) %}
                 <tr>
-                    <td>{{ cat }}</td>
+                    <td>{{ "Un-categorised" if cat == "Other" else cat }}</td>
                     <td class="amount">{{ "{:,.2f}".format(amount) }}</td>
                 </tr>
                 {% endfor %}

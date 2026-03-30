@@ -118,3 +118,20 @@ MODE_SHIFT_RECENT_MONTHS: int = 2           # Recent window = last 2 calendar mo
 MODE_SHIFT_THRESHOLD_PP: float = 15.0       # Flag if any mode shifts ≥ 15 percentage points
 MODE_SHIFT_MIN_TRANSACTIONS: int = 5        # Min txns per period to compare
 MODE_SHIFT_MIN_MONTHS: int = 3              # Need ≥ 3 distinct months of data
+
+# ---------------------------------------------------------------------------
+# Persona Classification Thresholds
+# ---------------------------------------------------------------------------
+PERSONA_BL_LARGE_AVG_SANCTION: float = 50_00_000    # 50L — Large Business avg sanction
+PERSONA_BL_SME_MIN_SANCTION: float = 25_00_000      # 25L — SME minimum total
+PERSONA_BL_MICRO_MAX: float = 2_00_000              # 2L — Micro/shopkeeper ceiling
+PERSONA_HL_MATURE_SANCTION: float = 50_00_000       # 50L — Mature Salaried HL
+PERSONA_HL_METRO_SANCTION: float = 75_00_000        # 75L — Metro Senior
+PERSONA_HL_AFFORDABLE_MAX: float = 20_00_000        # 20L — Affordable housing
+PERSONA_PL_ENTRY_MAX: float = 5_00_000              # 5L — Entry Salaried PL ceiling
+PERSONA_OD_SALARY_MAX: float = 5_00_000             # 5L — Salary OD vs Business OD
+PERSONA_GOLD_STRESS_MIN: float = 50_000             # 50K — Gold Loan stress trigger
+PERSONA_GOLD_HIGH_STRESS: float = 2_00_000          # 2L — High Asset Stress
+PERSONA_CV_FLEET_MIN_COUNT: int = 4                 # Fleet Owner minimum CV count
+PERSONA_AL_CLUSTER_MIN: int = 3                     # AL cluster for cab/taxi proxy
+PERSONA_BL_LARGE_MIN_COUNT: int = 3                 # Large Business minimum BL count

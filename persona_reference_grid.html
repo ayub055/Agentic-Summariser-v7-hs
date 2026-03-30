@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Profile Rules & Thresholds</title>
+<style>
+    body { font-family: Arial, sans-serif; line-height: 1.5; margin: 20px; }
+    h2 { margin-top: 40px; color: #0a3d62; }
+    table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+    th, td { border: 1px solid #ccc; padding: 8px 10px; text-align: left; }
+    th { background: #f1f2f6; font-weight: bold; }
+    .section { margin-bottom: 60px; }
+</style>
+</head>
+<body>
+
+<h1>Profile Rule Framework</h1>
+
+<!-- TICKET SIZE THRESHOLDS -->
+<div class="section">
+<h2>Ticket Size Thresholds</h2>
+<table>
+<thead>
+<tr>
+<th>Product</th>
+<th>Very Small</th>
+<th>Small</th>
+<th>Mid</th>
+<th>Large</th>
+</tr>
+</thead>
+<tbody>
+<tr><td>Auto Loan</td><td>—</td><td>≤5L</td><td>5L–15L</td><td>&gt;15L</td></tr>
+<tr><td>Home Loan</td><td>—</td><td>≤20L</td><td>20L–50L</td><td>&gt;50L</td></tr>
+<tr><td>Personal Loan</td><td>&lt;50K</td><td>50K–2L</td><td>2L–5L</td><td>&gt;5L</td></tr>
+<tr><td>Business Loan</td><td>&lt;2L</td><td>≤5L</td><td>5L–50L</td><td>&gt;50L</td></tr>
+<tr><td>CV Loan</td><td>—</td><td>≤15L (LCV)</td><td>&gt;15L (HCV)</td><td>—</td></tr>
+<tr><td>Gold Loan</td><td>—</td><td>≤50K</td><td>50K–2L</td><td>&gt;2L</td></tr>
+<tr><td>Overdraft</td><td>—</td><td>≤5L</td><td>5L–25L</td><td>&gt;25L</td></tr>
+</tbody>
+</table>
+</div>
+
+<!-- UNIQUE IDENTIFIER PRODUCTS -->
+<div class="section">
+<h2>Unique Identifier Products<br><small>(Single loan → defines profile)</small></h2>
+<table>
+<thead>
+<tr>
+<th>Product</th>
+<th>Profile</th>
+</tr>
+</thead>
+<tbody>
+<tr><td>Any Business Loan (all variants)</td><td>Business Owner</td></tr>
+<tr><td>Commercial Vehicle</td><td>Transport Operator</td></tr>
+<tr><td>Tractor Loan</td><td>Farmer / Agriculture</td></tr>
+<tr><td>Construction Equipment</td><td>Contractor / Infrastructure</td></tr>
+<tr><td>Fleet Card</td><td>Fleet Operator</td></tr>
+<tr><td>GECL Secured / Unsecured</td><td>Business Owner</td></tr>
+<tr><td>Microfinance</td><td>MF Segment — separate track</td></tr>
+<tr><td>Education Loan</td><td>Young Professional</td></tr>
+<tr><td>Loan Against Securities</td><td>HNI / Investor</td></tr>
+<tr><td>Non-Funded Credit Facility</td><td>Business — trade / export</td></tr>
+<tr><td>Loan to Professional</td><td>Self-Employed Professional</td></tr>
+<tr><td>Corporate Credit Card</td><td>Corporate / Senior Professional</td></tr>
+<tr><td>Home Loan alone</td><td>Asset Holder</td></tr>
+<tr><td>OD alone ≤ 5L</td><td>Salaried (salary OD)</td></tr>
+<tr><td>OD alone &gt;5L</td><td>Business / Self-Employed</td></tr>
+<tr><td>Gold Loan alone &gt;50K</td><td>Asset Stress</td></tr>
+<tr><td>LAD alone</td><td>Asset Stress</td></tr>
+</tbody>
+</table>
+</div>
+
+<!-- GENERIC PRODUCTS -->
+<div class="section">
+<h2>Generic Products<br><small>(Single loan → insufficient data)</small></h2>
+<p>Single PL · Single Credit Card · Single Consumer Loan · Single Short Term PL · Secured Credit Card alone</p>
+</div>
+
+<!-- FULL PROFILE RULE MATRIX -->
+<div class="section">
+<h2>Full Profile Rule Matrix</h2>
+<table>
+<thead>
+<tr>
+<th>Profile</th>
+<th>Track</th>
+<th>Primary Rule</th>
+<th>Count</th>
+<th>Ticket</th>
+<th>Secondary / Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr><td>MF Entrepreneur</td><td>MF</td><td>MF Business Loan</td><td>≥1</td><td>Any</td><td>MF track evaluated first, exits</td></tr>
+<tr><td>MF Asset Builder</td><td>MF</td><td>MF Home Loan (no MF BL)</td><td>≥1</td><td>Any</td><td></td></tr>
+<tr><td>MF Consumer</td><td>MF</td><td>MF Personal Loan only</td><td>≥1</td><td>Any</td><td></td></tr>
+
+<tr><td>Large Business</td><td>Business</td><td>BL ≥3</td><td>≥3</td><td>Avg &gt;50L</td><td>Non-Funded CF → trade/export</td></tr>
+<tr><td>SME / Growing</td><td>Business</td><td>BL + OD large OR Non-Funded CF</td><td>—</td><td>≥25L–50L</td><td>OD &gt;5L confirms scale</td></tr>
+<tr><td>Small Business</td><td>Business</td><td>BL Unsecured/Secured or GECL</td><td>1–2</td><td>≤50L</td><td>BL &lt;2L → micro/shopkeeper</td></tr>
+<tr><td>Agri Priority Business</td><td>Business</td><td>BL Priority Sector – Agri</td><td>≥1</td><td>Any</td><td>+ Tractor → Agri Entrepreneur</td></tr>
+
+<tr><td>Fleet Owner</td><td>Transport</td><td>CV any</td><td>≥4</td><td>Any</td><td>CV ≥2 + Fleet Card qualifies</td></tr>
+<tr><td>Transport Operator</td><td>Transport</td><td>CV LCV OR AL cluster small</td><td>1–3 CV</td><td>≤15L CV / ≤5L AL</td><td>AL ≥3 → cab/taxi proxy</td></tr>
+<tr><td>Contractor</td><td>Transport</td><td>CE Loan</td><td>≥1</td><td>Any</td><td>≥2 → established</td></tr>
+
+<tr><td>Farmer</td><td>Agriculture</td><td>Tractor OR Agri BL</td><td>≥1</td><td>Any</td><td>Both → Agri Entrepreneur</td></tr>
+
+<tr><td>Mature Salaried</td><td>Salaried</td><td>HL large + Card + AL mid</td><td>HL ≥1</td><td>HL &gt;50L</td><td>HL &gt;75L → Metro senior</td></tr>
+<tr><td>Established Salaried</td><td>Salaried</td><td>HL + Card or PL</td><td>HL ≥1</td><td>Any</td><td>HL ≤20L → Affordable housing</td></tr>
+<tr><td>Entry Salaried</td><td>Salaried</td><td>PL small-mid + Card</td><td>PL ≥1</td><td>PL ≤5L</td><td>Edu Loan closed → young professional</td></tr>
+
+<tr><td>Corporate Professional</td><td>Salaried</td><td>Corporate Credit Card</td><td>≥1</td><td>Any</td><td>+ LAS → HNI Executive</td></tr>
+<tr><td>Self-Employed Prof.</td><td>Professional</td><td>Loan to Professional</td><td>≥1</td><td>Any</td><td></td></tr>
+
+<tr><td>HNI / Investor</td><td>Asset</td><td>LAS</td><td>≥1</td><td>Any</td><td>+ HL large → senior professional</td></tr>
+<tr><td>Asset Holder</td><td>Asset</td><td>HL alone</td><td>≥1</td><td>Any</td><td>Occupation unclear</td></tr>
+<tr><td>Asset Stress</td><td>Asset</td><td>Gold Loan alone OR LAD alone</td><td>≥1</td><td>Gold &gt;50K</td><td>Pledging ancestral wealth</td></tr>
+
+<tr><td>Stressed Borrower</td><td>Stressed</td><td>Short PL + Loan on Card OR Temp OD + Loan on Card</td><td>—</td><td>—</td><td>≥3 stress products + Gold = debt trap</td></tr>
+<tr><td>Insufficient Data</td><td>Thin File</td><td>Single generic product</td><td>1</td><td>Any</td><td>No profile</td></tr>
+<tr><td>New to Credit</td><td>NTC</td><td>Zero bureau loans</td><td>0</td><td>—</td><td>Separate track</td></tr>
+</tbody>
+</table>
+</div>
+
+<!-- STRESS OVERLAY -->
+<div class="section">
+<h2>Stress Overlay (Applied Last)</h2>
+<table>
+<thead>
+<tr>
+<th>Trigger</th>
+<th>Condition</th>
+<th>Flag</th>
+<th>Severity</th>
+</tr>
+</thead>
+<tbody>
+<tr><td>Gold Loan</td><td>&gt;50K + any other profile</td><td>Asset Stress</td><td>Moderate</td></tr>
+<tr><td>Gold Loan</td><td>&gt;2L</td><td>High Asset Stress</td><td>High</td></tr>
+<tr><td>Loan on Credit Card</td><td>Any</td><td>Liquidity Stress</td><td>Moderate</td></tr>
+<tr><td>Loan on Credit Card</td><td>≥3 instances</td><td>Revolving Debt Trap</td><td>High</td></tr>
+<tr><td>Temporary OD</td><td>Present</td><td>Cash Flow Stress</td><td>Moderate</td></tr>
+<tr><td>Short Term PL + Loan on Card</td><td>Both present</td><td>Active Distress</td><td>High</td></tr>
+<tr><td>Short Term PL alone</td><td>With existing profile</td><td>Soft Stress</td><td>Low</td></tr>
+</tbody>
+</table>
+</div>
+
+<!-- PRIORITY ORDER -->
+<div class="section">
+<h2>Evaluation Priority Order</h2>
+<p><strong>MF → Business → Transport → Agriculture → Salaried → Professional → Asset → Stressed</strong></p>
+<p>First match = Primary profile.<br>Next closest = Secondary profile.<br>Stress applied independently.</p>
+</div>
+
+</body>
+</html>

@@ -494,7 +494,7 @@ def compute_checklist(
 
     # ── BUREAU CHECKLIST ──────────────────────────────────────────
 
-    # B1. DPD > 0 in bureau
+    # B1. Max DPD occurred
     has_dpd = False
     dpd_detail = None
     if bureau_report:
@@ -508,7 +508,7 @@ def compute_checklist(
                 parts.append(f"{ei.max_dpd_months_ago}M ago")
             dpd_detail = " — ".join(parts)
     bureau_items.append({
-        "label": "DPD > 0 in bureau",
+        "label": "MAX DPD occurred",
         "checked": has_dpd,
         "severity": "high" if has_dpd else "positive",
         "detail": dpd_detail,
@@ -547,7 +547,7 @@ def compute_checklist(
         from schemas.loan_type import LoanType
         cc_vec = bureau_report.feature_vectors.get(LoanType.CC)
         if cc_vec and cc_vec.utilization_ratio is not None:
-            cc_util = cc_vec.utilization_ratio
+            cc_util = cc_vec.utilization_ratio * 100  # convert fraction to percentage
     bureau_items.append({
         "label": "CC utilization elevated (\u226530%)",
         "checked": cc_util is not None and cc_util >= 30,
@@ -996,6 +996,340 @@ def compute_checklist(
     return {"bureau": bureau_items, "banking": banking_items}
 
 
+# ---------------------------------------------------------------------------
+# Persona classification — raw loan type sets
+# ---------------------------------------------------------------------------
+_MF_BL = {"Microfinance - Business Loan"}
+_MF_HL = {"Microfinance - Housing Loan"}
+_MF_PL = {"Microfinance - Personal Loan"}
+_TRACTOR = {"Tractor Loan"}
+_CE = {"Construction Equipment Loan"}
+_CV = {"Commercial Vehicle Loan"}
+_FLEET_CARD = {"Fleet Card"}
+_GECL = {"GECL Loan Secured", "GECL Loan Unsecured"}
+_EDUCATION = {"Education Loan", "P2P Education Loan"}
+_LAS = {"Loan_against_securities", "Loan Against Shares/Securities"}
+_NON_FUNDED = {
+    "Non-Funded Credit Facility",
+    "Business Non-Funded Credit Facility - General",
+    "Business Non-Funded Credit Facility - Priority Sector-Others",
+    "Business Non-Funded Credit Facility - Priority Sector - Agriculture",
+    "Business Non-Funded Credit Facility - Priority Sector - Small Business",
+}
+_LOAN_TO_PROF = {"Loan to Professional"}
+_CORP_CC = {"Corporate Credit Card"}
+_LOAN_ON_CARD = {"Loan on Credit Card"}
+_SHORT_TERM_PL = {"Short Term Personal Loan"}
+_TEMP_OD = {"Temporary Overdraft"}
+_OD = {"Overdraft", "Prime Minister Jaan Dhan Yojana - Overdraft"}
+_BL_ALL = {
+    "Business Loan - General", "Business Loan - Secured", "Business Loan - Unsecured",
+    "Business Loan - Priority Sector - Agriculture", "Business Loan - Priority Sector - Others",
+    "Business Loan - Priority Sector - Small Business", "Business Loan Against Bank Deposits",
+    "Mudra Loans - Shishu / Kishor / Tarun",
+}
+_BL_AGRI = {
+    "Business Loan - Priority Sector - Agriculture",
+    "Business Non-Funded Credit Facility - Priority Sector - Agriculture",
+}
+_HL_ALL = {"Housing Loan", "Home Loan", "Pradhan Mantri Awas Yojana - Credit Link Subsidy Scheme MAY CLSS"}
+_CC_ALL = {"Credit Card", "Secured Credit Card"}
+_PL_PLAIN = {"Personal Loan"}
+_AL_ALL = {"Auto Loan (Personal)", "Auto Loan", "Used Car Loan"}
+_GL_ALL = {"Gold Loan", "Priority Sector - Gold Loan"}
+_LAD_ALL = {"Loan Against Bank Deposits"}
+_GENERIC_SINGLE = {"Personal Loan", "Credit Card", "Consumer Loan", "Short Term Personal Loan", "Secured Credit Card"}
+
+
+def _count_raw(raw_counts: dict, type_set: set) -> int:
+    """Sum counts for all raw types matching a set."""
+    return sum(raw_counts.get(t, 0) for t in type_set)
+
+
+def _sum_sanctioned(raw_sanctioned: dict, type_set: set) -> float:
+    """Sum sanctioned amounts for all raw types matching a set."""
+    return sum(raw_sanctioned.get(t, 0.0) for t in type_set)
+
+
+def _fmt_inr_short(amount: float) -> str:
+    """Format amount as short INR string (e.g. '15L', '2.5Cr')."""
+    if amount >= 1_00_00_000:
+        return f"{amount / 1_00_00_000:.1f}Cr"
+    elif amount >= 1_00_000:
+        return f"{amount / 1_00_000:.0f}L"
+    elif amount >= 1_000:
+        return f"{amount / 1_000:.0f}K"
+    return f"{amount:.0f}"
+
+
+def compute_probable_persona(bureau_report: Optional[BureauReport]) -> dict:
+    """Compute probable customer persona from bureau tradeline data.
+
+    Evaluates all persona rules in waterfall priority order, collects all
+    matches, and returns the top 2-3 by priority. Stress overlays are
+    evaluated independently.
+
+    Returns:
+        {
+            "profiles": [{"label": str, "track": str, "detail": str|None}, ...],
+            "stress_flags": [{"label": str, "severity": str, "detail": str|None}, ...],
+            "summary": "Probable profile of customer is X, Y"
+        }
+    """
+    empty = {"profiles": [], "stress_flags": [], "summary": ""}
+
+    if bureau_report is None or bureau_report.raw_loan_profile is None:
+        empty["profiles"] = [{"label": "Insufficient Data", "track": "Thin File", "detail": "No bureau data available"}]
+        empty["summary"] = "Probable profile of customer is Insufficient Data"
+        return empty
+
+    raw = bureau_report.raw_loan_profile
+    rc = raw.get("raw_counts", {})
+    rs = raw.get("raw_sanctioned", {})
+    rl = raw.get("raw_live_counts", {})
+    total_tl = raw.get("total_tradelines", 0)
+
+    # Edge: no tradelines
+    if total_tl == 0:
+        return {
+            "profiles": [{"label": "New to Credit", "track": "NTC", "detail": "Zero bureau tradelines"}],
+            "stress_flags": [],
+            "summary": "Probable profile of customer is New to Credit",
+        }
+
+    # Edge: single generic product
+    if total_tl == 1:
+        single_type = next(iter(rc), "")
+        if single_type in _GENERIC_SINGLE:
+            return {
+                "profiles": [{"label": "Insufficient Data", "track": "Thin File", "detail": f"Single {single_type}"}],
+                "stress_flags": [],
+                "summary": "Probable profile of customer is Insufficient Data (thin file)",
+            }
+
+    matches = []  # list of {"label", "track", "priority", "detail"}
+
+    # --- MF Track (priority=10) ---
+    mf_bl = _count_raw(rc, _MF_BL)
+    mf_hl = _count_raw(rc, _MF_HL)
+    mf_pl = _count_raw(rc, _MF_PL)
+    if mf_bl > 0:
+        matches.append({"label": "MF Entrepreneur", "track": "Microfinance", "priority": 10,
+                         "detail": f"{mf_bl} MF Business Loan(s)"})
+    elif mf_hl > 0:
+        matches.append({"label": "MF Asset Builder", "track": "Microfinance", "priority": 11,
+                         "detail": f"{mf_hl} MF Housing Loan(s)"})
+    elif mf_pl > 0:
+        matches.append({"label": "MF Consumer", "track": "Microfinance", "priority": 12,
+                         "detail": f"{mf_pl} MF Personal Loan(s)"})
+
+    # --- Business Track (priority=20) ---
+    bl_count = _count_raw(rc, _BL_ALL) + _count_raw(rc, _GECL)
+    bl_sanction = _sum_sanctioned(rs, _BL_ALL) + _sum_sanctioned(rs, _GECL)
+    nf_count = _count_raw(rc, _NON_FUNDED)
+    od_count = _count_raw(rc, _OD)
+    od_sanction = _sum_sanctioned(rs, _OD)
+    bl_agri_count = _count_raw(rc, _BL_AGRI)
+
+    if bl_count >= T.PERSONA_BL_LARGE_MIN_COUNT and bl_count > 0 and (bl_sanction / bl_count) > T.PERSONA_BL_LARGE_AVG_SANCTION:
+        detail = f"{bl_count} BL, avg {_fmt_inr_short(bl_sanction / bl_count)}"
+        if nf_count > 0:
+            detail += " + Non-Funded CF (trade/export)"
+        matches.append({"label": "Large Business", "track": "Business", "priority": 20, "detail": detail})
+    elif (bl_count > 0 and od_sanction > T.PERSONA_OD_SALARY_MAX) or nf_count > 0:
+        total_biz = bl_sanction + od_sanction
+        if T.PERSONA_BL_SME_MIN_SANCTION <= total_biz <= T.PERSONA_BL_LARGE_AVG_SANCTION * 2:
+            matches.append({"label": "SME / Growing Business", "track": "Business", "priority": 21,
+                             "detail": f"{bl_count} BL + OD {_fmt_inr_short(od_sanction)}, total {_fmt_inr_short(total_biz)}"})
+    if 1 <= bl_count <= 2 and bl_sanction <= T.PERSONA_BL_LARGE_AVG_SANCTION:
+        sub = "micro/shopkeeper" if bl_count > 0 and (bl_sanction / bl_count) < T.PERSONA_BL_MICRO_MAX else None
+        detail = f"{bl_count} BL, {_fmt_inr_short(bl_sanction)}"
+        if sub:
+            detail += f" ({sub})"
+        matches.append({"label": "Small Business Owner", "track": "Business", "priority": 22, "detail": detail})
+
+    if bl_agri_count > 0:
+        tractor_count = _count_raw(rc, _TRACTOR)
+        label = "Agri Entrepreneur" if tractor_count > 0 else "Agri Priority Business"
+        matches.append({"label": label, "track": "Business", "priority": 23,
+                         "detail": f"{bl_agri_count} Agri BL" + (f" + {tractor_count} Tractor" if tractor_count > 0 else "")})
+
+    # --- Transport Track (priority=30) ---
+    cv_count = _count_raw(rc, _CV)
+    fleet_count = _count_raw(rc, _FLEET_CARD)
+    ce_count = _count_raw(rc, _CE)
+    al_count = _count_raw(rc, _AL_ALL)
+    al_sanction = _sum_sanctioned(rs, _AL_ALL)
+
+    if cv_count >= T.PERSONA_CV_FLEET_MIN_COUNT or (cv_count >= 2 and fleet_count > 0):
+        matches.append({"label": "Fleet Owner", "track": "Transport", "priority": 30,
+                         "detail": f"{cv_count} CV" + (f" + Fleet Card" if fleet_count > 0 else "")})
+    elif cv_count >= 1:
+        matches.append({"label": "Transport Operator", "track": "Transport", "priority": 31,
+                         "detail": f"{cv_count} CV (LCV/HCV)"})
+
+    if al_count >= T.PERSONA_AL_CLUSTER_MIN and al_count > 0 and (al_sanction / al_count) <= T.PERSONA_PL_ENTRY_MAX:
+        matches.append({"label": "Transport Operator (Cab/Taxi)", "track": "Transport", "priority": 32,
+                         "detail": f"{al_count} AL cluster, avg {_fmt_inr_short(al_sanction / al_count)}"})
+
+    if ce_count >= 1:
+        label = "Established Contractor" if ce_count >= 2 else "Contractor"
+        matches.append({"label": label, "track": "Transport", "priority": 33,
+                         "detail": f"{ce_count} CE Loan(s)"})
+
+    # --- Agriculture Track (priority=40) ---
+    tractor_count = _count_raw(rc, _TRACTOR)
+    if tractor_count > 0 or bl_agri_count > 0:
+        if tractor_count > 0 and bl_agri_count > 0:
+            label = "Agri Entrepreneur"
+            detail = f"{tractor_count} Tractor + {bl_agri_count} Agri BL"
+        elif tractor_count > 0:
+            label = "Farmer / Agriculture"
+            detail = f"{tractor_count} Tractor Loan(s)"
+        else:
+            label = "Farmer / Agriculture"
+            detail = f"{bl_agri_count} Agri BL"
+        matches.append({"label": label, "track": "Agriculture", "priority": 40, "detail": detail})
+
+    # --- Salaried Track (priority=50) ---
+    hl_count = _count_raw(rc, _HL_ALL)
+    hl_sanction = _sum_sanctioned(rs, _HL_ALL)
+    cc_count = _count_raw(rc, _CC_ALL)
+    pl_count = _count_raw(rc, _PL_PLAIN)
+    pl_sanction = _sum_sanctioned(rs, _PL_PLAIN)
+    edu_count = _count_raw(rc, _EDUCATION)
+    corp_cc = _count_raw(rc, _CORP_CC)
+
+    if hl_count > 0 and hl_sanction > T.PERSONA_HL_MATURE_SANCTION and (cc_count > 0 or al_count > 0):
+        detail = f"HL {_fmt_inr_short(hl_sanction)}"
+        if hl_sanction > T.PERSONA_HL_METRO_SANCTION:
+            detail += " (Metro Senior)"
+        matches.append({"label": "Mature Salaried", "track": "Salaried", "priority": 50, "detail": detail})
+    elif hl_count > 0 and (cc_count > 0 or pl_count > 0):
+        detail = f"HL {_fmt_inr_short(hl_sanction)}"
+        if hl_sanction <= T.PERSONA_HL_AFFORDABLE_MAX:
+            detail += " (Affordable housing)"
+        matches.append({"label": "Established Salaried", "track": "Salaried", "priority": 51, "detail": detail})
+    elif pl_count > 0 and pl_sanction <= T.PERSONA_PL_ENTRY_MAX and cc_count > 0:
+        detail = f"PL {_fmt_inr_short(pl_sanction)} + CC"
+        if edu_count > 0:
+            detail += " + Education (Young Professional)"
+        matches.append({"label": "Entry Salaried", "track": "Salaried", "priority": 52, "detail": detail})
+
+    if corp_cc > 0:
+        las_count = _count_raw(rc, _LAS)
+        label = "HNI Executive" if las_count > 0 else "Corporate Professional"
+        matches.append({"label": label, "track": "Salaried", "priority": 53,
+                         "detail": f"Corporate CC" + (f" + LAS" if las_count > 0 else "")})
+
+    # --- Professional Track (priority=60) ---
+    ltp_count = _count_raw(rc, _LOAN_TO_PROF)
+    if ltp_count > 0:
+        matches.append({"label": "Self-Employed Professional", "track": "Professional", "priority": 60,
+                         "detail": f"{ltp_count} Loan to Professional"})
+
+    # --- Asset Track (priority=70) ---
+    las_count = _count_raw(rc, _LAS)
+    gl_count = _count_raw(rc, _GL_ALL)
+    gl_sanction = _sum_sanctioned(rs, _GL_ALL)
+    lad_count = _count_raw(rc, _LAD_ALL)
+
+    if las_count > 0:
+        detail = f"{las_count} LAS"
+        if hl_count > 0 and hl_sanction > T.PERSONA_HL_MATURE_SANCTION:
+            detail += " + large HL (Senior Professional)"
+        matches.append({"label": "HNI / Investor", "track": "Asset", "priority": 70, "detail": detail})
+
+    # HL alone (no BL, no PL, no CC)
+    if hl_count > 0 and bl_count == 0 and pl_count == 0 and cc_count == 0:
+        matches.append({"label": "Asset Holder", "track": "Asset", "priority": 71,
+                         "detail": f"HL alone {_fmt_inr_short(hl_sanction)}"})
+
+    # Gold alone or LAD alone
+    non_gl_lad = total_tl - gl_count - lad_count
+    if gl_count > 0 and gl_sanction > T.PERSONA_GOLD_STRESS_MIN and non_gl_lad == 0:
+        matches.append({"label": "Asset Stress", "track": "Asset", "priority": 72,
+                         "detail": f"Gold Loan alone {_fmt_inr_short(gl_sanction)}"})
+    if lad_count > 0 and non_gl_lad == 0:
+        matches.append({"label": "Asset Stress", "track": "Asset", "priority": 73,
+                         "detail": "LAD alone — pledging deposits"})
+
+    # OD alone checks
+    if od_count > 0 and total_tl == od_count:
+        if od_sanction <= T.PERSONA_OD_SALARY_MAX:
+            matches.append({"label": "Salaried (Salary OD)", "track": "Salaried", "priority": 54,
+                             "detail": f"OD alone {_fmt_inr_short(od_sanction)}"})
+        else:
+            matches.append({"label": "Business / Self-Employed", "track": "Business", "priority": 24,
+                             "detail": f"OD alone {_fmt_inr_short(od_sanction)} (>5L)"})
+
+    # --- Stressed Track (priority=80) ---
+    loc_count = _count_raw(rc, _LOAN_ON_CARD)
+    spl_count = _count_raw(rc, _SHORT_TERM_PL)
+    tod_count = _count_raw(rc, _TEMP_OD)
+
+    if (spl_count > 0 and loc_count > 0) or (tod_count > 0 and loc_count > 0):
+        stress_products = spl_count + loc_count + tod_count
+        detail = []
+        if spl_count > 0:
+            detail.append(f"{spl_count} Short PL")
+        if loc_count > 0:
+            detail.append(f"{loc_count} Loan on Card")
+        if tod_count > 0:
+            detail.append(f"{tod_count} Temp OD")
+        combo = " + ".join(detail)
+        if gl_count > 0 and gl_sanction > T.PERSONA_GOLD_STRESS_MIN:
+            combo += f" + Gold {_fmt_inr_short(gl_sanction)} — possible debt trap"
+        matches.append({"label": "Stressed Borrower", "track": "Stressed", "priority": 80,
+                         "detail": combo})
+
+    # --- Stress Overlay (independent, always evaluated) ---
+    stress_flags = []
+    if gl_count > 0 and gl_sanction > T.PERSONA_GOLD_STRESS_MIN:
+        if gl_sanction > T.PERSONA_GOLD_HIGH_STRESS:
+            stress_flags.append({"label": "High Asset Stress", "severity": "high",
+                                  "detail": f"Gold Loan {_fmt_inr_short(gl_sanction)}"})
+        elif non_gl_lad < total_tl:  # has other products too
+            stress_flags.append({"label": "Asset Stress", "severity": "moderate",
+                                  "detail": f"Gold Loan {_fmt_inr_short(gl_sanction)} alongside other products"})
+    if loc_count > 0:
+        if loc_count >= 3:
+            stress_flags.append({"label": "Revolving Debt Trap", "severity": "high",
+                                  "detail": f"{loc_count} Loan on Card instances"})
+        else:
+            stress_flags.append({"label": "Liquidity Stress", "severity": "moderate",
+                                  "detail": f"{loc_count} Loan on Card"})
+    if spl_count > 0 and loc_count > 0:
+        stress_flags.append({"label": "Active Distress", "severity": "high",
+                              "detail": "Short Term PL + Loan on Card"})
+    elif spl_count > 0:
+        stress_flags.append({"label": "Soft Stress", "severity": "low",
+                              "detail": f"{spl_count} Short Term PL"})
+    if tod_count > 0:
+        stress_flags.append({"label": "Cash Flow Stress", "severity": "moderate",
+                              "detail": f"{tod_count} Temporary OD"})
+
+    # --- Select top 2-3 by priority ---
+    # Deduplicate by label (keep highest priority)
+    seen_labels = set()
+    unique_matches = []
+    for m in sorted(matches, key=lambda x: x["priority"]):
+        if m["label"] not in seen_labels:
+            seen_labels.add(m["label"])
+            unique_matches.append(m)
+
+    top = unique_matches[:3]
+
+    if not top:
+        top = [{"label": "Unclassified", "track": "Unknown", "priority": 99, "detail": f"{total_tl} tradeline(s), no clear profile match"}]
+
+    profiles = [{"label": m["label"], "track": m["track"], "detail": m.get("detail")} for m in top]
+    labels = ", ".join(p["label"] for p in profiles)
+    summary = f"Probable profile of customer is {labels}"
+
+    return {"profiles": profiles, "stress_flags": stress_flags, "summary": summary}
+
+
 def render_combined_report_html(
     customer_report: Optional[CustomerReport],
     bureau_report: Optional[BureauReport],
@@ -1057,6 +1391,7 @@ def render_combined_report_html(
     )
 
     checklist = compute_checklist(customer_report, bureau_report, rg_salary_data)
+    persona = compute_probable_persona(bureau_report)
 
     template = env.get_template(template_name)
     return template.render(
@@ -1072,4 +1407,5 @@ def render_combined_report_html(
         exposure_summary=exposure_summary,
         bureau_checklist=checklist["bureau"],
         banking_checklist=checklist["banking"],
+        persona=persona,
     )

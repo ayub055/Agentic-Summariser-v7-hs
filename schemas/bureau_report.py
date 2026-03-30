@@ -25,3 +25,4 @@ class BureauReport:
     narrative: Optional[str] = None
     key_findings: List = field(default_factory=list)
     monthly_exposure: Optional[Dict[str, Any]] = None  # {"months": [...], "series": {...}}
+    raw_loan_profile: Optional[Dict[str, Any]] = None  # raw loan type counts for persona
