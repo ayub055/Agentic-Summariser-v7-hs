@@ -1077,7 +1077,9 @@ def compute_probable_persona(bureau_report: Optional[BureauReport]) -> dict:
     """
     empty = {"profiles": [], "stress_flags": [], "summary": ""}
 
-    if bureau_report is None or bureau_report.raw_loan_profile is None:
+    if bureau_report is None:
+        return empty
+    if bureau_report.raw_loan_profile is None:
         empty["profiles"] = [{"label": "Insufficient Data", "track": "Thin File", "detail": "No bureau data available"}]
         empty["summary"] = "Probable profile of customer is Insufficient Data"
         return empty
@@ -1329,6 +1331,7 @@ def render_combined_report_html(
     THEME_TEMPLATES = {
         "emerald":  "combined_report.html",
         "original": "combined_report_original.html",
+        "bank":     "bank_report.html",
     }
     template_name = THEME_TEMPLATES.get(theme, THEME_TEMPLATES["emerald"])
     template_dir = Path(__file__).parent.parent.parent / "templates"
