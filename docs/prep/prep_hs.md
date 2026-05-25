@@ -12,6 +12,19 @@
 ## PROJECT 1: Kotak Agentic Reader
 *Credit Intelligence Agent | LangChain | Multi-Agent | Ollama | Pydantic | Streamlit*
 
+### Project Description : 
+Kotak Agentic Reader — Credit Intelligence Agent
+1. Built a LangChain based agentic system for natural-language based credit decisioning over
+banking transactions & CIBIL data, generating automated PDF/HTML/Excel reports.
+2. Built a goal-conditioned agentic pipeline with dynamic tool selection across 25+ modular
+analytics tools and zero human-in-the-loop intervention
+3. Enabled dual-model on-device LLM orchestration (Mistral for intent extraction, DeepSeek
+for synthesis) via Ollama for Hindsighting Team
+4. Delivered multi-modal autonomous report generation with Pydantic-typed inter-agent
+contracts and Streamlit streaming interface
+5. Improved efficiency of Hindsighting team, enabling fast corrective measures over lending
+Enhanced throughput of hindshighting team by ~400x on per day basis
+
 ### A. Guaranteed Questions
 
 1. `[GUARANTEED]` Walk me through the end-to-end architecture of your Kotak Agentic Reader system.
